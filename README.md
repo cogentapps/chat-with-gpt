@@ -8,15 +8,15 @@ Powered by the new ChatGPT API, this app has been developed using TypeScript + R
 
 ## Features
 
-- Fast response times.
-- Search through your past chat conversations.
-- View and customize the "system prompt" - the secret prompt shown to ChatGPT by the system before your first message.
-- Adjust the creativity and randomness of responses by setting the Temperature setting. Higher temperature means more creativity.
-- Give ChatGPT a realistic human voice by connecting your ElevenLabs text-to-speech account.
-- Share your favorite chat sessions online using public share URLs.
-- Easily copy-and-paste ChatGPT messages.
-- Full markdown support including code, tables, and math.
-- Pay for only what you use with the ChatGPT API.
+- 🚀 Fast response times.
+- 🔎 Search through your past chat conversations.
+- 📄 View and customize the "system prompt" - the secret prompt shown to ChatGPT by the system before your first message.
+- 🌡 Adjust the creativity and randomness of responses by setting the Temperature setting. Higher temperature means more creativity.
+- 💬 Give ChatGPT a realistic human voice by connecting your ElevenLabs text-to-speech account.
+- ✉ Share your favorite chat sessions online using public share URLs.
+- 📋 Easily copy-and-paste ChatGPT messages.
+- 🖼 Full markdown support including code, tables, and math.
+- 🫰 Pay for only what you use with the ChatGPT API.
 
 ## Bring your own API keys
 
