@@ -10,7 +10,7 @@ Powered by the new ChatGPT API, this app has been developed using TypeScript + R
 
 - 🚀 **Fast** response times.
 - 🔎 **Search** through your past chat conversations.
-- 📄 View and customize the System Prompt - the **secret prompt** shown to ChatGPT by the system before your first message.
+- 📄 View and customize the System Prompt - the **secret prompt** the system shows the AI before your messages.
 - 🌡 Adjust the **creativity and randomness** of responses by setting the Temperature setting. Higher temperature means more creativity.
 - 💬 Give ChatGPT a **realistic human voice** by connecting your ElevenLabs text-to-speech account.
 - ✉ **Share** your favorite chat sessions online using public share URLs.
