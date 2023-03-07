@@ -4,7 +4,7 @@ Chat with GPT is an open-source, unofficial ChatGPT app with extra features and 
 
 Try out the hosted version at: https://chatwithgpt.netlify.app
 
-Powered by the new ChatGPT API, this app has been developed using TypeScript + React. We welcome pull requests from the community!
+Powered by the new ChatGPT API from OpenAI, this app has been developed using TypeScript + React. We welcome pull requests from the community!
 
 [demo.webm](https://user-images.githubusercontent.com/127109874/223571582-34ca7562-bdb7-4712-aa5c-b7320866afdc.webm)
 
@@ -14,7 +14,7 @@ Powered by the new ChatGPT API, this app has been developed using TypeScript + R
 - 🔎 **Search** through your past chat conversations.
 - 📄 View and customize the System Prompt - the **secret prompt** the system shows the AI before your messages.
 - 🌡 Adjust the **creativity and randomness** of responses by setting the Temperature setting. Higher temperature means more creativity.
-- 💬 Give ChatGPT a **realistic human voice** by connecting your ElevenLabs text-to-speech account.
+- 💬 Give ChatGPT AI a **realistic human voice** by connecting your ElevenLabs text-to-speech account.
 - ✉ **Share** your favorite chat sessions online using public share URLs.
 - 📋 Easily **copy-and-paste** ChatGPT messages.
 - 🖼 **Full markdown support** including code, tables, and math.
@@ -30,7 +30,7 @@ Your API key is stored only on your device and is never transmitted to anyone ex
 
 ### ElevenLabs
 
-To use the realistic text-to-speech feature, you will need to add your ElevenLabs API key by clicking "Play" next to any message.
+To use the realistic AI text-to-speech feature, you will need to add your ElevenLabs API key by clicking "Play" next to any message.
 
 Your API key is stored only on your device and never transmitted to anyone except ElevenLabs.
 
