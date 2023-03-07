@@ -6,6 +6,8 @@ Try out the hosted version at: https://chatwithgpt.netlify.app
 
 Powered by the new ChatGPT API, this app has been developed using TypeScript + React. We welcome pull requests from the community!
 
+[demo.webm](https://user-images.githubusercontent.com/127109874/223571582-34ca7562-bdb7-4712-aa5c-b7320866afdc.webm)
+
 ## Features
 
 - 🚀 **Fast** response times.
