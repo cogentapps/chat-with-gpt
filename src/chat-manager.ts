@@ -237,13 +237,20 @@ export class Search {
         const output: any[] = [];
         for (const item of searchResults) {
             const chatID = item.id;
-            const chat = this.chats.get(chatID);
+            let chat = this.chats.get(chatID);
             if (!chat) {
                 continue;
             }
 
+            chat = { ...chat };
+
             let description = chat.messages?.first?.content || '';
             description = ellipsize(description, 400);
+
+            if (!chat.title) {
+                chat.title = ellipsize(description, 100);
+            }
+            
             if (!chat.title || !description) {
                 continue;
             }

@@ -81,7 +81,8 @@ export default function ChatPage(props: any) {
         if (id) {
             saveParameters(id, parameters);
         }
-    }, [parameters]);
+        saveParameters('', parameters);
+    }, [id, parameters]);
 
     const onNewMessage = useCallback(async (message?: string) => {
         if (props.share) {
