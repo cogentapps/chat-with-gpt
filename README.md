@@ -34,6 +34,34 @@ To use the realistic AI text-to-speech feature, you will need to add your Eleven
 
 Your API key is stored only on your device and never transmitted to anyone except ElevenLabs.
 
+## Running on your own computer
+
+1. First, you'll need to have Git installed on your computer. If you don't have it installed already, you can download it from the official Git website: https://git-scm.com/downloads.
+
+2. Once Git is installed, you can clone the Chat with GPT repository by running the following command in your terminal or command prompt:
+
+```
+git clone https://github.com/cogentapps/chat-with-gpt.git
+```
+
+3. Next, you'll need to have Node.js and npm (Node Package Manager) installed on your computer. You can download the latest version of Node.js from the official Node.js website: https://nodejs.org/en/download/
+
+4. Once Node.js is installed, navigate to the root directory of the Chat with GPT repository in your terminal or command prompt and run the following command to install the required dependencies:
+
+```
+npm install
+```
+
+This will install all the required dependencies specified in the package.json file.
+
+5. Finally, run the following command to start the development server:
+
+```
+npm run start
+```
+
+This will start the development server on port 3000. You can then open your web browser and navigate to http://localhost:3000 to view the Chat with GPT webapp running locally on your computer.
+
 ## Roadmap
 
 - Edit messages (coming soon)
