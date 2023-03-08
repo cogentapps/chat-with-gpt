@@ -222,7 +222,7 @@ export default function SettingsScreen(props: SettingsScreenProps) {
                                     <audio controls style={{ display: 'none' }} id="voice-preview" key={context.voice.id}>
                                         <source src={voices.find(v => v.voice_id === context.voice.id)?.preview_url} type="audio/mpeg" />
                                     </audio>
-                                    <Button onClick={() => document.getElementById('voice-preview')?.play()} variant='light' compact style={{ marginTop: '1rem' }}>
+                                    <Button onClick={() => (document.getElementById('voice-preview') as HTMLMediaElement)?.play()} variant='light' compact style={{ marginTop: '1rem' }}>
                                         <i className='fa fa-headphones' />
                                         <span>Preview voice</span>
                                     </Button>
