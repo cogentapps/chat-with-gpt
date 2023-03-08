@@ -6,26 +6,43 @@ import {
 } from "react-router-dom";
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
-import ChatPage from './components/page';
 import { AppContextProvider } from './context';
+import LandingPage from './components/pages/landing';
+import ChatPage from './components/pages/chat';
+import AboutPage from './components/pages/about';
+
 import './index.scss';
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <ChatPage landing={true} />,
+        element: <AppContextProvider>
+            <LandingPage landing={true} />
+        </AppContextProvider>,
     },
     {
         path: "/chat/:id",
-        element: <ChatPage />,
+        element: <AppContextProvider>
+            <ChatPage />
+        </AppContextProvider>,
     },
     {
         path: "/s/:id",
-        element: <ChatPage share={true} />,
+        element: <AppContextProvider>
+            <ChatPage share={true} />
+        </AppContextProvider>,
     },
     {
         path: "/s/:id/*",
-        element: <ChatPage share={true} />,
+        element: <AppContextProvider>
+            <ChatPage share={true} />
+        </AppContextProvider>,
+    },
+    {
+        path: "/about",
+        element: <AppContextProvider>
+            <AboutPage />
+        </AppContextProvider>,
     },
 ]);
 
@@ -36,11 +53,9 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <MantineProvider theme={{ colorScheme: "dark" }}>
-            <AppContextProvider>
-                <ModalsProvider>
-                    <RouterProvider router={router} />
-                </ModalsProvider>
-            </AppContextProvider>
+            <ModalsProvider>
+                <RouterProvider router={router} />
+            </ModalsProvider>
         </MantineProvider>
     </React.StrictMode>
 );

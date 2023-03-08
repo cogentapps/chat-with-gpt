@@ -1,17 +1,13 @@
 import styled from '@emotion/styled';
 import { Button, ActionIcon, Textarea } from '@mantine/core';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAppContext } from '../context';
-import { Parameters } from '../types';
 
 const Container = styled.div`
     background: #292933;
     border-top: thin solid #393933;
     padding: 1rem 1rem 0 1rem;
-    position: absolute;
-    bottom: 0rem;
-    left: 0;
-    right: 0;
 
     .inner {
         max-width: 50rem;
@@ -30,10 +26,10 @@ export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
 function PaperPlaneSubmitButton(props: { onSubmit: any, disabled?: boolean }) {
     return (
-        <ActionIcon size="xs"
-                    disabled={props.disabled} 
-                    loading={props.disabled}
-                    onClick={() => props.onSubmit()}>
+        <ActionIcon size="sm"
+            disabled={props.disabled}
+            loading={props.disabled}
+            onClick={props.onSubmit}>
             <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
         </ActionIcon>
     );
@@ -41,27 +37,24 @@ function PaperPlaneSubmitButton(props: { onSubmit: any, disabled?: boolean }) {
 
 export interface MessageInputProps {
     disabled?: boolean;
-    parameters: Parameters;
-    onSubmit: OnSubmit;
 }
 
 export default function MessageInput(props: MessageInputProps) {
     const context = useAppContext();
-
-    const [message, setMessage] = useState('');
+    const pathname = useLocation().pathname;
 
     const onChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setMessage(e.target.value);
-    }, []);
+        context.setMessage(e.target.value);
+    }, [context.setMessage]);
 
     const onSubmit = useCallback(async () => {
-        if (await props.onSubmit(message)) {
-            setMessage('');
+        if (await context.onNewMessage(context.message)) {
+            context.setMessage('');
         }
-    }, [message, props.onSubmit]);
+    }, [context.message, context.onNewMessage, context.setMessage]);
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Enter'&& e.shiftKey === false && !props.disabled) {
+        if (e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
             e.preventDefault();
             onSubmit();
         }
@@ -81,31 +74,41 @@ export default function MessageInput(props: MessageInputProps) {
     const openSystemPromptPanel = useCallback(() => context.settings.open('options', 'system-prompt'), []);
     const openTemperaturePanel = useCallback(() => context.settings.open('options', 'temperature'), []);
 
+    const messagesToDisplay = context.currentChat.messagesToDisplay;
+    const disabled = context.generating
+        || messagesToDisplay[messagesToDisplay.length - 1]?.role === 'user'
+        || (messagesToDisplay.length > 0 && !messagesToDisplay[messagesToDisplay.length - 1]?.done);
+
+    const isLandingPage = pathname === '/';
+    if (context.isShare || (!isLandingPage && !context.id)) {
+        return null;
+    }
+    
     return <Container>
         <div className="inner">
-            <Textarea disabled={props.disabled}
+            <Textarea disabled={props.disabled || disabled}
                 autosize
                 minRows={3}
                 maxRows={12}
                 placeholder={"Enter a message here..."}
-                value={message}
+                value={context.message}
                 onChange={onChange}
                 rightSection={rightSection}
                 onKeyDown={onKeyDown} />
             <div>
-                <Button variant="subtle" 
-                        className="settings-button"
-                        size="xs"
-                        compact
-                        onClick={openSystemPromptPanel}>
+                <Button variant="subtle"
+                    className="settings-button"
+                    size="xs"
+                    compact
+                    onClick={openSystemPromptPanel}>
                     <span>Customize system prompt</span>
                 </Button>
-                <Button variant="subtle" 
-                        className="settings-button"
-                        size="xs"
-                        compact
-                        onClick={openTemperaturePanel}>
-                    <span>Temperature: {props.parameters.temperature.toFixed(1)}</span>
+                <Button variant="subtle"
+                    className="settings-button"
+                    size="xs"
+                    compact
+                    onClick={openTemperaturePanel}>
+                    <span>Temperature: {context.parameters.temperature.toFixed(1)}</span>
                 </Button>
             </div>
         </div>
