@@ -8,6 +8,7 @@ import { createStreamingChatCompletion } from './openai';
 import { createTitle } from './titles';
 import { ellipsize, sleep } from './utils';
 import * as idb from './idb';
+import { getTokenCountForMessages, selectMessagesToSendSafely } from './tokenizer';
 
 export const channel = new BroadcastChannel('chats');
 
@@ -102,9 +103,10 @@ export class ChatManager extends EventEmitter {
             ? chat.messages.getMessageChainTo(message.parentID)
             : [];
         messages.push(newMessage);
+        
+        const messagesToSend = selectMessagesToSendSafely(messages.map(getOpenAIMessageFromMessage));
 
-        const response = await createStreamingChatCompletion(messages.map(getOpenAIMessageFromMessage),
-            message.requestedParameters);
+        const response = await createStreamingChatCompletion(messagesToSend, message.requestedParameters);
 
         response.on('error', () => {
             if (!reply.content) {
@@ -250,7 +252,7 @@ export class Search {
             if (!chat.title) {
                 chat.title = ellipsize(description, 100);
             }
-            
+
             if (!chat.title || !description) {
                 continue;
             }

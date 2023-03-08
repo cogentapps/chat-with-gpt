@@ -1,16 +1,10 @@
 import styled from '@emotion/styled';
-import ReactMarkdown from 'react-markdown';
 import { Button, CopyButton, Loader } from '@mantine/core';
-
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
 
 import { Message } from "../types";
 import { share } from '../utils';
 import { ElevenLabsReaderButton } from '../elevenlabs';
+import { Markdown } from './markdown';
 
 // hide for everyone but screen readers
 const SROnly = styled.span`
@@ -229,38 +223,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                     </Button>
                 )}
             </div>
-            <div className={"prose dark:prose-invert content content-" + props.message.id}>
-                <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]}
-                    rehypePlugins={[rehypeKatex]}
-                    components={{
-                        code({ node, inline, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(className || '')
-                            return !inline ? (
-                                <div>
-                                    <CopyButton value={String(children)}>
-                                        {({ copy, copied }) => (
-                                            <Button variant="subtle" size="sm" compact onClick={copy}>
-                                                <i className="fa fa-clipboard" />
-                                                <span>{copied ? 'Copied' : 'Copy'}</span>
-                                            </Button>
-                                        )}
-                                    </CopyButton>
-                                    <SyntaxHighlighter
-                                        children={String(children).replace(/\n$/, '')}
-                                        style={vscDarkPlus as any}
-                                        language={match?.[1] || 'text'}
-                                        PreTag="div"
-                                        {...props}
-                                    />
-                                </div>
-                            ) : (
-                                <code className={className} {...props}>
-                                    {children}
-                                </code>
-                            )
-                        }
-                    }}>{props.message.content}</ReactMarkdown>
-            </div>
+            <Markdown content={props.message.content} className={"content content-" + props.message.id} />
         </div>
         {props.last && <EndOfChatMarker />}
     </Container>

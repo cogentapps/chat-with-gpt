@@ -1,15 +1,17 @@
 import styled from '@emotion/styled';
 import Helmet from 'react-helmet';
 import { useSpotlight } from '@mantine/spotlight';
-import { Button, ButtonProps, TextInput } from '@mantine/core';
+import { Button, ButtonProps } from '@mantine/core';
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { APP_NAME } from '../values';
 import { useAppContext } from '../context';
 import { backend } from '../backend';
+import { MenuItem, primaryMenu, secondaryMenu } from '../menus';
 
-const Container = styled.div`
+const HeaderContainer = styled.div`
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
@@ -56,7 +58,44 @@ const Container = styled.div`
         font-size: 90%;
     }
 
-    i + span {
+    i + span, .mantine-Button-root span.hide-on-mobile {
+        @media (max-width: 40em) {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+    }
+
+    .mantine-Button-root {
+        @media (max-width: 40em) {
+            padding: 0.5rem;
+        }
+    }
+`;
+
+const SubHeaderContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    font-family: "Work Sans", sans-serif;
+    line-height: 1.7;
+    font-size: 80%;
+    opacity: 0.7;
+    margin: 0.5rem 1rem 0 1rem;
+    gap: 1rem;
+
+    .spacer {
+        flex-grow: 1;
+    }
+
+    a {
+        color: white;
+    }
+
+    .fa {
+        font-size: 90%;
+    }
+
+    .fa + span {
         @media (max-width: 40em) {
             position: absolute;
             left: -9999px;
@@ -68,8 +107,8 @@ const Container = styled.div`
 function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, children?: any }) {
     return (
         <Button size='xs'
-                variant={props.variant || 'subtle'}
-                onClick={props.onClick}>
+            variant={props.variant || 'subtle'}
+            onClick={props.onClick}>
             {props.icon && <i className={'fa fa-' + props.icon} />}
             {props.children && <span>
                 {props.children}
@@ -78,7 +117,14 @@ function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, child
     )
 }
 
-export default function Header(props: { title?: any, onShare?: () => void, share?: boolean, canShare?: boolean }) {
+export interface HeaderProps {
+    title?: any;
+    onShare?: () => void;
+    share?: boolean;
+    canShare?: boolean;
+}
+
+export default function Header(props: HeaderProps) {
     const context = useAppContext();
     const navigate = useNavigate();
     const spotlight = useSpotlight();
@@ -93,8 +139,8 @@ export default function Header(props: { title?: any, onShare?: () => void, share
     const openSettings = useCallback(() => {
         context.settings.open(context.apiKeys.openai ? 'options' : 'user');
     }, [context, context.apiKeys.openai]);
-    
-    return <Container>
+
+    return <HeaderContainer>
         <Helmet>
             <title>{props.title ? `${props.title} - ` : ''}{APP_NAME} - Unofficial ChatGPT app</title>
         </Helmet>
@@ -112,10 +158,27 @@ export default function Header(props: { title?: any, onShare?: () => void, share
             Share
         </HeaderButton>}
         {backend && !context.authenticated && (
-            <HeaderButton onClick={() => backend?.signIn()}>Sign in to sync</HeaderButton>
+            <HeaderButton onClick={() => backend?.signIn()}>Sign in <span className="hide-on-mobile">to sync</span></HeaderButton>
         )}
         <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
             New Chat
         </HeaderButton>
-    </Container>;
+    </HeaderContainer>;
+}
+
+function SubHeaderMenuItem(props: { item: MenuItem }) {
+    return (
+        <Button variant="light" size="xs" compact component={Link} to={props.item.link} key={props.item.link}>
+            {props.item.icon && <i className={'fa fa-' + props.item.icon} />}
+            <span>{props.item.label}</span>
+        </Button>
+    );
+}
+
+export function SubHeader(props: any) {
+    return <SubHeaderContainer>
+        {primaryMenu.map(item => <SubHeaderMenuItem item={item} key={item.link} />)}
+        <div className="spacer" />
+        {secondaryMenu.map(item => <SubHeaderMenuItem item={item} key={item.link} />)}
+    </SubHeaderContainer>;
 }
