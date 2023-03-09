@@ -21,6 +21,8 @@ https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1
 - 💬 Give ChatGPT AI a **realistic human voice** by connecting your ElevenLabs text-to-speech account.
 - ✉ **Share** your favorite chat sessions online using public share URLs.
 - 📋 Easily **copy-and-paste** ChatGPT messages.
+- ✏️ Edit your messages
+- 🔁 Regenerate ChatGPT messages
 - 🖼 **Full markdown support** including code, tables, and math.
 - 🫰 Pay for only what you use with the ChatGPT API.
 
@@ -65,11 +67,6 @@ npm run start
 ```
 
 This will start the development server on port 3000. You can then open your web browser and navigate to http://localhost:3000 to view the Chat with GPT webapp running locally on your computer.
-
-## Roadmap
-
-- Edit messages (coming soon)
-- Regenerate messages (coming soon)
 
 ## License
 
