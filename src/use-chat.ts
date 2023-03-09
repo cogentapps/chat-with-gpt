@@ -13,7 +13,7 @@ export interface UseChatResult {
 
 export function useChat(chatManager: ChatManager, id: string | undefined | null, share = false): UseChatResult {
     const [chat, setChat] = useState<Chat | null | undefined>(null);
-    const [_, setVersion] = useState(0);
+    const [_, setVersion] = useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     // used to prevent auto-scroll when chat is first opened
     const [chatLoadedAt, setLoadedAt] = useState(0);

@@ -297,4 +297,5 @@ export class Search {
     }
 }
 
-export default new ChatManager();
+const chatManager = new ChatManager();
+export default chatManager;

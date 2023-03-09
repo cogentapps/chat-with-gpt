@@ -138,7 +138,7 @@ export default function Header(props: HeaderProps) {
 
     const openSettings = useCallback(() => {
         context.settings.open(context.apiKeys.openai ? 'options' : 'user');
-    }, [context, context.apiKeys.openai]);
+    }, [context]);
 
     return <HeaderContainer>
         <Helmet>

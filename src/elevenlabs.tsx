@@ -307,7 +307,7 @@ export function ElevenLabsReaderButton(props: { selector: string }) {
         } else {
             reader.current.stop();
         }
-    }, [status, props.selector, context.apiKeys.elevenlabs]);
+    }, [status, props.selector, context.apiKeys.elevenlabs, context.settings, context.voice.id]);
 
     return (
         <Button variant="subtle" size="sm" compact onClickCapture={onClick} loading={status === 'init'}>
