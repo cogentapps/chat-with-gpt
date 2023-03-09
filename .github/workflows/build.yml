@@ -1,0 +1,11 @@
+name: build app
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  deploy-webapp:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - run: npm install && npm run build
