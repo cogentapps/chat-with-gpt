@@ -22,15 +22,13 @@ chatManager.on('title', async (id: string, title: string) => {
 
 */
 
-export let backend: Backend | null = null;
+export let backend: {
+    current?: Backend | null
+} = {};
 
 export class Backend extends EventEmitter {
-    constructor() {
-        super();
-    }
-
     register() {
-        backend = this;
+        backend.current = this;
     }
 
     get isAuthenticated() {

@@ -11,7 +11,7 @@ export default class SSE {
 
     public headers = this.options.headers || {};
     public payload = this.options.payload !== undefined ? this.options.payload : '';
-    public method = this.options.method || (this.payload && 'POST' || 'GET');
+    public method = this.options.method ? this.options.method : (this.payload ? 'POST' : 'GET');
     public withCredentials = !!this.options.withCredentials;
 
     public FIELD_SEPARATOR = ':';
@@ -109,7 +109,7 @@ export default class SSE {
             return;
         }
 
-        if (this.readyState == this.CONNECTING) {
+        if (this.readyState === this.CONNECTING) {
             this.dispatchEvent(new CustomEvent('open'));
             this._setReadyState(this.OPEN);
         }

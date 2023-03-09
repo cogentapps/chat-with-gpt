@@ -54,7 +54,7 @@ export default function ChatPage(props: any) {
                 container?.scrollTo({ top: offset, behavior: 'smooth' });
             }, 500);
         }
-    }, [context.currentChat?.chatLoadedAt, context.currentChat?.messagesToDisplay.length]);
+    }, [context.currentChat?.chatLoadedAt, context.currentChat?.messagesToDisplay.length, props.share]);
 
     const messagesToDisplay = context.currentChat.messagesToDisplay;
 
@@ -67,7 +67,7 @@ export default function ChatPage(props: any) {
             title: (id && messagesToDisplay.length) ? context.currentChat.chat?.title : null,
             onShare: async () => {
                 if (context.currentChat.chat) {
-                    const id = await backend?.shareChat(context.currentChat.chat);
+                    const id = await backend.current?.shareChat(context.currentChat.chat);
                     if (id) {
                         const slug = context.currentChat.chat.title
                             ? '/' + slugify(context.currentChat.chat.title.toLocaleLowerCase())

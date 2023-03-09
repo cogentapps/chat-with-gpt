@@ -8,7 +8,7 @@ import { createStreamingChatCompletion } from './openai';
 import { createTitle } from './titles';
 import { ellipsize, sleep } from './utils';
 import * as idb from './idb';
-import { getTokenCountForMessages, selectMessagesToSendSafely } from './tokenizer';
+import { selectMessagesToSendSafely } from './tokenizer';
 
 export const channel = new BroadcastChannel('chats');
 

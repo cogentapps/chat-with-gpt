@@ -50,16 +50,16 @@ export function useCreateAppContext(): Context {
 
     const chatManager = useRef(ChatManagerInstance);
     const currentChat = useChat(chatManager.current, id, isShare);
-    const [authenticated, setAuthenticated] = useState(backend?.isAuthenticated || false);
+    const [authenticated, setAuthenticated] = useState(backend.current?.isAuthenticated || false);
 
     const updateAuth = useCallback((authenticated: boolean) => setAuthenticated(authenticated), []);
 
     useEffect(() => {
-        backend?.on('authenticated', updateAuth);
+        backend.current?.on('authenticated', updateAuth);
         return () => {
-            backend?.off('authenticated', updateAuth)
+            backend.current?.off('authenticated', updateAuth)
         };
-    }, [backend]);
+    }, [updateAuth]);
 
     const [openaiApiKey, setOpenAIApiKey] = useState<string | null>(
         localStorage.getItem('openai-api-key') || ''
@@ -150,7 +150,7 @@ export function useCreateAppContext(): Context {
         setTimeout(() => setGenerating(false), 4000);
 
         return true;
-    }, [chatManager, openaiApiKey, id, parameters, message, currentChat.leaf]);
+    }, [chatManager, openaiApiKey, id, parameters, currentChat.leaf, navigate, isShare]);
 
     const regenerateMessage = useCallback(async (message: Message) => {
         if (isShare) {
@@ -173,7 +173,7 @@ export function useCreateAppContext(): Context {
         setTimeout(() => setGenerating(false), 4000);
 
         return true;
-    }, [chatManager, openaiApiKey, id, parameters]);
+    }, [chatManager, openaiApiKey, parameters, isShare]);
 
     const editMessage = useCallback(async (message: Message, content: string) => {
         if (isShare) {
@@ -219,7 +219,7 @@ export function useCreateAppContext(): Context {
         setTimeout(() => setGenerating(false), 4000);
 
         return true;
-    }, [chatManager, openaiApiKey, id, parameters, message, currentChat.leaf]);
+    }, [chatManager, openaiApiKey, id, parameters, isShare, navigate]);
 
     const context = useMemo<Context>(() => ({
         authenticated,
@@ -258,7 +258,8 @@ export function useCreateAppContext(): Context {
         regenerateMessage,
         editMessage,
     }), [chatManager, authenticated, openaiApiKey, elevenLabsApiKey, settingsTab, option, voiceID,
-        generating, message, parameters, onNewMessage, regenerateMessage, editMessage, currentChat]);
+        generating, message, parameters, onNewMessage, regenerateMessage, editMessage, currentChat,
+        id, isShare]);
 
     return context;
 }

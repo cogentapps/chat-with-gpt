@@ -273,24 +273,26 @@ export default class ElevenLabsReader extends EventEmitter {
 export function ElevenLabsReaderButton(props: { selector: string }) {
     const context = useAppContext();
     const [status, setStatus] = useState<'idle' | 'init' | 'playing' | 'buffering'>('idle');
-    const [error, setError] = useState(false);
+    // const [error, setError] = useState(false);
     const reader = useRef(new ElevenLabsReader());
 
     useEffect(() => {
-        reader.current.on('init', () => setStatus('init'));
-        reader.current.on('playing', () => setStatus('playing'));
-        reader.current.on('buffering', () => setStatus('buffering'));
-        reader.current.on('error', () => {
+        const currentReader = reader.current;
+
+        currentReader.on('init', () => setStatus('init'));
+        currentReader.on('playing', () => setStatus('playing'));
+        currentReader.on('buffering', () => setStatus('buffering'));
+        currentReader.on('error', () => {
             setStatus('idle');
-            setError(true);
+            // setError(true);
         });
-        reader.current.on('done', () => setStatus('idle'));
+        currentReader.on('done', () => setStatus('idle'));
 
         return () => {
-            reader.current.removeAllListeners();
-            reader.current.stop();
+            currentReader.removeAllListeners();
+            currentReader.stop();
         };
-    }, [reader.current, props.selector]);
+    }, [props.selector]);
 
     const onClick = useCallback(() => {
         if (status === 'idle') {

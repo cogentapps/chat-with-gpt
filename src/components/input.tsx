@@ -45,13 +45,13 @@ export default function MessageInput(props: MessageInputProps) {
 
     const onChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         context.setMessage(e.target.value);
-    }, [context.setMessage]);
+    }, [context]);
 
     const onSubmit = useCallback(async () => {
         if (await context.onNewMessage(context.message)) {
             context.setMessage('');
         }
-    }, [context.message, context.onNewMessage, context.setMessage]);
+    }, [context]);
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
@@ -71,8 +71,8 @@ export default function MessageInput(props: MessageInputProps) {
         );
     }, [onSubmit, props.disabled]);
 
-    const openSystemPromptPanel = useCallback(() => context.settings.open('options', 'system-prompt'), []);
-    const openTemperaturePanel = useCallback(() => context.settings.open('options', 'temperature'), []);
+    const openSystemPromptPanel = useCallback(() => context.settings.open('options', 'system-prompt'), [context.settings]);
+    const openTemperaturePanel = useCallback(() => context.settings.open('options', 'temperature'), [context.settings]);
 
     const messagesToDisplay = context.currentChat.messagesToDisplay;
     const disabled = context.generating

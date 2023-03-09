@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { backend } from "./backend";
 import { ChatManager } from "./chat-manager";
-import { useAppContext } from "./context";
 import { Chat, Message } from './types';
 
 export interface UseChatResult {
@@ -14,7 +13,7 @@ export interface UseChatResult {
 
 export function useChat(chatManager: ChatManager, id: string | undefined | null, share = false): UseChatResult {
     const [chat, setChat] = useState<Chat | null | undefined>(null);
-    const [version, setVersion] = useState(0);
+    const [_, setVersion] = useState(0);
 
     // used to prevent auto-scroll when chat is first opened
     const [chatLoadedAt, setLoadedAt] = useState(0);
@@ -29,7 +28,7 @@ export function useChat(chatManager: ChatManager, id: string | undefined | null,
                     return;
                 }
             } else {
-                const c = await backend?.getSharedChat(id);
+                const c = await backend.current?.getSharedChat(id);
                 if (c) {
                     setChat(c);
                     setVersion(v => v + 1);
@@ -38,7 +37,7 @@ export function useChat(chatManager: ChatManager, id: string | undefined | null,
             }
         }
         setChat(null);
-    }, [id, share]);
+    }, [id, share, chatManager]);
 
     useEffect(() => {
         if (id) {
@@ -55,7 +54,7 @@ export function useChat(chatManager: ChatManager, id: string | undefined | null,
                 chatManager.off(id, update);
             }
         };
-    }, [id, update]);
+    }, [id, update, chatManager]);
 
     const leaf = chat?.messages.mostRecentLeaf();
 

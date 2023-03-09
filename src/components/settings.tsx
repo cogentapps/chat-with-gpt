@@ -167,7 +167,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
                                                 setParameters({ ...parameters, apiKey: event.currentTarget.value });
                                                 context.apiKeys.setOpenAIApiKey(event.currentTarget.value);
                                             }} />
-                                        <p><a href="https://platform.openai.com/account/api-keys" target="_blank">Find your API key here.</a> Your API key is stored only on this device and never transmitted to anyone except OpenAI.</p>
+                                        <p><a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noreferrer">Find your API key here.</a> Your API key is stored only on this device and never transmitted to anyone except OpenAI.</p>
                                         <p>OpenAI API key usage is billed at a pay-as-you-go rate, separate from your ChatGPT subscription.</p>
                                     </section>
                                 </Grid.Col>
@@ -211,7 +211,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
                                     <section className={context.settings.option === 'elevenlabs-api-key' ? 'focused' : ''}>
                                         <h3>Your ElevenLabs Text-to-Speech API Key (optional)</h3>
                                         <TextInput placeholder="Paste your API key here" value={context.apiKeys.elevenlabs || ''} onChange={event => context.apiKeys.setElevenLabsApiKey(event.currentTarget.value)} />
-                                        <p>Give ChatGPT a realisic human voice by connecting your ElevenLabs account (preview the available voices below). <a href="https://beta.elevenlabs.io" target="_blank">Click here to sign up.</a></p>
+                                        <p>Give ChatGPT a realisic human voice by connecting your ElevenLabs account (preview the available voices below). <a href="https://beta.elevenlabs.io" target="_blank" rel="noreferrer">Click here to sign up.</a></p>
                                         <p>You can find your API key by clicking your avatar or initials in the top right of the ElevenLabs website, then clicking Profile. Your API key is stored only on this device and never transmitted to anyone except ElevenLabs.</p>
                                     </section>
                                 </Grid.Col>

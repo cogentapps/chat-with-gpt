@@ -10,7 +10,7 @@ export function useChatSpotlightProps() {
 
     useEffect(() => {
         context.chat.on('update', () => setVersion(v => v + 1));
-    }, []);
+    }, [context.chat]);
 
     const search = useCallback((query: string) => {
         return context.chat.search.query(query)
@@ -18,7 +18,7 @@ export function useChatSpotlightProps() {
                 ...result,
                 onTrigger: () => navigate('/chat/' + result.chatID + (result.messageID ? '#msg-' + result.messageID : '')),
             }))
-    }, [navigate, version]);
+    }, [context.chat, navigate, version]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const props = useMemo(() => ({
         shortcut: ['mod + P'],

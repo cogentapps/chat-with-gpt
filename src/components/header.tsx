@@ -158,7 +158,7 @@ export default function Header(props: HeaderProps) {
             Share
         </HeaderButton>}
         {backend && !context.authenticated && (
-            <HeaderButton onClick={() => backend?.signIn()}>Sign in <span className="hide-on-mobile">to sync</span></HeaderButton>
+            <HeaderButton onClick={() => backend.current?.signIn()}>Sign in <span className="hide-on-mobile">to sync</span></HeaderButton>
         )}
         <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
             New Chat

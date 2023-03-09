@@ -1,7 +1,5 @@
 import styled from '@emotion/styled';
 import { Button } from '@mantine/core';
-import MessageInput from '../input';
-import SettingsDrawer from '../settings';
 import { useAppContext } from '../../context';
 import { Page } from '../page';
 
