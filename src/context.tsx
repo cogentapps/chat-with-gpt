@@ -5,7 +5,7 @@ import { backend } from "./backend";
 import ChatManagerInstance, { ChatManager } from "./chat-manager";
 import { defaultElevenLabsVoiceID } from "./elevenlabs";
 import { loadParameters, saveParameters } from "./parameters";
-import { Parameters } from "./types";
+import { Message, Parameters } from "./types";
 import { useChat, UseChatResult } from "./use-chat";
 
 export interface Context {
@@ -33,9 +33,11 @@ export interface Context {
     generating: boolean;
     message: string;
     parameters: Parameters;
-    setMessage: (message: string) => void;
+    setMessage: (message: string, parentID?: string) => void;
     setParameters: (parameters: Parameters) => void;
     onNewMessage: (message?: string) => Promise<boolean>;
+    regenerateMessage: (message: Message) => Promise<boolean>;
+    editMessage: (message: Message, content: string) => Promise<boolean>;
 }
 
 const AppContext = React.createContext<Context>({} as any);
@@ -45,7 +47,7 @@ export function useCreateAppContext(): Context {
     const pathname = useLocation().pathname;
     const isShare = pathname.startsWith('/s/');
     const navigate = useNavigate();
-    
+
     const chatManager = useRef(ChatManagerInstance);
     const currentChat = useChat(chatManager.current, id, isShare);
     const [authenticated, setAuthenticated] = useState(backend?.isAuthenticated || false);
@@ -150,6 +152,75 @@ export function useCreateAppContext(): Context {
         return true;
     }, [chatManager, openaiApiKey, id, parameters, message, currentChat.leaf]);
 
+    const regenerateMessage = useCallback(async (message: Message) => {
+        if (isShare) {
+            return false;
+        }
+
+        if (!openaiApiKey) {
+            setSettingsTab('user');
+            setOption('openai-api-key');
+            return false;
+        }
+
+        setGenerating(true);
+
+        await chatManager.current.regenerate(message, {
+            ...parameters,
+            apiKey: openaiApiKey,
+        });
+
+        setTimeout(() => setGenerating(false), 4000);
+
+        return true;
+    }, [chatManager, openaiApiKey, id, parameters]);
+
+    const editMessage = useCallback(async (message: Message, content: string) => {
+        if (isShare) {
+            return false;
+        }
+
+        if (!content?.trim().length) {
+            return false;
+        }
+
+        if (!openaiApiKey) {
+            setSettingsTab('user');
+            setOption('openai-api-key');
+            return false;
+        }
+
+        setGenerating(true);
+
+        if (id) {
+            await chatManager.current.sendMessage({
+                chatID: id,
+                content: content.trim(),
+                requestedParameters: {
+                    ...parameters,
+                    apiKey: openaiApiKey,
+                },
+                parentID: message.parentID,
+            });
+        } else {
+            const id = await chatManager.current.createChat();
+            await chatManager.current.sendMessage({
+                chatID: id,
+                content: content.trim(),
+                requestedParameters: {
+                    ...parameters,
+                    apiKey: openaiApiKey,
+                },
+                parentID: message.parentID,
+            });
+            navigate('/chat/' + id);
+        }
+
+        setTimeout(() => setGenerating(false), 4000);
+
+        return true;
+    }, [chatManager, openaiApiKey, id, parameters, message, currentChat.leaf]);
+
     const context = useMemo<Context>(() => ({
         authenticated,
         id,
@@ -184,8 +255,10 @@ export function useCreateAppContext(): Context {
         setMessage,
         setParameters,
         onNewMessage,
+        regenerateMessage,
+        editMessage,
     }), [chatManager, authenticated, openaiApiKey, elevenLabsApiKey, settingsTab, option, voiceID,
-        generating, message, parameters, onNewMessage, currentChat]);
+        generating, message, parameters, onNewMessage, regenerateMessage, editMessage, currentChat]);
 
     return context;
 }
