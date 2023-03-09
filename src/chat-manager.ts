@@ -2,7 +2,7 @@ import { BroadcastChannel } from 'broadcast-channel';
 import EventEmitter from 'events';
 import MiniSearch, { SearchResult } from 'minisearch'
 import { v4 as uuidv4 } from 'uuid';
-import { Chat, getOpenAIMessageFromMessage, Message, UserSubmittedMessage } from './types';
+import { Chat, getOpenAIMessageFromMessage, Message, Parameters, UserSubmittedMessage } from './types';
 import { MessageTree } from './message-tree';
 import { createStreamingChatCompletion } from './openai';
 import { createTitle } from './titles';
@@ -81,18 +81,7 @@ export class ChatManager extends EventEmitter {
             done: true,
         };
 
-        const reply: Message = {
-            id: uuidv4(),
-            parentID: newMessage.id,
-            chatID: chat.id,
-            timestamp: Date.now(),
-            role: 'assistant',
-            content: '',
-            done: false,
-        };
-
         chat.messages.addMessage(newMessage);
-        chat.messages.addMessage(reply);
         chat.updated = Date.now();
 
         this.emit(chat.id);
@@ -103,10 +92,51 @@ export class ChatManager extends EventEmitter {
             ? chat.messages.getMessageChainTo(message.parentID)
             : [];
         messages.push(newMessage);
-        
+
+        await this.getReply(messages, message.requestedParameters);
+    }
+
+    public async regenerate(message: Message, requestedParameters: Parameters) {
+        const chat = this.chats.get(message.chatID);
+
+        if (!chat) {
+            throw new Error('Chat not found');
+        }
+
+        const messages: Message[] = message.parentID
+            ? chat.messages.getMessageChainTo(message.parentID)
+            : [];
+
+        await this.getReply(messages, requestedParameters);
+    }
+
+    private async getReply(messages: Message[], requestedParameters: Parameters) {
+        const latestMessage = messages[messages.length - 1];
+        const chat = this.chats.get(latestMessage.chatID);
+
+        if (!chat) {
+            throw new Error('Chat not found');
+        }
+
+        const reply: Message = {
+            id: uuidv4(),
+            parentID: latestMessage.id,
+            chatID: latestMessage.chatID,
+            timestamp: Date.now(),
+            role: 'assistant',
+            content: '',
+            done: false,
+        };
+
+        chat.messages.addMessage(reply);
+        chat.updated = Date.now();
+
+        this.emit(chat.id);
+        channel.postMessage({ type: 'chat-update', data: chat });
+
         const messagesToSend = selectMessagesToSendSafely(messages.map(getOpenAIMessageFromMessage));
 
-        const response = await createStreamingChatCompletion(messagesToSend, message.requestedParameters);
+        const response = await createStreamingChatCompletion(messagesToSend, requestedParameters);
 
         response.on('error', () => {
             if (!reply.content) {
@@ -139,7 +169,7 @@ export class ChatManager extends EventEmitter {
             setTimeout(() => this.search.update(chat), 500);
 
             if (!chat.title) {
-                chat.title = await createTitle(chat, message.requestedParameters.apiKey);
+                chat.title = await createTitle(chat, requestedParameters.apiKey);
                 if (chat.title) {
                     this.emit(chat.id);
                     this.emit('title', chat.id, chat.title);
