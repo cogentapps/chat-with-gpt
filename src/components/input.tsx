@@ -50,11 +50,11 @@ export default function MessageInput(props: MessageInputProps) {
     const context = useAppContext();
     const dispatch = useAppDispatch();
 
-    const onCustomizeSystemPromptClick = useCallback(() => dispatch(openSystemPromptPanel()), []);
-    const onTemperatureClick = useCallback(() => dispatch(openTemperaturePanel()), []);
+    const onCustomizeSystemPromptClick = useCallback(() => dispatch(openSystemPromptPanel()), [dispatch]);
+    const onTemperatureClick = useCallback(() => dispatch(openTemperaturePanel()), [dispatch]);
     const onChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         dispatch(setMessage(e.target.value));
-    }, []);
+    }, [dispatch]);
 
     const pathname = useLocation().pathname;
 
