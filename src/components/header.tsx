@@ -143,7 +143,7 @@ export default function Header(props: HeaderProps) {
 
     const openSettings = useCallback(() => {
         dispatch(setTab(openAIApiKey ? 'options' : 'user'));
-    }, [openAIApiKey]);
+    }, [dispatch, openAIApiKey]);
 
     const header = useMemo(() => (
         <HeaderContainer>
