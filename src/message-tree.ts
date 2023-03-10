@@ -16,6 +16,10 @@ export function createNode(message: Message): Node {
 export class MessageTree {
     public nodes: Map<string, Node> = new Map();
 
+    constructor(messages: (Message | Node)[] = []) {
+        this.addMessages(messages);
+    }
+
     public get roots(): Node[] {
         return Array.from(this.nodes.values())
             .filter((node) => node.parent === null);
@@ -63,6 +67,16 @@ export class MessageTree {
             if (other.parentID === node.id) {
                 node.children.add(other);
                 other.parent = node;
+            }
+        }
+    }
+
+    public addMessages(messages: Message[]) {
+        for (const message of messages) {
+            try {
+                this.addMessage(message);
+            } catch (e) {
+                console.error(e);
             }
         }
     }

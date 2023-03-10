@@ -2,12 +2,15 @@ import styled from '@emotion/styled';
 import Helmet from 'react-helmet';
 import { useSpotlight } from '@mantine/spotlight';
 import { Button, ButtonProps } from '@mantine/core';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { APP_NAME } from '../values';
 import { useAppContext } from '../context';
 import { backend } from '../backend';
 import { MenuItem, primaryMenu, secondaryMenu } from '../menus';
+import { useAppDispatch, useAppSelector } from '../store';
+import { selectOpenAIApiKey } from '../store/api-keys';
+import { setTab } from '../store/settings-ui';
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -129,6 +132,8 @@ export default function Header(props: HeaderProps) {
     const navigate = useNavigate();
     const spotlight = useSpotlight();
     const [loading, setLoading] = useState(false);
+    const openAIApiKey = useAppSelector(selectOpenAIApiKey);
+    const dispatch = useAppDispatch();
 
     const onNewChat = useCallback(async () => {
         setLoading(true);
@@ -137,33 +142,37 @@ export default function Header(props: HeaderProps) {
     }, [navigate]);
 
     const openSettings = useCallback(() => {
-        context.settings.open(context.apiKeys.openai ? 'options' : 'user');
-    }, [context]);
+        dispatch(setTab(openAIApiKey ? 'options' : 'user'));
+    }, [dispatch, openAIApiKey]);
 
-    return <HeaderContainer>
-        <Helmet>
-            <title>{props.title ? `${props.title} - ` : ''}{APP_NAME} - Unofficial ChatGPT app</title>
-        </Helmet>
-        {props.title && <h1>{props.title}</h1>}
-        {!props.title && (<h1>
-            <div>
-                <strong>{APP_NAME}</strong><br />
-                <span>An unofficial ChatGPT app</span>
-            </div>
-        </h1>)}
-        <div className="spacer" />
-        <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
-        <HeaderButton icon="gear" onClick={openSettings} />
-        {backend && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
-            Share
-        </HeaderButton>}
-        {backend && !context.authenticated && (
-            <HeaderButton onClick={() => backend.current?.signIn()}>Sign in <span className="hide-on-mobile">to sync</span></HeaderButton>
-        )}
-        <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
-            New Chat
-        </HeaderButton>
-    </HeaderContainer>;
+    const header = useMemo(() => (
+        <HeaderContainer>
+            <Helmet>
+                <title>{props.title ? `${props.title} - ` : ''}{APP_NAME} - Unofficial ChatGPT app</title>
+            </Helmet>
+            {props.title && <h1>{props.title}</h1>}
+            {!props.title && (<h1>
+                <div>
+                    <strong>{APP_NAME}</strong><br />
+                    <span>An unofficial ChatGPT app</span>
+                </div>
+            </h1>)}
+            <div className="spacer" />
+            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
+            <HeaderButton icon="gear" onClick={openSettings} />
+            {backend && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
+                Share
+            </HeaderButton>}
+            {backend && !context.authenticated && (
+                <HeaderButton onClick={() => backend.current?.signIn()}>Sign in <span className="hide-on-mobile">to sync</span></HeaderButton>
+            )}
+            <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
+                New Chat
+            </HeaderButton>
+        </HeaderContainer>
+    ), [props.title, props.share, props.canShare, props.onShare, openSettings, onNewChat, loading, context.authenticated, spotlight.openSpotlight]);
+
+    return header;
 }
 
 function SubHeaderMenuItem(props: { item: MenuItem }) {
@@ -176,9 +185,13 @@ function SubHeaderMenuItem(props: { item: MenuItem }) {
 }
 
 export function SubHeader(props: any) {
-    return <SubHeaderContainer>
-        {primaryMenu.map(item => <SubHeaderMenuItem item={item} key={item.link} />)}
-        <div className="spacer" />
-        {secondaryMenu.map(item => <SubHeaderMenuItem item={item} key={item.link} />)}
-    </SubHeaderContainer>;
+    const elem = useMemo(() => (
+        <SubHeaderContainer>
+            {primaryMenu.map(item => <SubHeaderMenuItem item={item} key={item.link} />)}
+            <div className="spacer" />
+            {secondaryMenu.map(item => <SubHeaderMenuItem item={item} key={item.link} />)}
+        </SubHeaderContainer>
+    ), []);
+
+    return elem;
 }
