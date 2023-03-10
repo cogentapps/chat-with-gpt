@@ -1,12 +1,12 @@
 import styled from '@emotion/styled';
 import { Button, CopyButton, Loader, Textarea } from '@mantine/core';
-import { useState } from 'react';
 
 import { Message } from "../types";
 import { share } from '../utils';
-import { ElevenLabsReaderButton } from '../elevenlabs';
+import { ElevenLabsReaderButton } from '../tts/elevenlabs';
 import { Markdown } from './markdown';
 import { useAppContext } from '../context';
+import { useMemo, useState } from 'react';
 
 // hide for everyone but screen readers
 const SROnly = styled.span`
@@ -210,60 +210,66 @@ export default function MessageComponent(props: { message: Message, last: boolea
     const [editing, setEditing] = useState(false);
     const [content, setContent] = useState('');
 
-    if (props.message.role === 'system') {
-        return null;
-    }
+    const elem = useMemo(() => {
+        if (props.message.role === 'system') {
+            return null;
+        }
 
-    return <Container className={"message by-" + props.message.role}>
-        <div className="inner">
-            <div className="metadata">
-                <span>
-                    <strong>
-                        {getRoleName(props.message.role, props.share)}<SROnly>:</SROnly>
-                    </strong>
-                    {props.message.role === 'assistant' && props.last && !props.message.done && <InlineLoader />}
-                </span>
-                {props.message.done && <ElevenLabsReaderButton selector={'.content-' + props.message.id} />}
-                <div style={{ flexGrow: 1 }} />
-                <CopyButton value={props.message.content}>
-                    {({ copy, copied }) => (
-                        <Button variant="subtle" size="sm" compact onClick={copy} style={{ marginLeft: '1rem' }}>
-                            <i className="fa fa-clipboard" />
-                            <span>{copied ? 'Copied' : 'Copy'}</span>
-                        </Button>
-                    )}
-                </CopyButton>
-                {typeof navigator.share !== 'undefined' && (
-                    <Button variant="subtle" size="sm" compact onClick={() => share(props.message.content)}>
-                        <i className="fa fa-share" />
-                        <span>Share</span>
-                    </Button>
-                )}
-                {!context.isShare && props.message.role === 'user' && (
-                    <Button variant="subtle" size="sm" compact onClick={() => {
-                        setContent(props.message.content);
-                        setEditing(true);
-                    }}>
-                        <i className="fa fa-edit" />
-                        <span>Edit</span>
-                    </Button>
-                )}
-                {!context.isShare && props.message.role === 'assistant' && (
-                    <Button variant="subtle" size="sm" compact onClick={() => context.regenerateMessage(props.message)}>
-                        <i className="fa fa-refresh" />
-                        <span>Regenerate</span>
-                    </Button>
-                )}
-            </div>
-            {!editing && <Markdown content={props.message.content} className={"content content-" + props.message.id} />}
-            {editing && (<Editor>
-                <Textarea value={content}
-                    onChange={e => setContent(e.currentTarget.value)}
-                    autosize={true} />
-                <Button variant="light" onClick={() => context.editMessage(props.message, content)}>Save changes</Button>
-                <Button variant="subtle" onClick={() => setEditing(false)}>Cancel</Button>
-            </Editor>)}
-        </div>
-        {props.last && <EndOfChatMarker />}
-    </Container>
+        return (
+            <Container className={"message by-" + props.message.role}>
+                <div className="inner">
+                    <div className="metadata">
+                        <span>
+                            <strong>
+                                {getRoleName(props.message.role, props.share)}<SROnly>:</SROnly>
+                            </strong>
+                            {props.message.role === 'assistant' && props.last && !props.message.done && <InlineLoader />}
+                        </span>
+                        {props.message.done && <ElevenLabsReaderButton selector={'.content-' + props.message.id} />}
+                        <div style={{ flexGrow: 1 }} />
+                        <CopyButton value={props.message.content}>
+                            {({ copy, copied }) => (
+                                <Button variant="subtle" size="sm" compact onClick={copy} style={{ marginLeft: '1rem' }}>
+                                    <i className="fa fa-clipboard" />
+                                    <span>{copied ? 'Copied' : 'Copy'}</span>
+                                </Button>
+                            )}
+                        </CopyButton>
+                        {typeof navigator.share !== 'undefined' && (
+                            <Button variant="subtle" size="sm" compact onClick={() => share(props.message.content)}>
+                                <i className="fa fa-share" />
+                                <span>Share</span>
+                            </Button>
+                        )}
+                        {!context.isShare && props.message.role === 'user' && (
+                            <Button variant="subtle" size="sm" compact onClick={() => {
+                                setContent(props.message.content);
+                                setEditing(true);
+                            }}>
+                                <i className="fa fa-edit" />
+                                <span>Edit</span>
+                            </Button>
+                        )}
+                        {!context.isShare && props.message.role === 'assistant' && (
+                            <Button variant="subtle" size="sm" compact onClick={() => context.regenerateMessage(props.message)}>
+                                <i className="fa fa-refresh" />
+                                <span>Regenerate</span>
+                            </Button>
+                        )}
+                    </div>
+                    {!editing && <Markdown content={props.message.content} className={"content content-" + props.message.id} />}
+                    {editing && (<Editor>
+                        <Textarea value={content}
+                            onChange={e => setContent(e.currentTarget.value)}
+                            autosize={true} />
+                        <Button variant="light" onClick={() => context.editMessage(props.message, content)}>Save changes</Button>
+                        <Button variant="subtle" onClick={() => setEditing(false)}>Cancel</Button>
+                    </Editor>)}
+                </div>
+                {props.last && <EndOfChatMarker />}
+            </Container>
+        )
+    }, [props.last, props.share, editing, content, context, props.message]);
+
+    return elem;
 }

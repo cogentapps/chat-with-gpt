@@ -1,11 +1,10 @@
-import { useDebouncedValue } from "@mantine/hooks";
 import React, { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { backend } from "./backend";
 import ChatManagerInstance, { ChatManager } from "./chat-manager";
-import { defaultElevenLabsVoiceID } from "./elevenlabs";
-import { loadParameters, saveParameters } from "./parameters";
-import { Message, Parameters } from "./types";
+import store, { useAppDispatch } from "./store";
+import { openOpenAIApiKeyPanel } from "./store/settings-ui";
+import { Message } from "./types";
 import { useChat, UseChatResult } from "./use-chat";
 
 export interface Context {
@@ -14,27 +13,7 @@ export interface Context {
     id: string | undefined | null;
     currentChat: UseChatResult;
     isShare: boolean;
-    apiKeys: {
-        openai: string | undefined | null;
-        setOpenAIApiKey: (apiKey: string | null) => void;
-        elevenlabs: string | undefined | null;
-        setElevenLabsApiKey: (apiKey: string | null) => void;
-    };
-    settings: {
-        tab: string | undefined | null;
-        option: string | undefined | null;
-        open: (tab: string, option?: string | undefined | null) => void;
-        close: () => void;
-    };
-    voice: {
-        id: string;
-        setVoiceID: (id: string) => void;
-    };
     generating: boolean;
-    message: string;
-    parameters: Parameters;
-    setMessage: (message: string, parentID?: string) => void;
-    setParameters: (parameters: Parameters) => void;
     onNewMessage: (message?: string) => Promise<boolean>;
     regenerateMessage: (message: Message) => Promise<boolean>;
     editMessage: (message: Message, content: string) => Promise<boolean>;
@@ -44,6 +23,8 @@ const AppContext = React.createContext<Context>({} as any);
 
 export function useCreateAppContext(): Context {
     const { id } = useParams();
+    const dispatch = useAppDispatch();
+    
     const pathname = useLocation().pathname;
     const isShare = pathname.startsWith('/s/');
     const navigate = useNavigate();
@@ -61,50 +42,7 @@ export function useCreateAppContext(): Context {
         };
     }, [updateAuth]);
 
-    const [openaiApiKey, setOpenAIApiKey] = useState<string | null>(
-        localStorage.getItem('openai-api-key') || ''
-    );
-    const [elevenLabsApiKey, setElevenLabsApiKey] = useState<string | null>(
-        localStorage.getItem('elevenlabs-api-key') || ''
-    );
-
-    useEffect(() => {
-        if (openaiApiKey) {
-            localStorage.setItem('openai-api-key', openaiApiKey || '');
-        }
-    }, [openaiApiKey]);
-
-    useEffect(() => {
-        if (elevenLabsApiKey) {
-            localStorage.setItem('elevenlabs-api-key', elevenLabsApiKey || '');
-        }
-    }, [elevenLabsApiKey]);
-
-    const [settingsTab, setSettingsTab] = useState<string | null | undefined>();
-    const [option, setOption] = useState<string | null | undefined>();
-
-    const [voiceID, setVoiceID] = useState(localStorage.getItem('voice-id') || defaultElevenLabsVoiceID);
-
-    useEffect(() => {
-        localStorage.setItem('voice-id', voiceID);
-    }, [voiceID]);
-
     const [generating, setGenerating] = useState(false);
-
-    const [message, setMessage] = useState('');
-
-    const [_parameters, setParameters] = useState<Parameters>(loadParameters(id));
-    useEffect(() => {
-        setParameters(loadParameters(id));
-    }, [id]);
-
-    const [parameters] = useDebouncedValue(_parameters, 2000);
-    useEffect(() => {
-        if (id) {
-            saveParameters(id, parameters);
-        }
-        saveParameters('', parameters);
-    }, [id, parameters]);
 
     const onNewMessage = useCallback(async (message?: string) => {
         if (isShare) {
@@ -115,13 +53,16 @@ export function useCreateAppContext(): Context {
             return false;
         }
 
+        const openaiApiKey = store.getState().apiKeys.openAIApiKey;
+
         if (!openaiApiKey) {
-            setSettingsTab('user');
-            setOption('openai-api-key');
+            dispatch(openOpenAIApiKeyPanel());
             return false;
         }
 
         setGenerating(true);
+
+        const parameters = store.getState().parameters;
 
         if (id) {
             await chatManager.current.sendMessage({
@@ -150,20 +91,23 @@ export function useCreateAppContext(): Context {
         setTimeout(() => setGenerating(false), 4000);
 
         return true;
-    }, [chatManager, openaiApiKey, id, parameters, currentChat.leaf, navigate, isShare]);
+    }, [dispatch, chatManager, id, currentChat.leaf, navigate, isShare]);
 
     const regenerateMessage = useCallback(async (message: Message) => {
         if (isShare) {
             return false;
         }
 
+        const openaiApiKey = store.getState().apiKeys.openAIApiKey;
+
         if (!openaiApiKey) {
-            setSettingsTab('user');
-            setOption('openai-api-key');
+            dispatch(openOpenAIApiKeyPanel());
             return false;
         }
 
         setGenerating(true);
+
+        const parameters = store.getState().parameters;
 
         await chatManager.current.regenerate(message, {
             ...parameters,
@@ -173,7 +117,7 @@ export function useCreateAppContext(): Context {
         setTimeout(() => setGenerating(false), 4000);
 
         return true;
-    }, [chatManager, openaiApiKey, parameters, isShare]);
+    }, [dispatch, chatManager, isShare]);
 
     const editMessage = useCallback(async (message: Message, content: string) => {
         if (isShare) {
@@ -184,13 +128,16 @@ export function useCreateAppContext(): Context {
             return false;
         }
 
+        const openaiApiKey = store.getState().apiKeys.openAIApiKey;
+
         if (!openaiApiKey) {
-            setSettingsTab('user');
-            setOption('openai-api-key');
+            dispatch(openOpenAIApiKeyPanel());
             return false;
         }
 
         setGenerating(true);
+
+        const parameters = store.getState().parameters;
 
         if (id) {
             await chatManager.current.sendMessage({
@@ -219,7 +166,7 @@ export function useCreateAppContext(): Context {
         setTimeout(() => setGenerating(false), 4000);
 
         return true;
-    }, [chatManager, openaiApiKey, id, parameters, isShare, navigate]);
+    }, [dispatch, chatManager, id, isShare, navigate]);
 
     const context = useMemo<Context>(() => ({
         authenticated,
@@ -227,39 +174,11 @@ export function useCreateAppContext(): Context {
         chat: chatManager.current,
         currentChat,
         isShare,
-        apiKeys: {
-            openai: openaiApiKey,
-            elevenlabs: elevenLabsApiKey,
-            setOpenAIApiKey,
-            setElevenLabsApiKey,
-        },
-        settings: {
-            tab: settingsTab,
-            option: option,
-            open: (tab: string, option?: string | undefined | null) => {
-                setSettingsTab(tab);
-                setOption(option);
-            },
-            close: () => {
-                setSettingsTab(null);
-                setOption(null);
-            },
-        },
-        voice: {
-            id: voiceID,
-            setVoiceID,
-        },
         generating,
-        message,
-        parameters,
-        setMessage,
-        setParameters,
         onNewMessage,
         regenerateMessage,
         editMessage,
-    }), [chatManager, authenticated, openaiApiKey, elevenLabsApiKey, settingsTab, option, voiceID,
-        generating, message, parameters, onNewMessage, regenerateMessage, editMessage, currentChat,
-        id, isShare]);
+    }), [chatManager, authenticated, generating, onNewMessage, regenerateMessage, editMessage, currentChat, id, isShare]);
 
     return context;
 }

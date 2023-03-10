@@ -1,6 +1,9 @@
 import styled from '@emotion/styled';
 import { Button } from '@mantine/core';
-import { useAppContext } from '../../context';
+import { useCallback } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { selectOpenAIApiKey } from '../../store/api-keys';
+import { openOpenAIApiKeyPanel } from '../../store/settings-ui';
 import { Page } from '../page';
 
 const Container = styled.div`
@@ -16,13 +19,15 @@ const Container = styled.div`
 `;
 
 export default function LandingPage(props: any) {
-    const context = useAppContext();
+    const openAIApiKey = useAppSelector(selectOpenAIApiKey);
+    const dispatch = useAppDispatch();
+    const onConnectButtonClick = useCallback(() => dispatch(openOpenAIApiKeyPanel()), [dispatch]);
 
     return <Page id={'landing'} showSubHeader={true}>
         <Container>
             <p>Hello, how can I help you today?</p>
-            {!context.apiKeys.openai && (
-                <Button size="xs" variant="light" compact onClick={() => context.settings.open('user', 'openai-api-key')}>
+            {!openAIApiKey && (
+                <Button size="xs" variant="light" compact onClick={onConnectButtonClick}>
                     Connect your OpenAI account to get started
                 </Button>
             )}

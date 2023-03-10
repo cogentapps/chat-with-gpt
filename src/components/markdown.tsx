@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import { Button, CopyButton } from '@mantine/core';
+import { useMemo } from 'react';
 
 export interface MarkdownProps {
     content: string;
@@ -12,13 +13,17 @@ export interface MarkdownProps {
 }
 
 export function Markdown(props: MarkdownProps) {
-    const classes = ['prose', 'dark:prose-invert'];
-    
-    if (props.className) {
-        classes.push(props.className);
-    }
+    const classes = useMemo(() => {
+        const classes = ['prose', 'dark:prose-invert'];
 
-    return (
+        if (props.className) {
+            classes.push(props.className);
+        }
+
+        return classes;
+    }, [props.className])
+
+    const elem = useMemo(() => (
         <div className={classes.join(' ')}>
             <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[rehypeKatex]}
@@ -51,5 +56,7 @@ export function Markdown(props: MarkdownProps) {
                     }
                 }}>{props.content}</ReactMarkdown>
         </div>
-    );
+    ), [props.content, classes]);
+
+    return elem;
 }

@@ -34,7 +34,7 @@ export function Page(props: {
                 onShare={props.headerProps?.onShare} />
             {props.showSubHeader && <SubHeader />}
             {props.children}
-            <MessageInput />
+            <MessageInput key={localStorage.getItem('openai-api-key')} />
             <SettingsDrawer />
         </Container>
     </SpotlightProvider>;

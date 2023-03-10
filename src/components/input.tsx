@@ -3,6 +3,10 @@ import { Button, ActionIcon, Textarea } from '@mantine/core';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppContext } from '../context';
+import { useAppDispatch, useAppSelector } from '../store';
+import { selectMessage, setMessage } from '../store/message';
+import { selectTemperature } from '../store/parameters';
+import { openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
 
 const Container = styled.div`
     background: #292933;
@@ -40,18 +44,25 @@ export interface MessageInputProps {
 }
 
 export default function MessageInput(props: MessageInputProps) {
+    const temperature = useAppSelector(selectTemperature);
+    const message = useAppSelector(selectMessage);
+    
     const context = useAppContext();
+    const dispatch = useAppDispatch();
+
+    const onCustomizeSystemPromptClick = useCallback(() => dispatch(openSystemPromptPanel()), []);
+    const onTemperatureClick = useCallback(() => dispatch(openTemperaturePanel()), []);
+    const onChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        dispatch(setMessage(e.target.value));
+    }, []);
+
     const pathname = useLocation().pathname;
 
-    const onChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        context.setMessage(e.target.value);
-    }, [context]);
-
     const onSubmit = useCallback(async () => {
-        if (await context.onNewMessage(context.message)) {
-            context.setMessage('');
+        if (await context.onNewMessage(message)) {
+            dispatch(setMessage(''));
         }
-    }, [context]);
+    }, [context, message, dispatch]);
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
@@ -71,9 +82,6 @@ export default function MessageInput(props: MessageInputProps) {
         );
     }, [onSubmit, props.disabled]);
 
-    const openSystemPromptPanel = useCallback(() => context.settings.open('options', 'system-prompt'), [context.settings]);
-    const openTemperaturePanel = useCallback(() => context.settings.open('options', 'temperature'), [context.settings]);
-
     const messagesToDisplay = context.currentChat.messagesToDisplay;
     const disabled = context.generating
         || messagesToDisplay[messagesToDisplay.length - 1]?.role === 'user'
@@ -83,7 +91,7 @@ export default function MessageInput(props: MessageInputProps) {
     if (context.isShare || (!isLandingPage && !context.id)) {
         return null;
     }
-    
+
     return <Container>
         <div className="inner">
             <Textarea disabled={props.disabled || disabled}
@@ -91,7 +99,7 @@ export default function MessageInput(props: MessageInputProps) {
                 minRows={3}
                 maxRows={12}
                 placeholder={"Enter a message here..."}
-                value={context.message}
+                value={message}
                 onChange={onChange}
                 rightSection={rightSection}
                 onKeyDown={onKeyDown} />
@@ -100,15 +108,15 @@ export default function MessageInput(props: MessageInputProps) {
                     className="settings-button"
                     size="xs"
                     compact
-                    onClick={openSystemPromptPanel}>
+                    onClick={onCustomizeSystemPromptClick}>
                     <span>Customize system prompt</span>
                 </Button>
                 <Button variant="subtle"
                     className="settings-button"
                     size="xs"
                     compact
-                    onClick={openTemperaturePanel}>
-                    <span>Temperature: {context.parameters.temperature.toFixed(1)}</span>
+                    onClick={onTemperatureClick}>
+                    <span>Temperature: {temperature.toFixed(1)}</span>
                 </Button>
             </div>
         </div>
