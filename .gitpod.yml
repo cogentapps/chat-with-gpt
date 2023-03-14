@@ -1,0 +1,5 @@
+tasks:
+  - init: cd webapp && npm install
+    command: cd webapp && npm run start
+
+

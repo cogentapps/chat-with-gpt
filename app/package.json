@@ -1,0 +1,91 @@
+{
+  "name": "Chat with GPT",
+  "version": "0.2.0",
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^2.0.4",
+    "@emotion/css": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mantine/core": "^5.10.5",
+    "@mantine/hooks": "^5.10.5",
+    "@mantine/modals": "^5.10.5",
+    "@mantine/notifications": "^5.10.5",
+    "@mantine/spotlight": "^5.10.5",
+    "@reduxjs/toolkit": "^1.9.3",
+    "broadcast-channel": "^4.20.2",
+    "csv": "^6.2.8",
+    "expiry-set": "^1.0.0",
+    "idb-keyval": "^6.2.0",
+    "jshashes": "^1.0.8",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.1",
+    "minisearch": "^6.0.1",
+    "natural": "^6.2.0",
+    "openai": "^3.2.1",
+    "papaparse": "^5.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
+    "react-intl": "^6.2.10",
+    "react-markdown": "^8.0.5",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.8.2",
+    "react-syntax-highlighter": "^15.5.0",
+    "redux-persist": "^6.0.0",
+    "rehype-katex": "^6.0.2",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1",
+    "sentence-splitter": "^4.2.0",
+    "slugify": "^1.6.5",
+    "sort-by": "^0.0.2",
+    "uuid": "^9.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "GENERATE_SOURCEMAP=false craco build",
+    "test": "craco test",
+    "eject": "craco eject",
+    "extract": "formatjs extract 'src/**/*.ts*' --ignore='**/*.d.ts' --out-file public/lang/en-us.json --format simple --id-interpolation-pattern '[sha512:contenthash:base64:6]'"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "@formatjs/cli": "^6.0.4",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/natural": "^5.1.2",
+    "@types/node": "^16.18.13",
+    "@types/papaparse": "^5.3.7",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-helmet": "^6.1.6",
+    "@types/react-intl": "^3.0.0",
+    "@types/react-syntax-highlighter": "^15.5.6",
+    "@types/uuid": "^9.0.1",
+    "babel-plugin-formatjs": "^10.4.0",
+    "craco-wasm": "^0.0.1",
+    "http-proxy-middleware": "^2.0.6",
+    "react-scripts": "^5.0.1",
+    "sass": "^1.58.3",
+    "typescript": "^4.9.5"
+  }
+}
