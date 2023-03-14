@@ -34,6 +34,6 @@ RUN npm install
 
 COPY ./server/src ./src
 
-RUN CI=true cd /app && npm run start
+RUN CI=true cd /app && mkdir data && npm run start && rm -rf data
 
 COPY --from=build /app/build /app/public
