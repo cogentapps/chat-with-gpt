@@ -14,3 +14,4 @@ services:
     environment:
       - PORT=3000
       - WEBAPP_PORT=3000
+      
