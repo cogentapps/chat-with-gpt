@@ -22,7 +22,7 @@ export default class SQLiteObjectStore extends ObjectStore {
 
     public async get(key: string): Promise<string | null> {
         return new Promise((resolve, reject) => {
-            db.get(`SELECT * FROM objects WHERE key = ?`, [key], (err, row) => {
+            db.get(`SELECT * FROM objects WHERE key = ?`, [key], (err: any, row: any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -35,7 +35,7 @@ export default class SQLiteObjectStore extends ObjectStore {
 
     public async put(key: string, value: string, contentType: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            db.run(`INSERT OR REPLACE INTO objects (key, value) VALUES (?, ?)`, [key, value], (err) => {
+            db.run(`INSERT OR REPLACE INTO objects (key, value) VALUES (?, ?)`, [key, value], (err: any) => {
                 if (err) {
                     reject(err);
                 } else {

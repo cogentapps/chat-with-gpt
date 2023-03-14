@@ -77,7 +77,7 @@ export class SQLiteAdapter extends Database {
 
     public async getUser(email: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            db.get(`SELECT * FROM authentication WHERE email = ?`, [email], (err, row) => {
+            db.get(`SELECT * FROM authentication WHERE email = ?`, [email], (err: any, row: any) => {
                 if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to get user ${email}`);
@@ -95,7 +95,7 @@ export class SQLiteAdapter extends Database {
 
     public async getChats(userID: string): Promise<any[]> {
         return new Promise((resolve, reject) => {
-            db.all(`SELECT * FROM chats WHERE user_id = ?`, [userID], (err, rows) => {
+            db.all(`SELECT * FROM chats WHERE user_id = ?`, [userID], (err: any, rows: any) => {
                 if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to get chats for user ${userID}`);
@@ -109,12 +109,12 @@ export class SQLiteAdapter extends Database {
 
     public async getMessages(userID: string): Promise<any[]> {
         return new Promise((resolve, reject) => {
-            db.all(`SELECT * FROM messages WHERE user_id = ?`, [userID], (err, rows) => {
+            db.all(`SELECT * FROM messages WHERE user_id = ?`, [userID], (err: any, rows: any) => {
                 if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to get messages for user ${userID}`);
                 } else {
-                    resolve(rows.map((row) => {
+                    resolve(rows.map((row: any) => {
                         row.data = JSON.parse(row.data);
                         return row;
                     }));
