@@ -1,5 +1,6 @@
 *.sqlite
 *.db
+.gitpod.yml
 
 # Logs
 logs

@@ -4,6 +4,8 @@ Chat with GPT is an open-source, unofficial ChatGPT app with extra features and 
 
 Try out the hosted version at: https://chatwithgpt.netlify.app
 
+Or [self-host with Docker](#running-on-your-own-computer).
+
 Powered by the new ChatGPT API from OpenAI, this app has been developed using TypeScript + React. We welcome pull requests from the community!
 
 https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1-ac38-e972dafc2f98.mp4
