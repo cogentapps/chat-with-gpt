@@ -39,5 +39,6 @@ RUN CI=true sh -c "cd /app && mkdir data && npm run start && rm -rf data"
 COPY --from=build /app/build /app/public
 
 LABEL org.opencontainers.image.source="https://github.com/cogentapps/chat-with-gpt"
+ENV PORT 3000
 
 CMD ["npm", "run", "start"]
