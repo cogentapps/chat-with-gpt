@@ -25,6 +25,10 @@ process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
 
+if (process.env.CI) {
+    setTimeout(() => process.exit(), 10000);
+}
+
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 const webappPort = process.env.WEBAPP_PORT ? parseInt(process.env.WEBAPP_PORT, 10) : 3000;
 const origins = (process.env.ALLOWED_ORIGINS || '').split(',');
