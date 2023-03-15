@@ -58,7 +58,7 @@ export default function GenerationOptionsTab(props: any) {
                 maxRows={1}
                 autosize />
             <p style={{ marginBottom: '0.7rem' }}>
-                <FormattedMessage defaultMessage="The model name. Known names are: gpt-3.5, gpt-3.5-turbo and gpt-4.0"
+                <FormattedMessage defaultMessage="The model name. You can find model names here: https://platform.openai.com/docs/models/overview"
                     values={{ code: chunk => <code style={{ whiteSpace: 'nowrap' }}>{chunk}</code> }} />
             </p>
             {resettableModel && <Button size="xs" compact variant="light" onClick={onResetModel}>
