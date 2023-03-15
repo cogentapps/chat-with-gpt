@@ -43,9 +43,7 @@ Your API key is stored only on your device and never transmitted to anyone excep
 To run on your own device, you can use Docker:
 
 ```
-git clone https://github.com/cogentapps/chat-with-gpt
-cd chat-with-gpt
-docker-compose up
+docker run -v $(pwd)/data:/app/data -p 3000:3000 ghcr.io/cogentapps/chat-with-gpt:release
 ```
 
 Then navigate to http://localhost:3000 to view the app.
