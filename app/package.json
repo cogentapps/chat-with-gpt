@@ -1,5 +1,5 @@
 {
-  "name": "Chat with GPT",
+  "name": "chat-with-gpt",
   "version": "0.2.0",
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
