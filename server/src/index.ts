@@ -95,6 +95,10 @@ export default class ChatServer {
     }
 
     async initialize() {
+        if (!fs.existsSync('./data')) {
+            fs.mkdirSync('./data');
+        }
+
         await this.objectStore.initialize();;
         await this.database.initialize();;
 

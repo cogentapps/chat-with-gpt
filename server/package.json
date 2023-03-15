@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx ts-node src/index.ts"
+    "start": "npx ts-node --logError src/index.ts"
   },
   "author": "",
   "license": "MIT",
