@@ -4,6 +4,7 @@ export interface Parameters {
     temperature: number;
     apiKey?: string;
     initialSystemPrompt?: string;
+    model: string;
 }
 
 export interface Message {
