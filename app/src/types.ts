@@ -13,6 +13,7 @@ export interface Message {
     parentID?: string;
     timestamp: number;
     role: string;
+    model?: string;
     content: string;
     parameters?: Parameters;
     done?: boolean;
