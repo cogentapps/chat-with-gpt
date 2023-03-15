@@ -1,8 +1,13 @@
+import fs from 'fs';
 import { verbose } from "sqlite3";
 import { validate as validateEmailAddress } from 'email-validator';
 import Database from "./index";
 
 const sqlite3 = verbose();
+
+if (!fs.existsSync('./data')) {
+    fs.mkdirSync('./data');
+}
 
 const db = new sqlite3.Database('./data/chat.sqlite');
 
