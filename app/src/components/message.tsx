@@ -233,7 +233,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                     <div className="metadata">
                         <span>
                             <strong>
-                                {getRoleName(props.message.role, props.share)}<SROnly>:</SROnly>
+                                {getRoleName(props.message.role, props.share)}{props.message.model === 'gpt-4' && ' (GPT 4)'}<SROnly>:</SROnly>
                             </strong>
                             {props.message.role === 'assistant' && props.last && !props.message.done && <InlineLoader />}
                         </span>
