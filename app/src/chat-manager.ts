@@ -93,7 +93,9 @@ export class ChatManager extends EventEmitter {
         const messages: Message[] = message.parentID
             ? chat.messages.getMessageChainTo(message.parentID)
             : [];
-        messages.push(newMessage);
+        if (messages.length === 0) {
+            messages.push(newMessage);
+        }
 
         await this.getReply(messages, message.requestedParameters);
     }
