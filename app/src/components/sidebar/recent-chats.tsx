@@ -84,12 +84,12 @@ export default function RecentChats(props: any) {
                                   onClick={onClick}
                                   data-chat-id={c.chatID}
                                   className={c.chatID === currentChatID ? 'selected' : ''}>
-                        <strong>{c.title || <FormattedMessage defaultMessage={"Untitled"} />}</strong>
+                        <strong>{c.title || <FormattedMessage defaultMessage={"Untitled"} description="default title for untitled chat sessions" />}</strong>
                     </ChatListItem>
                 ))}
             </ChatList>}
             {recentChats.length === 0 && <Empty>
-                <FormattedMessage defaultMessage={"No chats yet."} />
+                <FormattedMessage defaultMessage={"No chats yet."} description="Message shown on the Chat History screen for new users who haven't started their first chat session" />
             </Empty>}
         </Container>
     );

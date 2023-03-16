@@ -30,7 +30,7 @@ export default function GenerationOptionsTab(props: any) {
         && (model?.trim() !== defaultModel.trim());
 
     const systemPromptOption = useMemo(() => (
-        <SettingsOption heading={intl.formatMessage({ defaultMessage: "System Prompt" })}
+        <SettingsOption heading={intl.formatMessage({ defaultMessage: "System Prompt", description: "Heading for the setting that lets users customize the System Prompt, on the settings screen" })}
                         focused={option === 'system-prompt'}>
             <Textarea
                 value={initialSystemPrompt || defaultSystemPrompt}
@@ -49,7 +49,7 @@ export default function GenerationOptionsTab(props: any) {
     ), [option, initialSystemPrompt, resettableSystemPromopt, onSystemPromptChange, onResetSystemPrompt]);
 
     const modelOption = useMemo(() => (
-        <SettingsOption heading={intl.formatMessage({ defaultMessage: "Model" })}
+        <SettingsOption heading={intl.formatMessage({ defaultMessage: "Model", description: "Heading for the setting that lets users choose a model to interact with, on the settings screen" })}
                         focused={option === 'model'}>
             <Select
                 value={model || defaultModel}
@@ -77,7 +77,10 @@ export default function GenerationOptionsTab(props: any) {
     ), [option, model, resettableModel, onModelChange, onResetModel]);
 
     const temperatureOption = useMemo(() => (
-        <SettingsOption heading={intl.formatMessage({ defaultMessage: "Temperature: {temperature, number, ::.0}", }, { temperature })}
+        <SettingsOption heading={intl.formatMessage({
+                            defaultMessage: "Temperature: {temperature, number, ::.0}", 
+                            description: "Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses",
+                        }, { temperature })}
                         focused={option === 'temperature'}>
             <Slider value={temperature} onChange={onTemperatureChange} step={0.1} min={0} max={1} precision={3} />
             <p>

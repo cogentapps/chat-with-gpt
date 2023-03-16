@@ -1,61 +1,222 @@
 {
-  "+G35mR": "Open sidebar",
-  "/OKZrc": "Find your API key here.",
-  "0vL5u1": "Create an account",
-  "1W07dM": "No chats yet.",
-  "2GFjIN": "Enter your password",
-  "3T9nRn": "Your API key is stored only on this device and never transmitted to anyone except OpenAI.",
-  "3kbIhS": "Untitled",
-  "47FYwb": "Cancel",
-  "4I+enA": "GPT 4 (requires invite)",
-  "4l6vz1": "Copy",
-  "5sg7KC": "Password",
-  "6PgVSe": "Regenerate",
-  "8HJxXG": "Sign up",
-  "A4iXFN": "Temperature: {temperature, number, ::.0}",
-  "AfTuRr": "User settings",
-  "BdPrnc": "Chat with GPT - Unofficial ChatGPT app",
-  "BwIZY+": "System Prompt",
-  "CJwO9s": "GPT 3.5 Turbo (default)",
-  "ECx3EW": "Chat with GPT",
-  "ExZfjk": "Sign in <h>to sync</h>",
-  "HIqSlE": "Preview voice",
-  "HyS0qp": "Close sidebar",
-  "J3ca41": "Play",
-  "KKa5Br": "Give ChatGPT a realisic human voice by connecting your ElevenLabs account (preview the available voices below). <a>Click here to sign up.</a>",
-  "KMq1sg": "Or create an account",
-  "KbaJTs": "Loading audio...",
-  "L5s+z7": "OpenAI API key usage is billed at a pay-as-you-go rate, separate from your ChatGPT subscription.",
-  "MI5gZ+": "Download SVG",
-  "NRJ4IQ": "Note: GPT-4 will only work if your OpenAI account has been granted access to the new model. <a>Request access here.</a>",
-  "NgCT/u": "Enter your email address",
-  "O83lC6": "Enter a message here...",
-  "OKhRC6": "Share",
-  "Q97T+z": "Paste your API key here",
-  "SQJto2": "Sign in",
-  "UT7Nkj": "New Chat",
-  "Ua8luY": "Hello, how can I help you today?",
-  "VL24Xt": "Search your chats",
-  "X0ha1a": "Save changes",
-  "Xzm66E": "Connect your OpenAI account to get started",
-  "b/VC/6": "Or sign in to an existing account",
-  "c60o5M": "Your OpenAI API Key",
-  "ghuZox": "Save and Close",
-  "hJZwTS": "Email address",
-  "jkpK/t": "Your ElevenLabs Text-to-Speech API Key (optional)",
-  "jtu3jt": "You can find your API key by clicking your avatar or initials in the top right of the ElevenLabs website, then clicking Profile. Your API key is stored only on this device and never transmitted to anyone except ElevenLabs.",
-  "mhtiX2": "Customize system prompt",
-  "mnJYBQ": "Voice",
-  "p556q3": "Copied",
-  "q/uwLT": "Stop",
-  "rhSI1/": "Model",
-  "role-chatgpt": "ChatGPT",
-  "role-system": "System",
-  "role-user": "You",
-  "role-user-formal": "User",
-  "rvqkVI": "Chat History",
-  "sPtnbA": "The System Prompt is shown to ChatGPT by the &quot;System&quot; before your first message. The <code>'{{ datetime }}'</code> tag is automatically replaced by the current date and time.",
-  "ss6kle": "Reset to default",
-  "tZdXp/": "The temperature parameter controls the randomness of the AI's responses. Lower values will make the AI more predictable, while higher values will make it more creative.",
-  "wEQDC6": "Edit"
+  "+G35mR": {
+    "defaultMessage": "Open sidebar"
+  },
+  "+LMWDJ": {
+    "defaultMessage": "Chat History",
+    "description": "Heading for the chat history screen"
+  },
+  "/xTTti": {
+    "defaultMessage": "User settings",
+    "description": "Menu item that opens the user settings screen"
+  },
+  "0vL5u1": {
+    "defaultMessage": "Create an account"
+  },
+  "1j61Mn": {
+    "defaultMessage": "Or create an account",
+    "description": "Label for a button on the Sign In page that lets the user create an account instead"
+  },
+  "1r/ryM": {
+    "defaultMessage": "Cancel",
+    "description": "Label for the button that can be clicked while the AI is generating a response to cancel generation"
+  },
+  "2GFjIN": {
+    "defaultMessage": "Enter your password"
+  },
+  "3T9nRn": {
+    "defaultMessage": "Your API key is stored only on this device and never transmitted to anyone except OpenAI."
+  },
+  "4I+enA": {
+    "defaultMessage": "GPT 4 (requires invite)"
+  },
+  "5sg7KC": {
+    "defaultMessage": "Password"
+  },
+  "6LJByb": {
+    "defaultMessage": "Loading audio...",
+    "description": "Message indicating that text-to-speech audio is buffering"
+  },
+  "74eGxP": {
+    "defaultMessage": "New Chat",
+    "description": "Label for the button used to start a new chat session"
+  },
+  "8CYNFt": {
+    "defaultMessage": "No chats yet.",
+    "description": "Message shown on the Chat History screen for new users who haven't started their first chat session"
+  },
+  "8HJxXG": {
+    "defaultMessage": "Sign up"
+  },
+  "Bi0lS9": {
+    "defaultMessage": "Share",
+    "description": "Label for the button used to create a public share URL for a chat log"
+  },
+  "Bm3EKs": {
+    "defaultMessage": "Save changes",
+    "description": "Label for a button that appears when the user is editing the text of one of their messages, to save the changes"
+  },
+  "CJwO9s": {
+    "defaultMessage": "GPT 3.5 Turbo (default)"
+  },
+  "FEzBCd": {
+    "defaultMessage": "Untitled",
+    "description": "default title for untitled chat sessions"
+  },
+  "Fko0yT": {
+    "defaultMessage": "Stop",
+    "description": "Label for the button that stops text-to-speech playback"
+  },
+  "HyS0qp": {
+    "defaultMessage": "Close sidebar"
+  },
+  "JpZMMj": {
+    "defaultMessage": "Voice",
+    "description": "Heading for the setting that lets users choose an ElevenLabs text-to-speech voice, on the settings screen"
+  },
+  "KKa5Br": {
+    "defaultMessage": "Give ChatGPT a realisic human voice by connecting your ElevenLabs account (preview the available voices below). <a>Click here to sign up.</a>"
+  },
+  "L5s+z7": {
+    "defaultMessage": "OpenAI API key usage is billed at a pay-as-you-go rate, separate from your ChatGPT subscription."
+  },
+  "MI5gZ+": {
+    "defaultMessage": "Download SVG"
+  },
+  "N2NGTf": {
+    "defaultMessage": "Chat with GPT",
+    "description": "app name"
+  },
+  "NRJ4IQ": {
+    "defaultMessage": "Note: GPT-4 will only work if your OpenAI account has been granted access to the new model. <a>Request access here.</a>"
+  },
+  "NgCT/u": {
+    "defaultMessage": "Enter your email address"
+  },
+  "O83lC6": {
+    "defaultMessage": "Enter a message here..."
+  },
+  "Q97T+z": {
+    "defaultMessage": "Paste your API key here"
+  },
+  "S9BFby": {
+    "defaultMessage": "Play",
+    "description": "Label for the button that starts text-to-speech playback"
+  },
+  "SQJto2": {
+    "defaultMessage": "Sign in"
+  },
+  "SQh9En": {
+    "defaultMessage": "Sign in <h>to sync</h>",
+    "description": "Label for sign in button, indicating the purpose of signing in is to sync your data between devices"
+  },
+  "Tgo3vj": {
+    "defaultMessage": "Edit",
+    "description": "Label for the button the user can click to edit the text of one of their messages"
+  },
+  "VL24Xt": {
+    "defaultMessage": "Search your chats"
+  },
+  "WOuVxP": {
+    "defaultMessage": "Model",
+    "description": "Heading for the setting that lets users choose a model to interact with, on the settings screen"
+  },
+  "Xzm66E": {
+    "defaultMessage": "Connect your OpenAI account to get started"
+  },
+  "Y0tGn6": {
+    "defaultMessage": "Or sign in to an existing account",
+    "description": "Label for a button on the Create Account page that lets the user sign into their existing account instead"
+  },
+  "bIacvz": {
+    "defaultMessage": "Chat with GPT - Unofficial ChatGPT app",
+    "description": "HTML title tag"
+  },
+  "cAtzqn": {
+    "defaultMessage": "System Prompt",
+    "description": "Heading for the setting that lets users customize the System Prompt, on the settings screen"
+  },
+  "cmcjSh": {
+    "defaultMessage": "Preview voice",
+    "description": "Label for the button that plays a preview of the selected ElevenLabs text-to-speech voice"
+  },
+  "f/hGIY": {
+    "defaultMessage": "Hello, how can I help you today?",
+    "description": "A friendly message that appears at the start of new chat sessions"
+  },
+  "gzJlXS": {
+    "defaultMessage": "Share",
+    "description": "Label for a button which shares the text of a chat message using the user device's share functionality"
+  },
+  "hJZwTS": {
+    "defaultMessage": "Email address"
+  },
+  "iqbKb2": {
+    "defaultMessage": "Save and Close",
+    "description": "Label for the button that closes the Settings screen, saving any changes"
+  },
+  "jtu3jt": {
+    "defaultMessage": "You can find your API key by clicking your avatar or initials in the top right of the ElevenLabs website, then clicking Profile. Your API key is stored only on this device and never transmitted to anyone except ElevenLabs."
+  },
+  "ljHOzQ": {
+    "defaultMessage": "Copied",
+    "description": "Label for copy-to-clipboard button after a successful copy"
+  },
+  "pv41j8": {
+    "defaultMessage": "Temperature: {temperature, number, ::.0}",
+    "description": "Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses"
+  },
+  "raQMIg": {
+    "defaultMessage": "Cancel",
+    "description": "Label for a button that appears when the user is editing the text of one of their messages, to cancel without saving changes"
+  },
+  "role-chatgpt": {
+    "defaultMessage": "ChatGPT",
+    "description": "Label that is shown above messages written by the AI (as opposed to the user)"
+  },
+  "role-system": {
+    "defaultMessage": "System",
+    "description": "Label that is shown above messages inserted into the conversation automatically by the system (as opposed to either the user or AI)"
+  },
+  "role-user": {
+    "defaultMessage": "You",
+    "description": "Label that is shown above messages written by the user (as opposed to the AI) in the user's own chat sessions (first person)."
+  },
+  "role-user-formal": {
+    "defaultMessage": "User",
+    "description": "Label that is shown above messages written by the user (as opposed to the AI) for publicly shared conversation (third person, formal)."
+  },
+  "sPtnbA": {
+    "defaultMessage": "The System Prompt is shown to ChatGPT by the &quot;System&quot; before your first message. The <code>'{{ datetime }}'</code> tag is automatically replaced by the current date and time."
+  },
+  "ss6kle": {
+    "defaultMessage": "Reset to default"
+  },
+  "sskUPZ": {
+    "defaultMessage": "Your ElevenLabs Text-to-Speech API Key (optional)",
+    "description": "Heading for the ElevenLabs API key setting on the settings screen"
+  },
+  "tZdXp/": {
+    "defaultMessage": "The temperature parameter controls the randomness of the AI's responses. Lower values will make the AI more predictable, while higher values will make it more creative."
+  },
+  "upBSoW": {
+    "defaultMessage": "Copy",
+    "description": "Label for copy-to-clipboard button"
+  },
+  "w5Dmuu": {
+    "defaultMessage": "Customize system prompt",
+    "description": "Label for the button that opens a modal for customizing the 'system prompt', a message used to customize and influence how the AI responds."
+  },
+  "y1F8Hs": {
+    "defaultMessage": "Your OpenAI API Key",
+    "description": "Heading for the OpenAI API key setting on the settings screen"
+  },
+  "zBmup+": {
+    "defaultMessage": "Regenerate",
+    "description": "Label for the button used to ask the AI to regenerate one of its messages. Since message generations are stochastic, the resulting message will be different."
+  },
+  "zFt1cV": {
+    "defaultMessage": "Find your API key here.",
+    "description": "Label for the link that takes the user to the page on the OpenAI website where they can find their API key."
+  }
 }

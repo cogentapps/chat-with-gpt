@@ -79,7 +79,7 @@ export default function MessageInput(props: MessageInputProps) {
                     <Button variant="subtle" size="xs" compact onClick={() => {
                         context.chat.cancelReply(context.currentChat.leaf!.id);
                     }}>
-                        <FormattedMessage defaultMessage={"Cancel"} />
+                        <FormattedMessage defaultMessage={"Cancel"} description="Label for the button that can be clicked while the AI is generating a response to cancel generation" />
                     </Button>
                     <Loader size="xs" style={{ padding: '0 0.8rem 0 0.5rem' }} />
                 </>)}
@@ -119,7 +119,7 @@ export default function MessageInput(props: MessageInputProps) {
                     compact
                     onClick={onCustomizeSystemPromptClick}>
                     <span>
-                        <FormattedMessage defaultMessage={"Customize system prompt"} />
+                        <FormattedMessage defaultMessage={"Customize system prompt"} description="Label for the button that opens a modal for customizing the 'system prompt', a message used to customize and influence how the AI responds." />
                     </span>
                 </Button>
                 <Button variant="subtle"
@@ -129,6 +129,7 @@ export default function MessageInput(props: MessageInputProps) {
                     onClick={onTemperatureClick}>
                     <span>
                         <FormattedMessage defaultMessage="Temperature: {temperature, number, ::.0}"
+                            description="Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses"
                             values={{ temperature }} />
                     </span>
                 </Button>

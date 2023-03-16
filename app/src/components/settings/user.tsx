@@ -17,7 +17,7 @@ export default function UserOptionsTab(props: any) {
 
     const elem = useMemo(() => (
         <SettingsTab name="user">
-            <SettingsOption heading={intl.formatMessage({ defaultMessage: "Your OpenAI API Key" })}
+            <SettingsOption heading={intl.formatMessage({ defaultMessage: "Your OpenAI API Key", description: "Heading for the OpenAI API key setting on the settings screen" })}
                             focused={option === 'openai-api-key'}>
                 <TextInput
                     placeholder={intl.formatMessage({ defaultMessage: "Paste your API key here" })}
@@ -25,7 +25,7 @@ export default function UserOptionsTab(props: any) {
                     onChange={onOpenAIApiKeyChange} />
                 <p>
                     <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noreferrer">
-                        <FormattedMessage defaultMessage="Find your API key here." />
+                        <FormattedMessage defaultMessage="Find your API key here." description="Label for the link that takes the user to the page on the OpenAI website where they can find their API key." />
                     </a>
                 </p>
                 <p>

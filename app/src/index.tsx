@@ -47,11 +47,17 @@ const root = ReactDOM.createRoot(
 );
 
 async function loadLocaleData(locale: string) {
-    const messages = await fetch(`/lang/${locale}.json`);
-    if (!messages.ok) {
+    const response = await fetch(`/lang/${locale}.json`);
+    if (!response.ok) {
         throw new Error("Failed to load locale data");
     }
-    return messages.json()
+    const messages: any = await response.json();
+    for (const key of Object.keys(messages)) {
+        if (typeof messages[key] !== 'string') {
+            messages[key] = messages[key].defaultMessage;
+        }
+    }
+    return messages;
 }
 
 async function bootstrapApplication() {

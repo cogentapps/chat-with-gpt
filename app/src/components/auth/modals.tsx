@@ -63,7 +63,7 @@ export function LoginModal(props: any) {
                 <FormattedMessage defaultMessage={"Sign in"} />
             </Button>
             <Button fullWidth variant="subtle" onClick={onCreateAccountClick}>
-                <FormattedMessage defaultMessage={"Or create an account"} />
+                <FormattedMessage defaultMessage={"Or create an account"} description="Label for a button on the Sign In page that lets the user create an account instead" />
             </Button>
         </Container>
     </Modal>
@@ -100,7 +100,7 @@ export function CreateAccountModal(props: any) {
                 <FormattedMessage defaultMessage={"Sign up"} />
             </Button>
             <Button fullWidth variant="subtle" onClick={onSignInClick}>
-                <FormattedMessage defaultMessage={"Or sign in to an existing account"} />
+                <FormattedMessage defaultMessage={"Or sign in to an existing account"} description="Label for a button on the Create Account page that lets the user sign into their existing account instead" />
             </Button>
         </Container>
     </Modal>

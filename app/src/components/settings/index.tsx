@@ -103,7 +103,9 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
                 </Tabs>
                 <div id="save">
                     <Button variant="light" fullWidth size="md" onClick={close}>
-                        <FormattedMessage defaultMessage={"Save and Close"} />
+                        <FormattedMessage defaultMessage={"Save and Close"} 
+                            description="Label for the button that closes the Settings screen, saving any changes"
+                            />
                     </Button>
                 </div>
             </Container>

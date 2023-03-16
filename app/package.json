@@ -49,7 +49,7 @@
     "build": "GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "eject": "craco eject",
-    "extract": "formatjs extract 'src/**/*.ts*' --ignore='**/*.d.ts' --out-file public/lang/en-us.json --format simple --id-interpolation-pattern '[sha512:contenthash:base64:6]'"
+    "extract": "formatjs extract 'src/**/*.ts*' --ignore='**/*.d.ts' --out-file public/lang/en-us.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'"
   },
   "eslintConfig": {
     "extends": [

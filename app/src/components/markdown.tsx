@@ -97,7 +97,10 @@ export function Markdown(props: MarkdownProps) {
                                         {({ copy, copied }) => (
                                             <Button variant="subtle" size="sm" compact onClick={copy}>
                                                 <i className="fa fa-clipboard" />
-                                                <span>{copied ? <FormattedMessage defaultMessage="Copied" /> : <FormattedMessage defaultMessage="Copy" />}</span>
+                                                <span>
+                                                    {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
+                                                        : <FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" />}
+                                                </span>
                                             </Button>
                                         )}
                                     </CopyButton>
