@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { useCallback, useEffect } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../../context';
 import { useAppDispatch } from '../../store';
@@ -83,12 +84,12 @@ export default function RecentChats(props: any) {
                                   onClick={onClick}
                                   data-chat-id={c.chatID}
                                   className={c.chatID === currentChatID ? 'selected' : ''}>
-                        <strong>{c.title || 'Untitled'}</strong>
+                        <strong>{c.title || <FormattedMessage defaultMessage={"Untitled"} />}</strong>
                     </ChatListItem>
                 ))}
             </ChatList>}
             {recentChats.length === 0 && <Empty>
-                No chats yet.
+                <FormattedMessage defaultMessage={"No chats yet."} />
             </Empty>}
         </Container>
     );

@@ -54,8 +54,14 @@ export default function GenerationOptionsTab(props: any) {
             <Select
                 value={model || defaultModel}
                 data={[
-                    { label: "GPT 3.5 Turbo (default)", value: "gpt-3.5-turbo" },
-                    { label: "GPT 4 (requires invite)", value: "gpt-4" },
+                    {
+                        label: intl.formatMessage({ defaultMessage: "GPT 3.5 Turbo (default)" }),
+                        value: "gpt-3.5-turbo",
+                    },
+                    {
+                        label: intl.formatMessage({ defaultMessage: "GPT 4 (requires invite)" }),
+                        value: "gpt-4",
+                    },
                 ]}
                 onChange={onModelChange} />
             {model === 'gpt-4' && (
