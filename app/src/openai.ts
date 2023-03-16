@@ -9,6 +9,8 @@ Knowledge cutoff: 2021-09
 Current date and time: {{ datetime }}
 `.trim();
 
+export const defaultModel = 'gpt-3.5-turbo';
+
 export interface OpenAIResponseChunk {
     id?: string;
     done: boolean;
@@ -53,7 +55,7 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
     const openai = new OpenAIApi(configuration);
 
     const response = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
+        model: parameters.model,
         temperature: parameters.temperature,
         messages: messages as any,
     });
@@ -93,7 +95,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
             'Content-Type': 'application/json',
         },
         payload: JSON.stringify({
-            "model": "gpt-3.5-turbo",
+            "model": parameters.model,
             "messages": messagesToSend,
             "temperature": parameters.temperature,
             "stream": true,

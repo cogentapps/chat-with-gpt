@@ -126,6 +126,7 @@ export class ChatManager extends EventEmitter {
             chatID: latestMessage.chatID,
             timestamp: Date.now(),
             role: 'assistant',
+            model: requestedParameters.model,
             content: '',
             done: false,
         };

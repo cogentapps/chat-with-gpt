@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { ActionIcon, Avatar, Burger, Button, Menu } from '@mantine/core';
 import { useElementSize } from '@mantine/hooks';
 import { useCallback, useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { backend } from '../../backend';
 import { useAppContext } from '../../context';
 import { useAppDispatch, useAppSelector } from '../../store';
@@ -115,7 +115,7 @@ export default function Sidebar(props: {
     const elem = useMemo(() => (
         <Container className={"sidebar " + (sidebarOpen ? 'opened' : 'closed')} ref={ref}>
             <div className="sidebar-header">
-                <h2>Chat History</h2>
+                <h2><FormattedMessage defaultMessage={"Chat History"} description="Heading for the chat history screen" /></h2>
                 <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />
             </div>
             <div className="sidebar-content">
@@ -141,12 +141,12 @@ export default function Sidebar(props: {
                         <Menu.Item onClick={() => {
                             dispatch(setTab('user'));
                         }} icon={<i className="fas fa-gear" />}>
-                            User settings
+                            <FormattedMessage defaultMessage={"User settings"} description="Menu item that opens the user settings screen" />
                         </Menu.Item>
                         {/*
                         <Menu.Divider />
                         <Menu.Item color="red" onClick={() => backend.current?.logout()} icon={<i className="fas fa-sign-out-alt" />}>
-                            Sign out
+                            <FormattedMessage defaultMessage={"Sign out"} />
                         </Menu.Item>
                         */}
                     </Menu.Dropdown>
