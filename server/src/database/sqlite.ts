@@ -61,14 +61,14 @@ export class SQLiteAdapter extends Database {
         });
     }
 
-    public createUser(email: string, passwordHash: Buffer, salt: Buffer): Promise<void> {
+    public createUser(email: string, passwordHash: Buffer): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!validateEmailAddress(email)) {
                 reject(new Error('invalid email address'));
                 return;
             }
 
-            db.run(`INSERT INTO authentication (id, email, password_hash, salt) VALUES (?, ?, ?, ?)`, [email, email, passwordHash, salt], (err) => {
+            db.run(`INSERT INTO authentication (id, email, password_hash) VALUES (?, ?, ?)`, [email, email, passwordHash], (err) => {
                 if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to create user ${email}`);
@@ -90,7 +90,7 @@ export class SQLiteAdapter extends Database {
                     resolve({
                         ...row,
                         passwordHash: Buffer.from(row.password_hash),
-                        salt: Buffer.from(row.salt),
+                        salt: row.salt ? Buffer.from(row.salt) : null,
                     });
                     console.log(`[database:sqlite] retrieved user ${email}`);
                 }

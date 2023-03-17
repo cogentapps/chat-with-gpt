@@ -1,11 +1,11 @@
 export default abstract class Database {
     public async initialize() {}
-    public abstract createUser(email: string, passwordHash: Buffer, salt: Buffer): Promise<void>;
+    public abstract createUser(email: string, passwordHash: Buffer): Promise<void>;
     public abstract getUser(email: string): Promise<{
         id: string;
         email: string;
         passwordHash: Buffer;
-        salt: Buffer;
+        salt: Buffer | null;
     }>;
     public abstract getChats(userID: string): Promise<any[]>;
     public abstract getMessages(userID: string): Promise<any[]>;

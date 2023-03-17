@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import passport from 'passport';
 import session from 'express-session';
@@ -18,17 +19,20 @@ export function configurePassport(context: ChatServer) {
             return cb(null, false, { message: 'Incorrect username or password.' });
         }
 
-        crypto.pbkdf2(password, user.salt, 310000, 32, 'sha256', (err, hashedPassword) => {
-            if (err) {
-                return cb(err);
-            }
+        try {
+            console.log(user.salt ? 'Using pbkdf2' : 'Using bcrypt');
+            const isPasswordCorrect = user.salt
+                ? crypto.timingSafeEqual(user.passwordHash, crypto.pbkdf2Sync(password, user.salt, 310000, 32, 'sha256'))
+                : await bcrypt.compare(password, user.passwordHash.toString());
 
-            if (!crypto.timingSafeEqual(user.passwordHash, hashedPassword)) {
+            if (!isPasswordCorrect) {
                 return cb(null, false, { message: 'Incorrect username or password.' });
             }
 
             return cb(null, user);
-        });
+        } catch (e) {
+            cb(e);
+        }
     }));
 
     passport.serializeUser((user: any, cb: any) => {
@@ -58,21 +62,19 @@ export function configurePassport(context: ChatServer) {
 
     context.app.post('/chatapi/register', async (req, res, next) => {
         const { username, password } = req.body;
-        const salt = crypto.randomBytes(32);
-        crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
-            if (err) {
-                return next(err);
-            }
-            try {
-                await context.database.createUser(username, hashedPassword, salt);
 
-                passport.authenticate('local')(req, res, () => {
-                    res.redirect('/');
-                });
-            } catch (err) {
-                res.redirect('/?error=register');
-            }
-        });
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        try {
+            await context.database.createUser(username, Buffer.from(hashedPassword));
+
+            passport.authenticate('local')(req, res, () => {
+                res.redirect('/');
+            });
+        } catch (err) {
+            console.error(err);
+            res.redirect('/?error=register');
+        }
     });
 
     context.app.all('/chatapi/logout', (req, res, next) => {
