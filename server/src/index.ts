@@ -65,17 +65,6 @@ export default class ChatServer {
         this.app.use(express.json({ limit: '1mb' }));
         this.app.use(compression());
 
-        this.app.use((req, res, next) => {
-            res.set({
-                'Access-Control-Allow-Origin': origins.includes(req.headers.origin!) ? req.headers.origin : origins[0],
-                'Access-Control-Allow-Credentials': true.toString(),
-                'Access-Control-Allow-Methods': 'GET,POST,PUT,OPTIONS',
-                'Access-Control-Max-Age': 2592000,
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            });
-            next();
-        });
-
         const { default: rateLimit } = await import('express-rate-limit'); // esm
         const limiter = rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutes
