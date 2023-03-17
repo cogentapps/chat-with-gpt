@@ -46,7 +46,9 @@ export default class ChatServer {
 
     constructor() {
         this.app = express();
-        
+    }
+
+    async initialize() {
         this.app.use(express.urlencoded({ extended: false }));
 
         if (process.env.AUTH0_CLIENT_ID && process.env.AUTH0_ISSUER && process.env.PUBLIC_URL) {
@@ -71,6 +73,14 @@ export default class ChatServer {
             next();
         });
 
+        const { default: rateLimit } = await import('express-rate-limit'); // esm
+        const limiter = rateLimit({
+            windowMs: 15 * 60 * 1000, // 15 minutes
+            max: 100, // limit each IP to 100 requests per windowMs
+        });
+
+        this.app.use(limiter);
+
         this.app.get('/chatapi/health', (req, res) => new HealthRequestHandler(this, req, res));
         this.app.get('/chatapi/session', (req, res) => new SessionRequestHandler(this, req, res));
         this.app.post('/chatapi/messages', (req, res) => new MessagesRequestHandler(this, req, res));
@@ -92,9 +102,7 @@ export default class ChatServer {
                 res.sendFile('public/index.html', { root: path.resolve(__dirname, '..') });
             });
         }
-    }
 
-    async initialize() {
         await this.objectStore.initialize();
         await this.database.initialize();
 
