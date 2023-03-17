@@ -208,15 +208,15 @@ export default function MessageComponent(props: { message: Message, last: boolea
         switch (role) {
             case 'user':
                 if (share) {
-                    return intl.formatMessage({ id: 'role-user-formal', defaultMessage: 'User' });
+                    return intl.formatMessage({ id: 'role-user-formal', defaultMessage: 'User', description: "Label that is shown above messages written by the user (as opposed to the AI) for publicly shared conversation (third person, formal)." });
                 } else {
-                    return intl.formatMessage({ id: 'role-user', defaultMessage: 'You' });
+                    return intl.formatMessage({ id: 'role-user', defaultMessage: 'You', description: "Label that is shown above messages written by the user (as opposed to the AI) in the user's own chat sessions (first person)." });
                 }
                 break;
             case 'assistant':
-                return intl.formatMessage({ id: 'role-chatgpt', defaultMessage: 'ChatGPT' });
+                return intl.formatMessage({ id: 'role-chatgpt', defaultMessage: 'ChatGPT', description: "Label that is shown above messages written by the AI (as opposed to the user)" });
             case 'system':
-                return intl.formatMessage({ id: 'role-system', defaultMessage: 'System' });
+                return intl.formatMessage({ id: 'role-system', defaultMessage: 'System', description: "Label that is shown above messages inserted into the conversation automatically by the system (as opposed to either the user or AI)" });
             default:
                 return role;
         }
@@ -243,7 +243,8 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             {({ copy, copied }) => (
                                 <Button variant="subtle" size="sm" compact onClick={copy} style={{ marginLeft: '1rem' }}>
                                     <i className="fa fa-clipboard" />
-                                    <span>{copied ? <FormattedMessage defaultMessage="Copied" /> : <FormattedMessage defaultMessage="Copy" />}</span>
+                                    {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
+                                            : <FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" />}
                                 </Button>
                             )}
                         </CopyButton>
@@ -251,7 +252,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             <Button variant="subtle" size="sm" compact onClick={() => share(props.message.content)}>
                                 <i className="fa fa-share" />
                                 <span>
-                                    <FormattedMessage defaultMessage="Share" />
+                                    <FormattedMessage defaultMessage="Share" description="Label for a button which shares the text of a chat message using the user device's share functionality" />
                                 </span>
                             </Button>
                         )}
@@ -261,14 +262,17 @@ export default function MessageComponent(props: { message: Message, last: boolea
                                 setEditing(v => !v);
                             }}>
                                 <i className="fa fa-edit" />
-                                <span>{editing ? <FormattedMessage defaultMessage="Cancel" /> : <FormattedMessage defaultMessage="Edit" />}</span>
+                                <span>
+                                    {editing ? <FormattedMessage defaultMessage="Cancel" description="Label for a button that appears when the user is editing the text of one of their messages, to cancel without saving changes" /> 
+                                        : <FormattedMessage defaultMessage="Edit" description="Label for the button the user can click to edit the text of one of their messages" />}
+                                </span>
                             </Button>
                         )}
                         {!context.isShare && props.message.role === 'assistant' && (
                             <Button variant="subtle" size="sm" compact onClick={() => context.regenerateMessage(props.message)}>
                                 <i className="fa fa-refresh" />
                                 <span>
-                                    <FormattedMessage defaultMessage="Regenerate" />
+                                    <FormattedMessage defaultMessage="Regenerate" description="Label for the button used to ask the AI to regenerate one of its messages. Since message generations are stochastic, the resulting message will be different." />
                                 </span>
                             </Button>
                         )}
@@ -279,10 +283,10 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             onChange={e => setContent(e.currentTarget.value)}
                             autosize={true} />
                         <Button variant="light" onClick={() => context.editMessage(props.message, content)}>
-                            <FormattedMessage defaultMessage="Save changes" />
+                            <FormattedMessage defaultMessage="Save changes" description="Label for a button that appears when the user is editing the text of one of their messages, to save the changes" />
                         </Button>
                         <Button variant="subtle" onClick={() => setEditing(false)}>
-                            <FormattedMessage defaultMessage="Cancel" />
+                            <FormattedMessage defaultMessage="Cancel" description="Label for a button that appears when the user is editing the text of one of their messages, to cancel without saving changes" />
                         </Button>
                     </Editor>)}
                 </div>

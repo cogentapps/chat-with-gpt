@@ -6,12 +6,11 @@ import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PersistGate } from 'redux-persist/integration/react';
-
-import AboutPage from './components/pages/about';
-import ChatPage from './components/pages/chat';
-import LandingPage from './components/pages/landing';
 import { AppContextProvider } from './context';
 import store, { persistor } from './store';
+
+import ChatPage from './components/pages/chat';
+import LandingPage from './components/pages/landing';
 
 import './backend';
 import './index.scss';
@@ -41,12 +40,6 @@ const router = createBrowserRouter([
             <ChatPage share={true} />
         </AppContextProvider>,
     },
-    {
-        path: "/about",
-        element: <AppContextProvider>
-            <AboutPage />
-        </AppContextProvider>,
-    },
 ]);
 
 const root = ReactDOM.createRoot(
@@ -54,11 +47,17 @@ const root = ReactDOM.createRoot(
 );
 
 async function loadLocaleData(locale: string) {
-    const messages = await fetch(`/lang/${locale}.json`);
-    if (!messages.ok) {
+    const response = await fetch(`/lang/${locale}.json`);
+    if (!response.ok) {
         throw new Error("Failed to load locale data");
     }
-    return messages.json()
+    const messages: any = await response.json();
+    for (const key of Object.keys(messages)) {
+        if (typeof messages[key] !== 'string') {
+            messages[key] = messages[key].defaultMessage;
+        }
+    }
+    return messages;
 }
 
 async function bootstrapApplication() {
