@@ -66,6 +66,10 @@ export class Backend extends EventEmitter {
     }
 
     public async sync() {
+        if (!this.isAuthenticated) {
+            return;
+        }
+
         const response = await this.post(endpoint + '/sync', {});
 
         for (const chatID of Object.keys(response)) {
