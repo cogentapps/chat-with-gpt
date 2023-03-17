@@ -103,6 +103,7 @@ export default function Sidebar(props: {
     className?: string;
 }) {
     const intl = useIntl();
+    const context = useAppContext();
     const dispatch = useAppDispatch();
     const sidebarOpen = useAppSelector(selectSidebarOpen);
     const onBurgerClick = useCallback(() => dispatch(toggleSidebar()), [dispatch]);
@@ -147,13 +148,13 @@ export default function Sidebar(props: {
                         <Menu.Divider />
                         <Menu.Item color="red" onClick={() => backend.current?.logout()} icon={<i className="fas fa-sign-out-alt" />}>
                             <FormattedMessage defaultMessage={"Sign out"} />
-                        </Menu.Item>
+                        </Menu.Item> 
                         */}
                     </Menu.Dropdown>
                 </Menu>
             )}
         </Container>
-    ), [sidebarOpen, width, ref, burgerLabel, onBurgerClick, dispatch]);
+    ), [sidebarOpen, width, ref, burgerLabel, onBurgerClick, dispatch, context.chat.chats.size]);
 
     return elem;
 }

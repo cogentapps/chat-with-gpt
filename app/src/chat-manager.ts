@@ -28,13 +28,20 @@ export class ChatManager extends EventEmitter {
         });
 
         channel.onmessage = (message: {
-            type: 'chat-update',
+            type: 'chat-update' | 'chat-delete',
             data: string,
         }) => {
-            const chat = deserializeChat(message.data);
-            const id = chat.id;
-            this.chats.set(id, chat);
-            this.emit(id);
+            switch (message.type) {
+                case 'chat-update':
+                    const chat = deserializeChat(message.data);
+                    const id = chat.id;
+                    this.chats.set(id, chat);
+                    this.emit(id);
+                    break;
+                case 'chat-delete':
+                    this.deleteChat(message.data, false);
+                    break;
+            }
         };
 
         (async () => {
@@ -69,7 +76,7 @@ export class ChatManager extends EventEmitter {
     public async sendMessage(message: UserSubmittedMessage) {
         const chat = this.chats.get(message.chatID);
 
-        if (!chat) {
+        if (!chat || chat.deleted) {
             throw new Error('Chat not found');
         }
 
@@ -101,7 +108,7 @@ export class ChatManager extends EventEmitter {
     public async regenerate(message: Message, requestedParameters: Parameters) {
         const chat = this.chats.get(message.chatID);
 
-        if (!chat) {
+        if (!chat || chat.deleted) {
             throw new Error('Chat not found');
         }
 
@@ -116,7 +123,7 @@ export class ChatManager extends EventEmitter {
         const latestMessage = messages[messages.length - 1];
         const chat = this.chats.get(latestMessage.chatID);
 
-        if (!chat) {
+        if (!chat || chat.deleted) {
             throw new Error('Chat not found');
         }
 
@@ -250,12 +257,19 @@ export class ChatManager extends EventEmitter {
         const serialized = await idb.get('chats');
         if (serialized) {
             for (const chat of serialized) {
-                const messages = new MessageTree();
-                for (const m of chat.messages) {
-                    messages.addMessage(m);
+                try {
+                    if (chat.deleted) {
+                        continue;
+                    }
+                    const messages = new MessageTree();
+                    for (const m of chat.messages) {
+                        messages.addMessage(m);
+                    }
+                    chat.messages = messages;
+                    this.loadChat(chat);
+                } catch (e) {
+                    console.error(e);
                 }
-                chat.messages = messages;
-                this.loadChat(chat);
             }
             this.emit('update');
         }
@@ -268,6 +282,11 @@ export class ChatManager extends EventEmitter {
         }
 
         const existing = this.chats.get(chat.id);
+
+        if (existing && existing.deleted) {
+            return;
+        }
+
         if (existing && existing.title && !chat.title) {
             chat.title = existing.title;
         }
@@ -282,6 +301,15 @@ export class ChatManager extends EventEmitter {
 
     public get(id: string): Chat | undefined {
         return this.chats.get(id);
+    }
+
+    public deleteChat(id: string, broadcast = true) {
+        this.chats.delete(id);
+        this.search.delete(id);
+        this.emit(id);
+        if (broadcast) {
+            channel.postMessage({ type: 'chat-delete', data: id });
+        }
     }
 }
 
@@ -307,6 +335,10 @@ export class Search {
         } else {
             this.index.replace(doc);
         }
+    }
+
+    public delete(id: string) {
+        this.index.remove({ id });
     }
 
     public query(query: string) {

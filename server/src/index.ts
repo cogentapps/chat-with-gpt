@@ -20,6 +20,7 @@ import SessionRequestHandler from './endpoints/session';
 import GetShareRequestHandler from './endpoints/get-share';
 import { configurePassport } from './passport';
 import { configureAuth0 } from './auth0';
+import DeleteChatRequestHandler from './endpoints/delete-chat';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -77,6 +78,7 @@ export default class ChatServer {
         this.app.get('/chatapi/session', (req, res) => new SessionRequestHandler(this, req, res));
         this.app.post('/chatapi/messages', (req, res) => new MessagesRequestHandler(this, req, res));
         this.app.post('/chatapi/title', (req, res) => new TitleRequestHandler(this, req, res));
+        this.app.post('/chatapi/delete', (req, res) => new DeleteChatRequestHandler(this, req, res));
         this.app.post('/chatapi/sync', (req, res) => new SyncRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
