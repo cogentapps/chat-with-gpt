@@ -20,6 +20,11 @@ const persistSidebarConfig = {
   storage,
 }
 
+const persistMessageConfig = {
+  key: 'message',
+  storage,
+}
+
 const store = configureStore({
   reducer: {
     // auth: authReducer,
@@ -27,7 +32,7 @@ const store = configureStore({
     settingsUI: settingsUIReducer,
     voices: persistReducer(persistConfig, voiceReducer),
     parameters: persistReducer(persistConfig, parametersReducer),
-    message: messageReducer,
+    message: persistReducer(persistMessageConfig, messageReducer),
     ui: uiReducer,
     sidebar: persistReducer(persistSidebarConfig, sidebarReducer),
   },
