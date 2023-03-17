@@ -49,6 +49,9 @@ export default class ChatServer {
     }
 
     async initialize() {
+        const { default: helmet } = await import('helmet');
+        this.app.use(helmet());
+
         this.app.use(express.urlencoded({ extended: false }));
 
         if (process.env.AUTH0_CLIENT_ID && process.env.AUTH0_ISSUER && process.env.PUBLIC_URL) {
