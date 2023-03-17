@@ -5,6 +5,8 @@ import createSQLiteSessionStore from 'connect-sqlite3';
 import { Strategy as LocalStrategy } from 'passport-local';
 import ChatServer from './index';
 
+const secret = process.env.AUTH_SECRET || crypto.randomBytes(32).toString('hex');
+
 export function configurePassport(context: ChatServer) {
     const SQLiteStore = createSQLiteSessionStore(session);
     const sessionStore = new SQLiteStore({ db: 'sessions.db' });
@@ -42,7 +44,7 @@ export function configurePassport(context: ChatServer) {
     });
 
     context.app.use(session({
-        secret: process.env.AUTH_SECRET || 'keyboard cat',
+        secret,
         resave: false,
         saveUninitialized: false,
         store: sessionStore as any,

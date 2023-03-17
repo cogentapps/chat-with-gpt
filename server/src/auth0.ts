@@ -1,10 +1,13 @@
+import crypto from 'crypto';
 import { auth, ConfigParams } from 'express-openid-connect';
 import ChatServer from './index';
+
+const secret = process.env.AUTH_SECRET || crypto.randomBytes(32).toString('hex');
 
 const config: ConfigParams = {
     authRequired: false,
     auth0Logout: false,
-    secret: process.env.AUTH_SECRET || 'keyboard cat',
+    secret,
     baseURL: process.env.PUBLIC_URL,
     clientID: process.env.AUTH0_CLIENT_ID,
     issuerBaseURL: process.env.AUTH0_ISSUER,
