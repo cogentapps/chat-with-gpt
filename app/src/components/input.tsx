@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Button, ActionIcon, Textarea, Loader } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 import { useAppContext } from '../context';
@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../store';
 import { selectMessage, setMessage } from '../store/message';
 import { selectTemperature } from '../store/parameters';
 import { openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
+import { speechRecognition } from '../speech-recognition-types.d'
 
 const Container = styled.div`
     background: #292933;
@@ -37,9 +38,9 @@ export interface MessageInputProps {
 export default function MessageInput(props: MessageInputProps) {
     const temperature = useAppSelector(selectTemperature);
     const message = useAppSelector(selectMessage);
-
+    const [recording, setRecording] = useState(false);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
-    
+
     const context = useAppContext();
     const dispatch = useAppDispatch();
     const intl = useIntl();
@@ -58,6 +59,26 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [context, message, dispatch]);
 
+    const onSpeechStart = () => {
+        console.log("onSpeechStart", recording)
+        if (!recording) {
+            setRecording(true);
+            speechRecognition.continuous = true;
+            speechRecognition.interimResults = true;
+
+            speechRecognition.onresult = (event) => {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                dispatch(setMessage(transcript));
+            };
+
+            speechRecognition.start();
+        } else {
+            setRecording(false);
+            speechRecognition.stop();
+        }
+    }
+
+
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
             e.preventDefault();
@@ -66,6 +87,7 @@ export default function MessageInput(props: MessageInputProps) {
     }, [onSubmit, props.disabled]);
 
     const rightSection = useMemo(() => {
+
         return (
             <div style={{
                 opacity: '0.8',
@@ -84,14 +106,20 @@ export default function MessageInput(props: MessageInputProps) {
                     <Loader size="xs" style={{ padding: '0 0.8rem 0 0.5rem' }} />
                 </>)}
                 {!context.generating && (
-                    <ActionIcon size="xl"
-                        onClick={onSubmit}>
-                        <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
-                    </ActionIcon>
+                    <>
+                        <ActionIcon size="xl"
+                            onClick={onSubmit}>
+                            <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
+                        </ActionIcon>
+                        <ActionIcon size="xl"
+                            onClick={onSpeechStart}>
+                            <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                        </ActionIcon>
+                    </>
                 )}
             </div>
         );
-    }, [onSubmit, props.disabled, context.generating]);
+    }, [recording, onSubmit, props.disabled, context.generating]);
 
     const disabled = context.generating;
 

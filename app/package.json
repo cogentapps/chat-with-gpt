@@ -4,6 +4,7 @@
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
     "@emotion/css": "^11.10.6",
+    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mantine/core": "^5.10.5",
     "@mantine/hooks": "^5.10.5",
