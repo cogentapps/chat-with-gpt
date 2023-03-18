@@ -30,6 +30,7 @@ WORKDIR /app
 COPY ./server/package.json ./
 COPY ./server/tsconfig.json ./
 
+RUN apk add --update --no-cache python3 py3-pip make g++ git
 RUN npm install
 
 COPY ./server/src ./src
