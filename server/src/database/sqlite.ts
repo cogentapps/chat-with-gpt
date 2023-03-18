@@ -89,9 +89,11 @@ export class SQLiteAdapter extends Database {
     public async getUser(email: string): Promise<any> {
         return new Promise((resolve, reject) => {
             db.get(`SELECT * FROM authentication WHERE email = ?`, [email], (err: any, row: any) => {
-                if (err || !row) {
+                if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to get user ${email}`);
+                } else if (!row) {
+                    resolve(null);
                 } else {
                     resolve({
                         ...row,
