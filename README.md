@@ -48,6 +48,12 @@ docker run -v $(pwd)/data:/app/data -p 3000:3000 ghcr.io/cogentapps/chat-with-gp
 
 Then navigate to http://localhost:3000 to view the app.
 
+## Updating
+
+```
+docker pull ghcr.io/cogentapps/chat-with-gpt:release
+```
+
 ## License
 
 Chat with GPT is licensed under the MIT license. See the LICENSE file for more information.
