@@ -11,7 +11,7 @@ name: publish image
 
 on:
   push:
-    branches: ['release']
+    branches: ['release', 'beta']
 
 env:
   REGISTRY: ghcr.io
