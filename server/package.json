@@ -1,6 +1,6 @@
 {
   "name": "chat-with-gpt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "An open-source ChatGPT app with a voice",
   "main": "index.js",
   "scripts": {
