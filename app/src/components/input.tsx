@@ -60,7 +60,6 @@ export default function MessageInput(props: MessageInputProps) {
     }, [context, message, dispatch]);
 
     const onSpeechStart = () => {
-        console.log("onSpeechStart", recording)
         if (!recording) {
             setRecording(true);
             speechRecognition.continuous = true;
