@@ -3,9 +3,10 @@ import RequestHandler from "./base";
 
 export default class SyncRequestHandler extends RequestHandler {
     async handler(req: express.Request, res: express.Response) {
-        const [chats, messages] = await Promise.all([
+        const [chats, messages, deletedChatIDs] = await Promise.all([
             this.context.database.getChats(this.userID!),
             this.context.database.getMessages(this.userID!),
+            this.context.database.getDeletedChatIDs(this.userID!),
         ]);
 
         const output: Record<string, any> = {};
@@ -24,6 +25,12 @@ export default class SyncRequestHandler extends RequestHandler {
             };
             chat.title = c.title;
             output[c.id] = chat;
+        }
+
+        for (const chatID of deletedChatIDs) {
+            output[chatID] = {
+                deleted: true
+            };
         }
 
         res.json(output);

@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../store';
 import { selectOpenAIApiKey } from '../store/api-keys';
 import { setTab } from '../store/settings-ui';
 import { selectSidebarOpen, toggleSidebar } from '../store/sidebar';
-import { openLoginModal } from '../store/ui';
+import { openSignupModal } from '../store/ui';
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -176,7 +176,7 @@ export default function Header(props: HeaderProps) {
                     if (process.env.REACT_APP_AUTH_PROVIDER !== 'local') {
                         backend.current?.signIn();
                     } else {
-                        dispatch(openLoginModal());
+                        dispatch(openSignupModal());
                     }
                 }}>
                     <FormattedMessage defaultMessage="Sign in <h>to sync</h>"

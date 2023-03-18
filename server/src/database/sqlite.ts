@@ -46,6 +46,12 @@ export class SQLiteAdapter extends Database {
                 title TEXT
             )`);
 
+            db.run(`CREATE TABLE IF NOT EXISTS deleted_chats (
+                id TEXT PRIMARY KEY,
+                user_id TEXT,
+                deleted_at DATETIME
+            )`);
+
             db.run(`CREATE TABLE IF NOT EXISTS messages (
                 id TEXT PRIMARY KEY,
                 user_id TEXT,
@@ -61,14 +67,14 @@ export class SQLiteAdapter extends Database {
         });
     }
 
-    public createUser(email: string, passwordHash: Buffer, salt: Buffer): Promise<void> {
+    public createUser(email: string, passwordHash: Buffer): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!validateEmailAddress(email)) {
                 reject(new Error('invalid email address'));
                 return;
             }
 
-            db.run(`INSERT INTO authentication (id, email, password_hash, salt) VALUES (?, ?, ?, ?)`, [email, email, passwordHash, salt], (err) => {
+            db.run(`INSERT INTO authentication (id, email, password_hash) VALUES (?, ?, ?)`, [email, email, passwordHash], (err) => {
                 if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to create user ${email}`);
@@ -86,11 +92,13 @@ export class SQLiteAdapter extends Database {
                 if (err) {
                     reject(err);
                     console.log(`[database:sqlite] failed to get user ${email}`);
+                } else if (!row) {
+                    resolve(null);
                 } else {
                     resolve({
                         ...row,
                         passwordHash: Buffer.from(row.password_hash),
-                        salt: Buffer.from(row.salt),
+                        salt: row.salt ? Buffer.from(row.salt) : null,
                     });
                     console.log(`[database:sqlite] retrieved user ${email}`);
                 }
@@ -166,6 +174,27 @@ export class SQLiteAdapter extends Database {
                 } else {
                     resolve();
                     console.log(`[database:sqlite] set title for chat ${chatID}`)
+                }
+            });
+        });
+    }
+
+    public async deleteChat(userID: string, chatID: string): Promise<any> {
+        db.serialize(() => {
+            db.run(`DELETE FROM chats WHERE id = ? AND user_id = ?`, [chatID, userID]);
+            db.run(`DELETE FROM messages WHERE chat_id = ? AND user_id = ?`, [chatID, userID]);
+            db.run(`INSERT INTO deleted_chats (id, user_id, deleted_at) VALUES (?, ?, ?)`, [chatID, userID, new Date()]);
+            console.log(`[database:sqlite] deleted chat ${chatID}`);
+        });
+    }
+
+    public async getDeletedChatIDs(userID: string): Promise<string[]> {
+        return new Promise((resolve, reject) => {
+            db.all(`SELECT * FROM deleted_chats WHERE user_id = ?`, [userID], (err: any, rows: any) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows.map((row: any) => row.id));
                 }
             });
         });

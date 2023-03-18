@@ -1,6 +1,6 @@
 {
   "name": "chat-with-gpt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
     "@emotion/css": "^11.10.6",
