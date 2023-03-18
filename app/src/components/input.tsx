@@ -10,6 +10,9 @@ import { selectMessage, setMessage } from '../store/message';
 import { selectTemperature } from '../store/parameters';
 import { openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
 import { speechRecognition } from '../speech-recognition-types.d'
+import MicRecorder from 'mic-recorder-to-mp3';
+import { selectUseOpenAIWhisper } from '../store/api-keys';
+
 
 const Container = styled.div`
     background: #292933;
@@ -40,6 +43,8 @@ export default function MessageInput(props: MessageInputProps) {
     const message = useAppSelector(selectMessage);
     const [recording, setRecording] = useState(false);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
+    const recorder = new MicRecorder({ bitRate: 128 })
+    const useOpenAIWhisper = useAppSelector(selectUseOpenAIWhisper);
 
     const context = useAppContext();
     const dispatch = useAppDispatch();
@@ -62,18 +67,30 @@ export default function MessageInput(props: MessageInputProps) {
     const onSpeechStart = () => {
         if (!recording) {
             setRecording(true);
-            speechRecognition.continuous = true;
-            speechRecognition.interimResults = true;
 
-            speechRecognition.onresult = (event) => {
-                const transcript = event.results[event.results.length - 1][0].transcript;
-                dispatch(setMessage(transcript));
-            };
+            // if we are using whisper, the we will just record with the browser and send the api when done 
+            if (useOpenAIWhisper) {
 
-            speechRecognition.start();
+            } else {
+
+                speechRecognition.continuous = true;
+                speechRecognition.interimResults = true;
+
+                speechRecognition.onresult = (event) => {
+                    const transcript = event.results[event.results.length - 1][0].transcript;
+                    dispatch(setMessage(transcript));
+                };
+
+                speechRecognition.start();
+            }
         } else {
             setRecording(false);
-            speechRecognition.stop();
+            if (useOpenAIWhisper) {
+
+            } else {
+                speechRecognition.stop();
+
+            }
         }
     }
 

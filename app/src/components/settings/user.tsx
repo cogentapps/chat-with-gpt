@@ -3,22 +3,24 @@ import SettingsOption from "./option";
 import { TextInput } from "@mantine/core";
 import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { selectOpenAIApiKey, setOpenAIApiKeyFromEvent } from "../../store/api-keys";
+import { selectOpenAIApiKey, setOpenAIApiKeyFromEvent, selectUseOpenAIWhisper, setUseOpenAIWhisperFromEvent } from "../../store/api-keys";
 import { selectSettingsOption } from "../../store/settings-ui";
 import { FormattedMessage, useIntl } from "react-intl";
 
 export default function UserOptionsTab(props: any) {
     const option = useAppSelector(selectSettingsOption);
     const openaiApiKey = useAppSelector(selectOpenAIApiKey);
+    const useOpenAIWhisper = useAppSelector(selectUseOpenAIWhisper);
     const intl = useIntl()
 
     const dispatch = useAppDispatch();
     const onOpenAIApiKeyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => dispatch(setOpenAIApiKeyFromEvent(event)), [dispatch]);
+    const onUseOpenAIWhisperChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => dispatch(setUseOpenAIWhisperFromEvent(event)), [dispatch]);
 
     const elem = useMemo(() => (
         <SettingsTab name="user">
             <SettingsOption heading={intl.formatMessage({ defaultMessage: "Your OpenAI API Key", description: "Heading for the OpenAI API key setting on the settings screen" })}
-                            focused={option === 'openai-api-key'}>
+                focused={option === 'openai-api-key'}>
                 <TextInput
                     placeholder={intl.formatMessage({ defaultMessage: "Paste your API key here" })}
                     value={openaiApiKey || ''}
@@ -29,6 +31,9 @@ export default function UserOptionsTab(props: any) {
                     </a>
                 </p>
                 <p>
+                    <input type="checkbox" id="use-openai-whisper-api" checked={useOpenAIWhisper!} onChange={onUseOpenAIWhisperChange} /> Use the OpenAI Whisper API for speech recognition.
+                </p>
+                <p>
                     <FormattedMessage defaultMessage="Your API key is stored only on this device and never transmitted to anyone except OpenAI." />
                 </p>
                 <p>
@@ -36,7 +41,7 @@ export default function UserOptionsTab(props: any) {
                 </p>
             </SettingsOption>
         </SettingsTab>
-    ), [option, openaiApiKey, onOpenAIApiKeyChange]);
+    ), [option, openaiApiKey, useOpenAIWhisper, onOpenAIApiKeyChange]);
 
     return elem;
 }
