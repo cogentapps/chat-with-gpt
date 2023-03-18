@@ -231,7 +231,7 @@ export function ElevenLabsReaderButton(props: { selector: string }) {
     const intl = useIntl();
 
     const voice = useAppSelector(selectVoice);
-    
+
     const [status, setStatus] = useState<'idle' | 'init' | 'playing' | 'buffering'>('idle');
     // const [error, setError] = useState(false);
     const reader = useRef(new ElevenLabsReader());
@@ -257,7 +257,20 @@ export function ElevenLabsReaderButton(props: { selector: string }) {
     const onClick = useCallback(() => {
         if (status === 'idle') {
             if (!elevenLabsApiKey?.length) {
-                dispatch(openElevenLabsApiKeyPanel());
+
+                // we have no ElevenLabs, so we'll just use the browser TTS
+                const utterance = new SpeechSynthesisUtterance();
+                utterance.text = document.querySelector(props.selector)?.textContent || '';
+                utterance.lang = intl.locale;
+                console.log(utterance.lang, speechSynthesis.getVoices())
+                utterance.rate = 1.0;
+                utterance.volume = 1.0;
+                utterance.pitch = 1.0;
+                utterance.voice = speechSynthesis.getVoices().find(v => v.name === voice) || speechSynthesis.getVoices().find(v => v.lang === utterance.lang)![0];
+                speechSynthesis.speak(utterance);
+                return;
+
+                //dispatch(openElevenLabsApiKeyPanel());
                 return;
             }
 
