@@ -50,8 +50,8 @@ export default class ChatServer {
     }
 
     async initialize() {
-        const { default: helmet } = await import('helmet');
-        this.app.use(helmet());
+        //const { default: helmet } = await import('helmet');
+        //this.app.use(helmet());
 
         this.app.use(express.urlencoded({ extended: false }));
 
