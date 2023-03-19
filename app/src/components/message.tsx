@@ -244,7 +244,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                                 <Button variant="subtle" size="sm" compact onClick={copy} style={{ marginLeft: '1rem' }}>
                                     <i className="fa fa-clipboard" />
                                     {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
-                                            : <FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" />}
+                                        : <FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" />}
                                 </Button>
                             )}
                         </CopyButton>
@@ -263,7 +263,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             }}>
                                 <i className="fa fa-edit" />
                                 <span>
-                                    {editing ? <FormattedMessage defaultMessage="Cancel" description="Label for a button that appears when the user is editing the text of one of their messages, to cancel without saving changes" /> 
+                                    {editing ? <FormattedMessage defaultMessage="Cancel" description="Label for a button that appears when the user is editing the text of one of their messages, to cancel without saving changes" />
                                         : <FormattedMessage defaultMessage="Edit" description="Label for the button the user can click to edit the text of one of their messages" />}
                                 </span>
                             </Button>

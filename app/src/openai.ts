@@ -26,7 +26,7 @@ export interface OpenAIResponseChunk {
 
 function parseResponseChunk(buffer: any): OpenAIResponseChunk {
     const chunk = buffer.toString().replace('data: ', '').trim();
-    
+
     if (chunk === '[DONE]') {
         return {
             done: true,
@@ -51,7 +51,7 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
     const configuration = new Configuration({
         apiKey: parameters.apiKey,
     });
-    
+
     const openai = new OpenAIApi(configuration);
 
     const response = await openai.createChatCompletion({
@@ -129,6 +129,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
     });
 
     eventSource.addEventListener('message', async (event: any) => {
+
         if (event.data === '[DONE]') {
             emitter.emit('done');
             return;
@@ -147,7 +148,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
     eventSource.stream();
 
-    return { 
+    return {
         emitter,
         cancel: () => eventSource.close(),
     };
