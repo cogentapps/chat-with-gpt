@@ -3,12 +3,12 @@ import type { RootState } from '.';
 
 const initialState: {
     openAIApiKey?: string | null | undefined;
-    useOpenAIWhisper?: boolean | null | undefined;
+    useOpenAIWhisper: boolean;
     elevenLabsApiKey?: string | null | undefined;
 
 } = {
     openAIApiKey: localStorage.getItem('openai-api-key'),
-    useOpenAIWhisper: localStorage.getItem('use-openai-whisper') === 'true',
+    useOpenAIWhisper: false,
     elevenLabsApiKey: localStorage.getItem('elevenlabs-api-key'),
 };
 

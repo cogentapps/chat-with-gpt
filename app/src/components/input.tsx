@@ -104,7 +104,7 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [context, message, dispatch]);
 
-    const onSpeechStart = () => {
+    const onSpeechStart = useCallback(() => {
 
         if (!recording) {
             setRecording(true);
@@ -141,27 +141,30 @@ export default function MessageInput(props: MessageInputProps) {
                     data.append('file', file);
                     data.append('model', 'whisper-1')
 
-                    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-                        method: "POST",
-                        headers: {
-                            'Authorization': `Bearer ${openAIApiKey}`,
-                        },
-                        body: data,
-                    });
+                    try {
+                        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+                            method: "POST",
+                            headers: {
+                                'Authorization': `Bearer ${openAIApiKey}`,
+                            },
+                            body: data,
+                        });
 
-                    const json = await response.json()
+                        const json = await response.json()
 
-                    if (json.text) {
-                        dispatch(setMessage(json.text));
+                        if (json.text) {
+                            dispatch(setMessage(json.text));
+                        }
+                    } catch (e) {
+                        console.log(e)
                     }
 
                 }).catch((e: any) => console.error(e));
             } else {
                 speechRecognition.stop();
-
             }
         }
-    }
+    }, [recording, message, dispatch]);
 
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -193,12 +196,12 @@ export default function MessageInput(props: MessageInputProps) {
                 {!context.generating && (
                     <>
                         <ActionIcon size="xl"
-                            onClick={onSubmit}>
-                            <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
-                        </ActionIcon>
-                        <ActionIcon size="xl"
                             onClick={onSpeechStart}>
                             <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                        </ActionIcon>
+                        <ActionIcon size="xl"
+                            onClick={onSubmit}>
+                            <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
                         </ActionIcon>
                     </>
                 )}

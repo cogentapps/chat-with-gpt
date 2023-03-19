@@ -1,6 +1,6 @@
 import SettingsTab from "./tab";
 import SettingsOption from "./option";
-import { TextInput } from "@mantine/core";
+import { Checkbox, TextInput } from "@mantine/core";
 import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { selectOpenAIApiKey, setOpenAIApiKeyFromEvent, selectUseOpenAIWhisper, setUseOpenAIWhisperFromEvent } from "../../store/api-keys";
@@ -30,9 +30,13 @@ export default function UserOptionsTab(props: any) {
                         <FormattedMessage defaultMessage="Find your API key here." description="Label for the link that takes the user to the page on the OpenAI website where they can find their API key." />
                     </a>
                 </p>
-                <p>
-                    <input type="checkbox" id="use-openai-whisper-api" checked={useOpenAIWhisper!} onChange={onUseOpenAIWhisperChange} /> Use the OpenAI Whisper API for speech recognition.
-                </p>
+
+                <Checkbox
+                    style={{ marginTop: '1rem' }}
+                    id="use-openai-whisper-api" checked={useOpenAIWhisper!} onChange={onUseOpenAIWhisperChange}
+                    label="Use the OpenAI Whisper API for speech recognition."
+                />
+
                 <p>
                     <FormattedMessage defaultMessage="Your API key is stored only on this device and never transmitted to anyone except OpenAI." />
                 </p>
