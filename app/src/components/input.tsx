@@ -11,8 +11,8 @@ import { selectTemperature } from '../store/parameters';
 import { openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
 import { speechRecognition } from '../speech-recognition-types.d'
 import MicRecorder from 'mic-recorder-to-mp3';
-import { selectUseOpenAIWhisper } from '../store/api-keys';
-
+import { selectUseOpenAIWhisper, selectOpenAIApiKey } from '../store/api-keys';
+import { Mp3Encoder } from 'lamejs';
 
 const Container = styled.div`
     background: #292933;
@@ -38,13 +38,53 @@ export interface MessageInputProps {
     disabled?: boolean;
 }
 
+
+
+async function chunkAndEncodeMP3File(file: Blob): Promise<Array<File>> {
+    const MAX_CHUNK_SIZE = 25 * 1024 * 1024; // 25 MB
+    const audioContext = new AudioContext();
+    const audioBuffer = await audioContext.decodeAudioData(await file.arrayBuffer());
+    const duration = audioBuffer.duration;
+    const sampleRate = audioBuffer.sampleRate;
+    const numChannels = audioBuffer.numberOfChannels;
+    const bytesPerSample = 2; // 16-bit audio
+    const samplesPerChunk = Math.floor((MAX_CHUNK_SIZE / bytesPerSample) / numChannels);
+    const totalSamples = Math.floor(duration * sampleRate);
+    const numChunks = Math.ceil(totalSamples / samplesPerChunk);
+
+    const chunks: Array<File> = [];
+    for (let i = 0; i < numChunks; i++) {
+        const startSample = i * samplesPerChunk;
+        const endSample = Math.min(startSample + samplesPerChunk, totalSamples);
+        const chunkDuration = (endSample - startSample) / sampleRate;
+        const chunkBuffer = audioContext.createBuffer(numChannels, endSample - startSample, sampleRate);
+        for (let c = 0; c < numChannels; c++) {
+            const channelData = audioBuffer.getChannelData(c).subarray(startSample, endSample);
+            chunkBuffer.copyToChannel(channelData, c);
+        }
+        const chunkBlob = await new Promise<Blob>((resolve) => {
+            const encoder = new Mp3Encoder(numChannels, sampleRate, 128);
+            const leftData = chunkBuffer.getChannelData(0);
+            const rightData = numChannels === 1 ? leftData : chunkBuffer.getChannelData(1);
+            const mp3Data = encoder.encodeBuffer(leftData, rightData);
+            const blob = new Blob([mp3Data], { type: 'audio/mp3' });
+            resolve(blob);
+        });
+        chunks.push(new File([chunkBlob], `text-${i}.mp3`, { type: 'audio/mp3' }));
+    }
+
+    return chunks;
+}
+
+
 export default function MessageInput(props: MessageInputProps) {
     const temperature = useAppSelector(selectTemperature);
     const message = useAppSelector(selectMessage);
     const [recording, setRecording] = useState(false);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
-    const recorder = new MicRecorder({ bitRate: 128 })
+    const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
     const useOpenAIWhisper = useAppSelector(selectUseOpenAIWhisper);
+    const openAIApiKey = useAppSelector(selectOpenAIApiKey);
 
     const context = useAppContext();
     const dispatch = useAppDispatch();
@@ -65,14 +105,14 @@ export default function MessageInput(props: MessageInputProps) {
     }, [context, message, dispatch]);
 
     const onSpeechStart = () => {
+
         if (!recording) {
             setRecording(true);
 
             // if we are using whisper, the we will just record with the browser and send the api when done 
             if (useOpenAIWhisper) {
-
+                recorder.start().catch((e: any) => console.error(e));
             } else {
-
                 speechRecognition.continuous = true;
                 speechRecognition.interimResults = true;
 
@@ -86,7 +126,36 @@ export default function MessageInput(props: MessageInputProps) {
         } else {
             setRecording(false);
             if (useOpenAIWhisper) {
+                const mp3 = recorder.stop().getMp3();
 
+                mp3.then(async ([buffer, blob]) => {
+
+                    const file = new File(buffer, 'chat.mp3', {
+                        type: blob.type,
+                        lastModified: Date.now()
+                    });
+
+                    // TODO: cut in chunks
+
+                    var data = new FormData()
+                    data.append('file', file);
+                    data.append('model', 'whisper-1')
+
+                    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+                        method: "POST",
+                        headers: {
+                            'Authorization': `Bearer ${openAIApiKey}`,
+                        },
+                        body: data,
+                    });
+
+                    const json = await response.json()
+
+                    if (json.text) {
+                        dispatch(setMessage(json.text));
+                    }
+
+                }).catch((e: any) => console.error(e));
             } else {
                 speechRecognition.stop();
 
