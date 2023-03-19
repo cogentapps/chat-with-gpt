@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Button, ActionIcon, Textarea, Loader } from '@mantine/core';
+import { Button, Text, ActionIcon, Textarea, Loader, Group, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -13,6 +13,8 @@ import { speechRecognition } from '../speech-recognition-types.d'
 import MicRecorder from 'mic-recorder-to-mp3';
 import { selectUseOpenAIWhisper, selectOpenAIApiKey } from '../store/api-keys';
 import { Mp3Encoder } from 'lamejs';
+import { openModal, closeModal } from '@mantine/modals';
+import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
 const Container = styled.div`
     background: #292933;
@@ -104,6 +106,93 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [context, message, dispatch]);
 
+    const theme = useMantineTheme();
+
+    const openFileModal = useCallback(() => openModal({
+        title: 'Drop an mp3 file here',
+        modalId: "file-modal",
+        children: (
+            <>
+                {useOpenAIWhisper &&
+                    <Dropzone
+                        onDrop={async (files) => {
+                            console.log('dropped files', files);
+                            closeModal("file-modal");
+                            let msg = "";
+                            for (const file of files) {
+                                msg += (await transcribeWithOpenAIWhisper(file)) + " ";
+                            }
+                            dispatch(setMessage(msg));
+                        }}
+                        onReject={(files) => console.log('rejected files', files)}
+                        maxSize={25 * 1024 ** 2}
+                        accept={["audio/mp3", "audio/mpeg"]}
+                        {...props}
+                    >
+                        <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
+                            <Dropzone.Accept>
+                                <ActionIcon size="xl">
+                                    <i className="fa fa-upload" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                                </ActionIcon>
+                            </Dropzone.Accept>
+                            <Dropzone.Reject>
+                                <ActionIcon size="xl">
+                                    <i className="fa fa-upload" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                                </ActionIcon>
+                            </Dropzone.Reject>
+                            <Dropzone.Idle>
+                                <ActionIcon size="xl">
+                                    <i className="fa fa-upload" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                                </ActionIcon>
+                            </Dropzone.Idle>
+
+                            <div>
+                                <Text size="xl" inline>
+                                    Drag mp3 speech audio files here or click to select files
+                                </Text>
+                                <Text size="sm" color="dimmed" inline mt={7}>
+                                    Attach as many files as you like, each file should not exceed 5mb
+                                </Text>
+                            </div>
+                        </Group>
+                    </Dropzone>
+                }
+                {!useOpenAIWhisper &&
+                    <p> Please enable OpenAI Whisper in the User Settings to use the file transcribing functionality.</p>
+                }
+            </>
+        ),
+
+    }), [useOpenAIWhisper, message, dispatch]);
+
+    const transcribeWithOpenAIWhisper = async (file: File) => {
+
+        // TODO: cut in chunks... 
+
+        var data = new FormData()
+        data.append('file', file);
+        data.append('model', 'whisper-1')
+
+        try {
+            const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${openAIApiKey}`,
+                },
+                body: data,
+            });
+
+            const json = await response.json()
+
+            if (json.text) {
+                return json.text
+            }
+        } catch (e) {
+            console.error(e)
+        }
+        return ""
+    }
+
     const onSpeechStart = useCallback(() => {
 
         if (!recording) {
@@ -135,29 +224,7 @@ export default function MessageInput(props: MessageInputProps) {
                         lastModified: Date.now()
                     });
 
-                    // TODO: cut in chunks
-
-                    var data = new FormData()
-                    data.append('file', file);
-                    data.append('model', 'whisper-1')
-
-                    try {
-                        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-                            method: "POST",
-                            headers: {
-                                'Authorization': `Bearer ${openAIApiKey}`,
-                            },
-                            body: data,
-                        });
-
-                        const json = await response.json()
-
-                        if (json.text) {
-                            dispatch(setMessage(json.text));
-                        }
-                    } catch (e) {
-                        console.log(e)
-                    }
+                    dispatch(setMessage(await transcribeWithOpenAIWhisper(file)));
 
                 }).catch((e: any) => console.error(e));
             } else {
@@ -198,6 +265,10 @@ export default function MessageInput(props: MessageInputProps) {
                         <ActionIcon size="xl"
                             onClick={onSpeechStart}>
                             <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                        </ActionIcon>
+                        <ActionIcon size="xl"
+                            onClick={openFileModal}>
+                            <i className="fa fa-upload" style={{ fontSize: '90%' }} />
                         </ActionIcon>
                         <ActionIcon size="xl"
                             onClick={onSubmit}>
