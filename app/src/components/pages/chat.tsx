@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useRef } from 'react';
 import styled from '@emotion/styled';
 import slugify from 'slugify';
 import { useEffect } from 'react';
@@ -35,12 +35,14 @@ export default function ChatPage(props: any) {
     const { id } = useParams();
     const context = useAppContext();
 
+    let firstLoad = true;
     useEffect(() => {
         if (props.share || !context.currentChat.chatLoadedAt) {
             return;
         }
 
-        const shouldScroll = (Date.now() - context.currentChat.chatLoadedAt) > 5000;
+        const shouldScroll = (Date.now() - context.currentChat.chatLoadedAt) > 5000 || firstLoad;
+        firstLoad = false;
 
         if (!shouldScroll) {
             return;
