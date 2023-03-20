@@ -33,7 +33,7 @@ export default function SpeechOptionsTab() {
     }, [elevenLabsApiKey]);
 
     const apiKeyOption = useMemo(() => (
-        <SettingsOption heading={intl.formatMessage({ defaultMessage: 'Your ElevenLabs Text-to-Speech API Key (optional)' })}
+        <SettingsOption heading={intl.formatMessage({ defaultMessage: 'Your ElevenLabs Text-to-Speech API Key (optional)', description: "Heading for the ElevenLabs API key setting on the settings screen" })}
                         focused={option === 'elevenlabs-api-key'}>
             <TextInput placeholder={intl.formatMessage({ defaultMessage: "Paste your API key here" })}
                 value={elevenLabsApiKey || ''} onChange={onElevenLabsApiKeyChange} />
@@ -50,7 +50,7 @@ export default function SpeechOptionsTab() {
     ), [option, elevenLabsApiKey, onElevenLabsApiKeyChange]);
 
     const voiceOption = useMemo(() => (
-        <SettingsOption heading={intl.formatMessage({ defaultMessage: 'Voice' })}
+        <SettingsOption heading={intl.formatMessage({ defaultMessage: 'Voice', description: 'Heading for the setting that lets users choose an ElevenLabs text-to-speech voice, on the settings screen' })}
                         focused={option === 'elevenlabs-voice'}>
             <Select
                 value={voice}
@@ -64,7 +64,7 @@ export default function SpeechOptionsTab() {
             <Button onClick={() => (document.getElementById('voice-preview') as HTMLMediaElement)?.play()} variant='light' compact style={{ marginTop: '1rem' }}>
                 <i className='fa fa-headphones' />
                 <span>
-                    <FormattedMessage defaultMessage="Preview voice" />
+                    <FormattedMessage defaultMessage="Preview voice" description="Label for the button that plays a preview of the selected ElevenLabs text-to-speech voice" />
                 </span>
             </Button>
         </SettingsOption>

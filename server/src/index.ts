@@ -20,6 +20,7 @@ import SessionRequestHandler from './endpoints/session';
 import GetShareRequestHandler from './endpoints/get-share';
 import { configurePassport } from './passport';
 import { configureAuth0 } from './auth0';
+import DeleteChatRequestHandler from './endpoints/delete-chat';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -46,7 +47,12 @@ export default class ChatServer {
 
     constructor() {
         this.app = express();
-        
+    }
+
+    async initialize() {
+        //const { default: helmet } = await import('helmet');
+        //this.app.use(helmet());
+
         this.app.use(express.urlencoded({ extended: false }));
 
         if (process.env.AUTH0_CLIENT_ID && process.env.AUTH0_ISSUER && process.env.PUBLIC_URL) {
@@ -60,21 +66,19 @@ export default class ChatServer {
         this.app.use(express.json({ limit: '1mb' }));
         this.app.use(compression());
 
-        this.app.use((req, res, next) => {
-            res.set({
-                'Access-Control-Allow-Origin': origins.includes(req.headers.origin!) ? req.headers.origin : origins[0],
-                'Access-Control-Allow-Credentials': true.toString(),
-                'Access-Control-Allow-Methods': 'GET,POST,PUT,OPTIONS',
-                'Access-Control-Max-Age': 2592000,
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            });
-            next();
+        const { default: rateLimit } = await import('express-rate-limit'); // esm
+        const limiter = rateLimit({
+            windowMs: 15 * 60 * 1000, // 15 minutes
+            max: 100, // limit each IP to 100 requests per windowMs
         });
+
+        this.app.use(limiter);
 
         this.app.get('/chatapi/health', (req, res) => new HealthRequestHandler(this, req, res));
         this.app.get('/chatapi/session', (req, res) => new SessionRequestHandler(this, req, res));
         this.app.post('/chatapi/messages', (req, res) => new MessagesRequestHandler(this, req, res));
         this.app.post('/chatapi/title', (req, res) => new TitleRequestHandler(this, req, res));
+        this.app.post('/chatapi/delete', (req, res) => new DeleteChatRequestHandler(this, req, res));
         this.app.post('/chatapi/sync', (req, res) => new SyncRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
@@ -92,11 +96,9 @@ export default class ChatServer {
                 res.sendFile('public/index.html', { root: path.resolve(__dirname, '..') });
             });
         }
-    }
 
-    async initialize() {
-        await this.objectStore.initialize();;
-        await this.database.initialize();;
+        await this.objectStore.initialize();
+        await this.database.initialize();
 
         try {
             this.app.listen(port, () => {

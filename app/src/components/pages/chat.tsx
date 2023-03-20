@@ -1,13 +1,15 @@
+import React, { Suspense } from 'react';
 import styled from '@emotion/styled';
 import slugify from 'slugify';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Loader } from '@mantine/core';
 
-import Message from '../message';
 import { useAppContext } from '../../context';
 import { backend } from '../../backend';
 import { Page } from '../page';
+
+const Message = React.lazy(() => import(/* webpackChunkName: "message" */ '../message'));
 
 const Messages = styled.div`
     max-height: 100%;
@@ -81,20 +83,26 @@ export default function ChatPage(props: any) {
                 }
             },
         }}>
-        <Messages id="messages">
-            {shouldShowChat && (
-                <div style={{ paddingBottom: '4.5rem' }}>
-                    {messagesToDisplay.map((message) => (
-                        <Message key={message.id}
-                            message={message}
-                            share={props.share}
-                            last={context.currentChat.chat!.messages.leafs.some(n => n.id === message.id)} />
-                    ))}
-                </div>
-            )}
-            {!shouldShowChat && <EmptyMessage>
+        <Suspense fallback={<Messages id="messages">
+            <EmptyMessage>
                 <Loader variant="dots" />
-            </EmptyMessage>}
-        </Messages>
+            </EmptyMessage>
+        </Messages>}>
+            <Messages id="messages">
+                {shouldShowChat && (
+                    <div style={{ paddingBottom: '4.5rem' }}>
+                        {messagesToDisplay.map((message) => (
+                            <Message key={message.id}
+                                message={message}
+                                share={props.share}
+                                last={context.currentChat.chat!.messages.leafs.some(n => n.id === message.id)} />
+                        ))}
+                    </div>
+                )}
+                {!shouldShowChat && <EmptyMessage>
+                    <Loader variant="dots" />
+                </EmptyMessage>}
+            </Messages>
+        </Suspense>
     </Page>;
 }

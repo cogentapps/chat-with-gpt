@@ -1,7 +1,12 @@
+import fs from 'fs';
 import { verbose } from "sqlite3";
 import ObjectStore from "./index";
 
 const sqlite3 = verbose();
+
+if (!fs.existsSync('./data')) {
+    fs.mkdirSync('./data');
+}
 
 const db = new sqlite3.Database('./data/object-store.sqlite');
 

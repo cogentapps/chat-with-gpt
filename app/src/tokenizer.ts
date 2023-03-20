@@ -3,7 +3,7 @@ import { OpenAIMessage } from "./types";
 let enc: any;
 
 setTimeout(async () => {
-    const { encoding_for_model } = await import("./tiktoken/dist/tiktoken");
+    const { encoding_for_model } = await import(/* webpackChunkName: "tiktoken" */ "./tiktoken/dist/tiktoken");
     enc = encoding_for_model("gpt-3.5-turbo");
 }, 2000);
 

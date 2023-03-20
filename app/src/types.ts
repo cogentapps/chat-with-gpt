@@ -4,6 +4,7 @@ export interface Parameters {
     temperature: number;
     apiKey?: string;
     initialSystemPrompt?: string;
+    model: string;
 }
 
 export interface Message {
@@ -12,6 +13,7 @@ export interface Message {
     parentID?: string;
     timestamp: number;
     role: string;
+    model?: string;
     content: string;
     parameters?: Parameters;
     done?: boolean;
@@ -42,6 +44,7 @@ export interface Chat {
     title?: string | null;
     created: number;
     updated: number;
+    deleted?: boolean;
 }
 
 export function serializeChat(chat: Chat): string {

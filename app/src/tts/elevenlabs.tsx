@@ -272,13 +272,13 @@ export function ElevenLabsReaderButton(props: { selector: string }) {
         <Button variant="subtle" size="sm" compact onClickCapture={onClick} loading={status === 'init'}>
             {status !== 'init' && <i className="fa fa-headphones" />}
             {status === 'idle' && <span>
-                <FormattedMessage defaultMessage="Play" />
+                <FormattedMessage defaultMessage="Play" description="Label for the button that starts text-to-speech playback" />
             </span>}
             {status === 'buffering' && <span>
-                <FormattedMessage defaultMessage="Loading audio..." />
+                <FormattedMessage defaultMessage="Loading audio..." description="Message indicating that text-to-speech audio is buffering" />
             </span>}
             {status !== 'idle' && status !== 'buffering' && <span>
-                <FormattedMessage defaultMessage="Stop" />
+                <FormattedMessage defaultMessage="Stop" description="Label for the button that stops text-to-speech playback" />
             </span>}
         </Button>
     );
