@@ -131,7 +131,13 @@ export default function RecentChats(props: any) {
     const currentChatID = context.currentChat.chat?.id;
     const recentChats = context.chat.search.query('');
 
-    const onClick = useCallback(() => {
+    const onClick = useCallback((e: React.MouseEvent) => {
+        if (e.currentTarget.closest('button')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+
         if (window.matchMedia('(max-width: 40em)').matches) {
             dispatch(toggleSidebar());
         }
