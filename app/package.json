@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^1.9.3",
     "@svgr/webpack": "^6.5.1",
     "broadcast-channel": "^4.20.2",
+    "buffer": "^6.0.3",
     "csv": "^6.2.8",
     "expiry-set": "^1.0.0",
     "idb-keyval": "^6.2.0",

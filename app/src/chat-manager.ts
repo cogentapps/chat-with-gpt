@@ -8,7 +8,6 @@ import { createStreamingChatCompletion } from './openai';
 import { createTitle } from './titles';
 import { ellipsize, sleep } from './utils';
 import * as idb from './idb';
-import { selectMessagesToSendSafely } from './tokenizer';
 
 export const channel = new BroadcastChannel('chats');
 
@@ -145,7 +144,7 @@ export class ChatManager extends EventEmitter {
         this.emit(chat.id);
         channel.postMessage({ type: 'chat-update', data: serializeChat(chat) });
 
-        const messagesToSend = selectMessagesToSendSafely(messages.map(getOpenAIMessageFromMessage));
+        const messagesToSend = messages.map(getOpenAIMessageFromMessage)
 
         const { emitter, cancel } = await createStreamingChatCompletion(messagesToSend, requestedParameters);
 

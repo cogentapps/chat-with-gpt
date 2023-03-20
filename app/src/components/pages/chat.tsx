@@ -9,7 +9,7 @@ import { useAppContext } from '../../context';
 import { backend } from '../../backend';
 import { Page } from '../page';
 
-const Message = React.lazy(() => import(/* webpackChunkName: "message" */ '../message'));
+const Message = React.lazy(() => import(/* webpackPreload: true */ '../message'));
 
 const Messages = styled.div`
     max-height: 100%;

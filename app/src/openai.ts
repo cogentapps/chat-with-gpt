@@ -70,7 +70,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
     const emitter = new EventEmitter();
 
-    const messagesToSend = [...messages].filter(m => m.role !== 'app');
+    let messagesToSend = [...messages].filter(m => m.role !== 'app');
 
     for (let i = messagesToSend.length - 1; i >= 0; i--) {
         const m = messagesToSend[i];
@@ -86,6 +86,8 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         role: 'system',
         content: (parameters.initialSystemPrompt || defaultSystemPrompt).replace('{{ datetime }}', new Date().toLocaleString()),
     });
+
+    messagesToSend = await selectMessagesToSendSafely(messagesToSend, 2048);
 
     const eventSource = new SSE('https://api.openai.com/v1/chat/completions', {
         method: "POST",
@@ -151,4 +153,14 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         emitter,
         cancel: () => eventSource.close(),
     };
+}
+
+async function selectMessagesToSendSafely(messages: OpenAIMessage[], maxTokens: number) {
+    const { ChatHistoryTrimmer } = await import(/* webpackPreload: true */ './tokenizer/chat-history-trimmer');
+    const compressor = new ChatHistoryTrimmer(messages, {
+        maxTokens,
+        preserveFirstUserMessage: true,
+        preserveSystemPrompt: true,
+    });
+    return compressor.process();
 }
