@@ -46,10 +46,29 @@ export class ChatHistoryTrimmer {
             return this.output;
         }
 
+        const systemPrompt = this.messages.find(m => m.role === 'system');
+        const firstUserMessage = this.messages.find(m => m.role === 'user');
         const last = this.messages[this.messages.length - 1];
+
+        this.output = [
+            tokenizer.truncateMessage(systemPrompt!, 100),
+        ];
+
+        if (firstUserMessage === last) {
+            this.output.push(tokenizer.truncateMessage(firstUserMessage, this.options.maxTokens - 100));
+        } else {
+            this.output.push(tokenizer.truncateMessage(firstUserMessage!, 100));
+            this.output.push(tokenizer.truncateMessage(last, this.options.maxTokens - 200));
+        }
+
+        excessTokens = this.countExcessTokens();
+        if (excessTokens === 0) {
+            return this.output;
+        }
+
         this.output = [
             tokenizer.truncateMessage(last, this.options.maxTokens),
-        ]
+        ];
 
         return this.output;
     }
@@ -82,13 +101,13 @@ export class ChatHistoryTrimmer {
         const output: OpenAIMessage[] = [...this.output];
 
         for (let i = 0; i < this.output.length && tokenizer.countTokensForMessages(output) > this.options.maxTokens; i++) {
-            if (i == lastMessageIndex) {
+            if (i === lastMessageIndex) {
                 continue;
             }
-            if (i !== systemPromptIndex && !this.options.preserveSystemPrompt) {
+            if (i === systemPromptIndex || this.options.preserveSystemPrompt) {
                 continue;
             }
-            if (i !== firstUserMessageIndex && this.options.preserveFirstUserMessage) {
+            if (i === firstUserMessageIndex || this.options.preserveFirstUserMessage) {
                 continue;
             }
             output[i].content = '';
