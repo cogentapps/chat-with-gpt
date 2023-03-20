@@ -8,8 +8,8 @@ import { useAppContext } from '../context';
 import { useAppDispatch, useAppSelector } from '../store';
 import { selectMessage, setMessage } from '../store/message';
 import { selectTemperature } from '../store/parameters';
-import { openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
-import { speechRecognition } from '../speech-recognition-types.d'
+import { openOpenAIApiKeyPanel, openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
+import { speechRecognition, supportsSpeechRecognition } from '../speech-recognition-types'
 import MicRecorder from 'mic-recorder-to-mp3';
 import { selectUseOpenAIWhisper, selectOpenAIApiKey } from '../store/api-keys';
 import { Mp3Encoder } from 'lamejs';
@@ -109,7 +109,7 @@ export default function MessageInput(props: MessageInputProps) {
         console.error('speech recognition error', e);
 
         try {
-            speechRecognition.stop();
+            speechRecognition?.stop();
         } catch (e) {
         }
 
@@ -122,14 +122,19 @@ export default function MessageInput(props: MessageInputProps) {
     }, [recorder]);
 
     const onSpeechStart = useCallback(() => {
+        if (!openAIApiKey) {
+            dispatch(openOpenAIApiKeyPanel());
+            return false;
+        }
+
         try {
             if (!recording) {
                 setRecording(true);
 
                 // if we are using whisper, the we will just record with the browser and send the api when done 
-                if (useOpenAIWhisper) {
+                if (useOpenAIWhisper || !supportsSpeechRecognition) {
                     recorder.start().catch(onSpeechError);
-                } else {
+                } else if (speechRecognition) {
                     const initialMessage = message;
 
                     speechRecognition.continuous = true;
@@ -146,10 +151,12 @@ export default function MessageInput(props: MessageInputProps) {
                     };
 
                     speechRecognition.start();
+                } else {
+                    onSpeechError(new Error('not supported'));
                 }
             } else {
                 setRecording(false);
-                if (useOpenAIWhisper) {
+                if (useOpenAIWhisper || !supportsSpeechRecognition) {
                     setTranscribing(true);
                     const mp3 = recorder.stop().getMp3();
 
@@ -185,14 +192,16 @@ export default function MessageInput(props: MessageInputProps) {
                         }
 
                     }).catch(onSpeechError);
-                } else {
+                } else if (speechRecognition) {
                     speechRecognition.stop();
+                } else {
+                    onSpeechError(new Error('not supported'));
                 }
             }
         } catch (e) {
             onSpeechError(e);
         }
-    }, [recording, message, dispatch]);
+    }, [recording, message, dispatch, onSpeechError, openAIApiKey]);
 
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {

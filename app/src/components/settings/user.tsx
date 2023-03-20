@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { selectOpenAIApiKey, setOpenAIApiKeyFromEvent, selectUseOpenAIWhisper, setUseOpenAIWhisperFromEvent } from "../../store/api-keys";
 import { selectSettingsOption } from "../../store/settings-ui";
 import { FormattedMessage, useIntl } from "react-intl";
+import { supportsSpeechRecognition } from "../../speech-recognition-types";
 
 export default function UserOptionsTab(props: any) {
     const option = useAppSelector(selectSettingsOption);
@@ -31,11 +32,11 @@ export default function UserOptionsTab(props: any) {
                     </a>
                 </p>
 
-                <Checkbox
+                {supportsSpeechRecognition && <Checkbox
                     style={{ marginTop: '1rem' }}
                     id="use-openai-whisper-api" checked={useOpenAIWhisper!} onChange={onUseOpenAIWhisperChange}
                     label="Use the OpenAI Whisper API for speech recognition."
-                />
+                />}
 
                 <p>
                     <FormattedMessage defaultMessage="Your API key is stored only on this device and never transmitted to anyone except OpenAI." />
