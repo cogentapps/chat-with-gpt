@@ -74,6 +74,11 @@ export function Markdown(props: MarkdownProps) {
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[rehypeKatex]}
                 components={{
+                    ol({ start, children }) {
+                        return <ol start={start ?? 1} style={{ counterReset: `list-item ${(start || 1) - 1}` }}>
+                            {children}
+                        </ol>;
+                    },
                     code({ node, inline, className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '')
                         const code = String(children);

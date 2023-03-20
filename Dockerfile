@@ -1,4 +1,4 @@
-FROM node:16-alpine AS build
+FROM node:19-alpine AS build
 
 RUN addgroup -S app && adduser -S app -G app
 RUN mkdir /app && chown app:app /app
@@ -21,7 +21,7 @@ ENV REACT_APP_AUTH_PROVIDER=local
 
 RUN npm run build
 
-FROM node:16-alpine AS server
+FROM node:19-alpine AS server
 
 RUN addgroup -S app && adduser -S app -G app
 

@@ -26,7 +26,7 @@ export interface OpenAIResponseChunk {
 
 function parseResponseChunk(buffer: any): OpenAIResponseChunk {
     const chunk = buffer.toString().replace('data: ', '').trim();
-    
+
     if (chunk === '[DONE]') {
         return {
             done: true,
@@ -51,7 +51,7 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
     const configuration = new Configuration({
         apiKey: parameters.apiKey,
     });
-    
+
     const openai = new OpenAIApi(configuration);
 
     const response = await openai.createChatCompletion({
@@ -70,7 +70,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
     const emitter = new EventEmitter();
 
-    const messagesToSend = [...messages].filter(m => m.role !== 'app');
+    let messagesToSend = [...messages].filter(m => m.role !== 'app');
 
     for (let i = messagesToSend.length - 1; i >= 0; i--) {
         const m = messagesToSend[i];
@@ -86,6 +86,8 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         role: 'system',
         content: (parameters.initialSystemPrompt || defaultSystemPrompt).replace('{{ datetime }}', new Date().toLocaleString()),
     });
+
+    messagesToSend = await selectMessagesToSendSafely(messagesToSend, 2048);
 
     const eventSource = new SSE('https://api.openai.com/v1/chat/completions', {
         method: "POST",
@@ -124,11 +126,16 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
     eventSource.addEventListener('error', (event: any) => {
         if (!contents) {
-            emitter.emit('error');
+            let error = event.data;
+            try {
+                error = JSON.parse(error).error.message;
+            } catch (e) {}
+            emitter.emit('error', error);
         }
     });
 
     eventSource.addEventListener('message', async (event: any) => {
+
         if (event.data === '[DONE]') {
             emitter.emit('done');
             return;
@@ -147,8 +154,20 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
     eventSource.stream();
 
-    return { 
+    return {
         emitter,
         cancel: () => eventSource.close(),
     };
 }
+
+async function selectMessagesToSendSafely(messages: OpenAIMessage[], maxTokens: number) {
+    const { ChatHistoryTrimmer } = await import(/* webpackPreload: true */ './tokenizer/chat-history-trimmer');
+    const compressor = new ChatHistoryTrimmer(messages, {
+        maxTokens,
+        preserveFirstUserMessage: true,
+        preserveSystemPrompt: true,
+    });
+    return compressor.process();
+}
+
+setTimeout(() => selectMessagesToSendSafely([], 2048), 2000);
