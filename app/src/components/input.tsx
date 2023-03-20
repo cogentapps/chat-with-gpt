@@ -81,6 +81,7 @@ export default function MessageInput(props: MessageInputProps) {
     const temperature = useAppSelector(selectTemperature);
     const message = useAppSelector(selectMessage);
     const [recording, setRecording] = useState(false);
+    const [transcribing, setTranscribing] = useState(false);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
     const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
     const useOpenAIWhisper = useAppSelector(selectUseOpenAIWhisper);
@@ -104,65 +105,90 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [context, message, dispatch]);
 
+    const onSpeechError = useCallback((e: any) => {
+        console.error('speech recognition error', e);
+
+        try {
+            speechRecognition.stop();
+        } catch (e) {
+        }
+
+        try {
+            recorder.stop();
+        } catch (e) { }
+
+        setRecording(false);
+        setTranscribing(false);
+    }, [recorder]);
+
     const onSpeechStart = useCallback(() => {
+        try {
+            if (!recording) {
+                setRecording(true);
 
-        if (!recording) {
-            setRecording(true);
+                // if we are using whisper, the we will just record with the browser and send the api when done 
+                if (useOpenAIWhisper) {
+                    recorder.start().catch(onSpeechError);
+                } else {
+                    const initialMessage = message;
 
-            // if we are using whisper, the we will just record with the browser and send the api when done 
-            if (useOpenAIWhisper) {
-                recorder.start().catch((e: any) => console.error(e));
+                    speechRecognition.continuous = true;
+                    speechRecognition.interimResults = true;
+
+                    speechRecognition.onresult = (event) => {
+                        let transcript = '';
+                        for (let i = 0; i < event.results.length; ++i) {
+                            transcript += event.results[i][0].transcript;
+                        }
+                        dispatch(setMessage(initialMessage + ' ' + transcript));
+                    };
+
+                    speechRecognition.start();
+                }
             } else {
-                speechRecognition.continuous = true;
-                speechRecognition.interimResults = true;
+                setRecording(false);
+                if (useOpenAIWhisper) {
+                    setTranscribing(true);
+                    const mp3 = recorder.stop().getMp3();
 
-                speechRecognition.onresult = (event) => {
-                    const transcript = event.results[event.results.length - 1][0].transcript;
-                    dispatch(setMessage(transcript));
-                };
-
-                speechRecognition.start();
-            }
-        } else {
-            setRecording(false);
-            if (useOpenAIWhisper) {
-                const mp3 = recorder.stop().getMp3();
-
-                mp3.then(async ([buffer, blob]) => {
-
-                    const file = new File(buffer, 'chat.mp3', {
-                        type: blob.type,
-                        lastModified: Date.now()
-                    });
-
-                    // TODO: cut in chunks
-
-                    var data = new FormData()
-                    data.append('file', file);
-                    data.append('model', 'whisper-1')
-
-                    try {
-                        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-                            method: "POST",
-                            headers: {
-                                'Authorization': `Bearer ${openAIApiKey}`,
-                            },
-                            body: data,
+                    mp3.then(async ([buffer, blob]) => {
+                        const file = new File(buffer, 'chat.mp3', {
+                            type: blob.type,
+                            lastModified: Date.now()
                         });
 
-                        const json = await response.json()
+                        // TODO: cut in chunks
 
-                        if (json.text) {
-                            dispatch(setMessage(json.text));
+                        var data = new FormData()
+                        data.append('file', file);
+                        data.append('model', 'whisper-1')
+
+                        try {
+                            const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+                                method: "POST",
+                                headers: {
+                                    'Authorization': `Bearer ${openAIApiKey}`,
+                                },
+                                body: data,
+                            });
+
+                            const json = await response.json()
+
+                            if (json.text) {
+                                dispatch(setMessage(message + ' ' + json.text));
+                                setTranscribing(false);
+                            }
+                        } catch (e) {
+                            onSpeechError(e);
                         }
-                    } catch (e) {
-                        console.log(e)
-                    }
 
-                }).catch((e: any) => console.error(e));
-            } else {
-                speechRecognition.stop();
+                    }).catch(onSpeechError);
+                } else {
+                    speechRecognition.stop();
+                }
             }
+        } catch (e) {
+            onSpeechError(e);
         }
     }, [recording, message, dispatch]);
 
@@ -197,7 +223,8 @@ export default function MessageInput(props: MessageInputProps) {
                     <>
                         <ActionIcon size="xl"
                             onClick={onSpeechStart}>
-                            <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />
+                            {transcribing && <Loader size="xs" />}
+                            {!transcribing && <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />}
                         </ActionIcon>
                         <ActionIcon size="xl"
                             onClick={onSubmit}>
@@ -207,7 +234,7 @@ export default function MessageInput(props: MessageInputProps) {
                 )}
             </div>
         );
-    }, [recording, onSubmit, props.disabled, context.generating]);
+    }, [recording, transcribing, onSubmit, props.disabled, context.generating]);
 
     const disabled = context.generating;
 
