@@ -4,6 +4,7 @@
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
     "@emotion/css": "^11.10.6",
+    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mantine/core": "^5.10.5",
     "@mantine/hooks": "^5.10.5",
@@ -20,6 +21,7 @@
     "jshashes": "^1.0.8",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
+    "mic-recorder-to-mp3": "^2.2.2",
     "minisearch": "^6.0.1",
     "natural": "^6.2.0",
     "openai": "^3.2.1",
