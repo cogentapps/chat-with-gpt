@@ -150,13 +150,13 @@ export class ChatManager extends EventEmitter {
 
         let lastChunkReceivedAt = Date.now();
 
-        const onError = () => {
+        const onError = (error?: string) => {
             if (reply.done) {
                 return;
             }
             clearInterval(timer);
             cancel();
-            reply.content += "\n\nI'm sorry, I'm having trouble connecting to OpenAI. Please make sure you've entered your OpenAI API key correctly and try again.";
+            reply.content += `\n\nI'm sorry, I'm having trouble connecting to OpenAI (${error || 'no response from the API'}). Please make sure you've entered your OpenAI API key correctly and try again.`;
             reply.content = reply.content.trim();
             reply.done = true;
             this.activeReplies.delete(reply.id);
@@ -169,21 +169,20 @@ export class ChatManager extends EventEmitter {
 
         let timer = setInterval(() => {
             const sinceLastChunk = Date.now() - lastChunkReceivedAt;
-            if (sinceLastChunk > 10000 && !reply.done) {
-                onError();
+            if (sinceLastChunk > 30000 && !reply.done) {
+                onError('no response from OpenAI in the last 30 seconds');
             }
         }, 2000);
 
-        emitter.on('error', () => {
+        emitter.on('error', (e: any) => {
             if (!reply.content && !reply.done) {
                 lastChunkReceivedAt = Date.now();
-                onError();
+                onError(e);
             }
         });
 
         emitter.on('data', (data: string) => {
             if (reply.done) {
-                cancel();
                 return;
             }
             lastChunkReceivedAt = Date.now();

@@ -126,7 +126,11 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
     eventSource.addEventListener('error', (event: any) => {
         if (!contents) {
-            emitter.emit('error');
+            let error = event.data;
+            try {
+                error = JSON.parse(error).error.message;
+            } catch (e) {}
+            emitter.emit('error', error);
         }
     });
 
@@ -165,3 +169,5 @@ async function selectMessagesToSendSafely(messages: OpenAIMessage[], maxTokens: 
     });
     return compressor.process();
 }
+
+setTimeout(() => selectMessagesToSendSafely([], 2048), 2000);
