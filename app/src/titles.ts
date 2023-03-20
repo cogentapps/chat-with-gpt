@@ -1,8 +1,8 @@
-import { createChatCompletion } from "./openai";
+import { createChatCompletion, defaultModel } from "./openai";
 import { OpenAIMessage, Chat } from "./types";
 
 const systemPrompt = `
-Please read the following exchange and write a short, concise title describing the topic.
+Please read the following exchange and write a short, concise title describing the topic (in the user's language).
 `.trim();
 
 const userPrompt = (user: string, assistant: string) => `
@@ -38,7 +38,7 @@ export async function createTitle(chat: Chat, apiKey: string | undefined | null,
         },
     ];
 
-    let title = await createChatCompletion(messages as any, { temperature: 0.5, apiKey });
+    let title = await createChatCompletion(messages as any, { temperature: 0.5, model: defaultModel, apiKey });
 
     if (!title?.length) {
         if (firstUserMessage.content.trim().length > 2 && firstUserMessage.content.trim().length < 250) {

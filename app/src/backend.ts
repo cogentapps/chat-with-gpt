@@ -66,6 +66,10 @@ export class Backend extends EventEmitter {
     }
 
     public async sync() {
+        if (!this.isAuthenticated) {
+            return;
+        }
+
         const response = await this.post(endpoint + '/sync', {});
 
         for (const chatID of Object.keys(response)) {
@@ -74,6 +78,12 @@ export class Backend extends EventEmitter {
                     id: chatID,
                     messages: new MessageTree(),
                 } as Chat;
+
+                if (response[chatID].deleted) {
+                    chatManager.deleteChat(chatID);
+                    continue;
+                }
+
                 chat.title = response[chatID].title || chat.title;
                 chat.messages.addMessages(response[chatID].messages);
                 chatManager.loadChat(chat);
@@ -125,6 +135,14 @@ export class Backend extends EventEmitter {
             console.error(e);
         }
         return null;
+    }
+
+    async deleteChat(id: string) {
+        if (!this.isAuthenticated) {
+            return;
+        }
+
+        return this.post(endpoint + '/delete', { id });
     }
 
     async get(url: string) {

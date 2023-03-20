@@ -2,7 +2,7 @@ name: build app
 on:
   push:
     branches:
-      - '*'
+      - main
 jobs:
   build-webapp:
     runs-on: ubuntu-latest
