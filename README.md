@@ -17,6 +17,7 @@ https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1
 - 📄 View and customize the System Prompt - the **secret prompt** the system shows the AI before your messages.
 - 🌡 Adjust the **creativity and randomness** of responses by setting the Temperature setting. Higher temperature means more creativity.
 - 💬 Give ChatGPT AI a **realistic human voice** by connecting your ElevenLabs text-to-speech account.
+- 🎤 **Speech recognition** powered by OpenAI Whisper
 - ✉ **Share** your favorite chat sessions online using public share URLs.
 - 📋 Easily **copy-and-paste** ChatGPT messages.
 - ✏️ Edit your messages
