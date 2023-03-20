@@ -122,12 +122,17 @@ declare global {
     }
 }
 
-let speechRecognition: SpeechRecognition
+let speechRecognition: SpeechRecognition | null = null;
 
 if (window.SpeechRecognition) {
     speechRecognition = new SpeechRecognition()
-} else {
-    speechRecognition = new webkitSpeechRecognition()
+} else if ((window as any).webkitSpeechRecognition) {
+    speechRecognition = new (window as any).webkitSpeechRecognition() as SpeechRecognition;
 }
 
-export { speechRecognition }
+const supportsSpeechRecognition = speechRecognition !== null;
+
+export {
+    speechRecognition,
+    supportsSpeechRecognition,
+}
