@@ -137,8 +137,10 @@ export default function MessageInput(props: MessageInputProps) {
 
                     speechRecognition.onresult = (event) => {
                         let transcript = '';
-                        for (let i = 0; i < event.results.length; ++i) {
-                            transcript += event.results[i][0].transcript;
+                        for (let i = 0; i < event.results.length; i++) {
+                            if (event.results[i].isFinal && event.results[i][0].confidence) {
+                                transcript += event.results[i][0].transcript;
+                            }
                         }
                         dispatch(setMessage(initialMessage + ' ' + transcript));
                     };
