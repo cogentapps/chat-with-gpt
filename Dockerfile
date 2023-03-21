@@ -3,6 +3,8 @@ FROM node:19-alpine AS build
 RUN addgroup -S app && adduser -S app -G app
 RUN mkdir /app && chown app:app /app
 
+RUN apk add --update --no-cache git
+
 USER app
 
 WORKDIR /app
@@ -19,7 +21,6 @@ COPY ./app/src ./src
 ENV NODE_ENV=production
 ENV REACT_APP_AUTH_PROVIDER=local
 
-RUN apk add --update --no-cache git
 RUN npm run build
 
 FROM node:19-alpine AS server
