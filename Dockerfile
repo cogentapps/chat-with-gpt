@@ -19,6 +19,7 @@ COPY ./app/src ./src
 ENV NODE_ENV=production
 ENV REACT_APP_AUTH_PROVIDER=local
 
+RUN apk add --update --no-cache git
 RUN npm run build
 
 FROM node:19-alpine AS server
