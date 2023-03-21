@@ -3,6 +3,7 @@
   "version": "0.2.1",
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
+    "@chengsokdara/use-whisper": "^0.2.0",
     "@emotion/css": "^11.10.6",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",

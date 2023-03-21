@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import { Button, ActionIcon, Textarea, Loader } from '@mantine/core';
+import { Button, ActionIcon, Textarea, Loader, Popover } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 import { useAppContext } from '../context';
@@ -10,9 +10,8 @@ import { selectMessage, setMessage } from '../store/message';
 import { selectTemperature } from '../store/parameters';
 import { openOpenAIApiKeyPanel, openSystemPromptPanel, openTemperaturePanel } from '../store/settings-ui';
 import { speechRecognition, supportsSpeechRecognition } from '../speech-recognition-types'
-import MicRecorder from 'mic-recorder-to-mp3';
+import { useWhisper } from '@chengsokdara/use-whisper';
 import { selectUseOpenAIWhisper, selectOpenAIApiKey } from '../store/api-keys';
-import { Mp3Encoder } from 'lamejs';
 
 const Container = styled.div`
     background: #292933;
@@ -38,54 +37,25 @@ export interface MessageInputProps {
     disabled?: boolean;
 }
 
-
-
-async function chunkAndEncodeMP3File(file: Blob): Promise<Array<File>> {
-    const MAX_CHUNK_SIZE = 25 * 1024 * 1024; // 25 MB
-    const audioContext = new AudioContext();
-    const audioBuffer = await audioContext.decodeAudioData(await file.arrayBuffer());
-    const duration = audioBuffer.duration;
-    const sampleRate = audioBuffer.sampleRate;
-    const numChannels = audioBuffer.numberOfChannels;
-    const bytesPerSample = 2; // 16-bit audio
-    const samplesPerChunk = Math.floor((MAX_CHUNK_SIZE / bytesPerSample) / numChannels);
-    const totalSamples = Math.floor(duration * sampleRate);
-    const numChunks = Math.ceil(totalSamples / samplesPerChunk);
-
-    const chunks: Array<File> = [];
-    for (let i = 0; i < numChunks; i++) {
-        const startSample = i * samplesPerChunk;
-        const endSample = Math.min(startSample + samplesPerChunk, totalSamples);
-        const chunkDuration = (endSample - startSample) / sampleRate;
-        const chunkBuffer = audioContext.createBuffer(numChannels, endSample - startSample, sampleRate);
-        for (let c = 0; c < numChannels; c++) {
-            const channelData = audioBuffer.getChannelData(c).subarray(startSample, endSample);
-            chunkBuffer.copyToChannel(channelData, c);
-        }
-        const chunkBlob = await new Promise<Blob>((resolve) => {
-            const encoder = new Mp3Encoder(numChannels, sampleRate, 128);
-            const leftData = chunkBuffer.getChannelData(0);
-            const rightData = numChannels === 1 ? leftData : chunkBuffer.getChannelData(1);
-            const mp3Data = encoder.encodeBuffer(leftData, rightData);
-            const blob = new Blob([mp3Data], { type: 'audio/mp3' });
-            resolve(blob);
-        });
-        chunks.push(new File([chunkBlob], `text-${i}.mp3`, { type: 'audio/mp3' }));
-    }
-
-    return chunks;
-}
-
-
 export default function MessageInput(props: MessageInputProps) {
     const temperature = useAppSelector(selectTemperature);
     const message = useAppSelector(selectMessage);
     const [recording, setRecording] = useState(false);
-    const [transcribing, setTranscribing] = useState(false);
+    const [speechError, setSpeechError] = useState<string | null>(null);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
-    const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
     const useOpenAIWhisper = useAppSelector(selectUseOpenAIWhisper);
     const openAIApiKey = useAppSelector(selectOpenAIApiKey);
+
+    const [initialMessage, setInitialMessage] = useState('');
+    const {
+        transcribing,
+        transcript,
+        startRecording,
+        stopRecording,
+    } = useWhisper({
+        apiKey: openAIApiKey || ' ',
+        streaming: false,
+    });
 
     const context = useAppContext();
     const dispatch = useAppDispatch();
@@ -100,6 +70,8 @@ export default function MessageInput(props: MessageInputProps) {
     const pathname = useLocation().pathname;
 
     const onSubmit = useCallback(async () => {
+        setSpeechError(null);
+
         if (await context.onNewMessage(message)) {
             dispatch(setMessage(''));
         }
@@ -107,6 +79,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const onSpeechError = useCallback((e: any) => {
         console.error('speech recognition error', e);
+        setSpeechError(e.message);
 
         try {
             speechRecognition?.stop();
@@ -114,26 +87,54 @@ export default function MessageInput(props: MessageInputProps) {
         }
 
         try {
-            recorder.stop();
+            stopRecording();
         } catch (e) { }
 
         setRecording(false);
-        setTranscribing(false);
-    }, [recorder]);
+    }, [stopRecording]);
 
-    const onSpeechStart = useCallback(() => {
-        if (!openAIApiKey) {
-            dispatch(openOpenAIApiKeyPanel());
-            return false;
+    const onHideSpeechError = useCallback(() => setSpeechError(null), []);
+
+    const onSpeechStart = useCallback(async () => {
+        let granted = false;
+        let denied = false;
+
+        try {
+            const result = await navigator.permissions.query({ name: 'microphone' as any });
+            if (result.state == 'granted') {
+                granted = true;
+            } else if (result.state == 'denied') {
+                denied = true;
+            }
+        } catch (e) {}
+
+        if (!granted && !denied) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                stream.getTracks().forEach(track => track.stop());
+                granted = true;
+            } catch (e) {
+                denied = true;
+            }
+        }
+
+        if (denied) {
+            onSpeechError(new Error('speech permission was not granted'));
+            return;
         }
 
         try {
             if (!recording) {
                 setRecording(true);
 
-                // if we are using whisper, the we will just record with the browser and send the api when done 
                 if (useOpenAIWhisper || !supportsSpeechRecognition) {
-                    recorder.start().catch(onSpeechError);
+                    if (!openAIApiKey) {
+                        dispatch(openOpenAIApiKeyPanel());
+                        return false;
+                    }
+                    // recorder.start().catch(onSpeechError);
+                    setInitialMessage(message);
+                    await startRecording();
                 } else if (speechRecognition) {
                     const initialMessage = message;
 
@@ -155,45 +156,12 @@ export default function MessageInput(props: MessageInputProps) {
                     onSpeechError(new Error('not supported'));
                 }
             } else {
-                setRecording(false);
                 if (useOpenAIWhisper || !supportsSpeechRecognition) {
-                    setTranscribing(true);
-                    const mp3 = recorder.stop().getMp3();
-
-                    mp3.then(async ([buffer, blob]) => {
-                        const file = new File(buffer, 'chat.mp3', {
-                            type: blob.type,
-                            lastModified: Date.now()
-                        });
-
-                        // TODO: cut in chunks
-
-                        var data = new FormData()
-                        data.append('file', file);
-                        data.append('model', 'whisper-1')
-
-                        try {
-                            const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-                                method: "POST",
-                                headers: {
-                                    'Authorization': `Bearer ${openAIApiKey}`,
-                                },
-                                body: data,
-                            });
-
-                            const json = await response.json()
-
-                            if (json.text) {
-                                dispatch(setMessage(message + ' ' + json.text));
-                                setTranscribing(false);
-                            }
-                        } catch (e) {
-                            onSpeechError(e);
-                        }
-
-                    }).catch(onSpeechError);
+                    await stopRecording();
+                    setTimeout(() => setRecording(false), 500);
                 } else if (speechRecognition) {
                     speechRecognition.stop();
+                    setRecording(false);
                 } else {
                     onSpeechError(new Error('not supported'));
                 }
@@ -201,8 +169,15 @@ export default function MessageInput(props: MessageInputProps) {
         } catch (e) {
             onSpeechError(e);
         }
-    }, [recording, message, dispatch, onSpeechError, openAIApiKey]);
+    }, [recording, message, dispatch, onSpeechError, setInitialMessage, openAIApiKey]);
 
+    useEffect(() => {
+        if (useOpenAIWhisper || !supportsSpeechRecognition) {
+            if (!transcribing && !recording && transcript?.text) {
+                dispatch(setMessage(initialMessage + ' ' + transcript.text));
+            }
+        }
+    }, [initialMessage, transcript, recording, transcribing, useOpenAIWhisper, dispatch]);
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
@@ -212,7 +187,6 @@ export default function MessageInput(props: MessageInputProps) {
     }, [onSubmit, props.disabled]);
 
     const rightSection = useMemo(() => {
-
         return (
             <div style={{
                 opacity: '0.8',
@@ -232,11 +206,34 @@ export default function MessageInput(props: MessageInputProps) {
                 </>)}
                 {!context.generating && (
                     <>
-                        <ActionIcon size="xl"
-                            onClick={onSpeechStart}>
-                            {transcribing && <Loader size="xs" />}
-                            {!transcribing && <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />}
-                        </ActionIcon>
+                        <Popover width={200} position="bottom" withArrow shadow="md" opened={speechError !== null}>
+                            <Popover.Target>
+                                <ActionIcon size="xl"
+                                    onClick={onSpeechStart}>
+                                    {transcribing && <Loader size="xs" />}
+                                    {!transcribing && <i className="fa fa-microphone" style={{ fontSize: '90%', color: recording ? 'red' : 'inherit' }} />}
+                                </ActionIcon>
+                            </Popover.Target>
+                            <Popover.Dropdown>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-start',
+                                }}>
+                                    <p style={{
+                                        fontFamily: `"Work Sans", sans-serif`,
+                                        fontSize: '0.9rem',
+                                        textAlign: 'center',
+                                        marginBottom: '0.5rem',
+                                    }}>
+                                        Sorry, an error occured trying to record audio.
+                                    </p>
+                                    <Button variant="light" size="xs" fullWidth onClick={onHideSpeechError}>
+                                        Close
+                                    </Button>
+                                </div>
+                            </Popover.Dropdown>
+                        </Popover>
                         <ActionIcon size="xl"
                             onClick={onSubmit}>
                             <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
@@ -245,7 +242,7 @@ export default function MessageInput(props: MessageInputProps) {
                 )}
             </div>
         );
-    }, [recording, transcribing, onSubmit, onSpeechStart, props.disabled, context.generating]);
+    }, [recording, transcribing, onSubmit, onSpeechStart, props.disabled, context.generating, speechError, onHideSpeechError]);
 
     const disabled = context.generating;
 
