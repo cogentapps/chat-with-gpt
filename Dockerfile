@@ -3,6 +3,8 @@ FROM node:19-alpine AS build
 RUN addgroup -S app && adduser -S app -G app
 RUN mkdir /app && chown app:app /app
 
+RUN apk add --update --no-cache git
+
 USER app
 
 WORKDIR /app
