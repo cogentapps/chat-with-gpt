@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { Button, ActionIcon, Textarea, Loader, Popover } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { Button, ActionIcon, Textarea, Loader, Popover, Checkbox, Center, Group } from '@mantine/core';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
@@ -24,8 +24,19 @@ const Container = styled.div`
         text-align: right;
     }
 
+    .inner > .bottom {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @media (max-width: 600px) {
+        .inner > .bottom {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
     .settings-button {
-        margin: 0.5rem -0.4rem 0.5rem 1rem;
         font-size: 0.7rem;
         color: #999;
     }
@@ -45,6 +56,7 @@ export default function MessageInput(props: MessageInputProps) {
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
     const useOpenAIWhisper = useAppSelector(selectUseOpenAIWhisper);
     const openAIApiKey = useAppSelector(selectOpenAIApiKey);
+    const [isEnterToSend, setIsEnterToSend] = useLocalStorage({ key: 'isEnterToSend', defaultValue: false})
 
     const [initialMessage, setInitialMessage] = useState('');
     const {
@@ -180,11 +192,11 @@ export default function MessageInput(props: MessageInputProps) {
     }, [initialMessage, transcript, recording, transcribing, useOpenAIWhisper, dispatch]);
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
+        if(e.key === 'Enter' && e.shiftKey === false && !props.disabled && isEnterToSend) {
             e.preventDefault();
             onSubmit();
         }
-    }, [onSubmit, props.disabled]);
+    }, [isEnterToSend, onSubmit, props.disabled]);
 
     const rightSection = useMemo(() => {
         return (
@@ -263,27 +275,32 @@ export default function MessageInput(props: MessageInputProps) {
                 rightSection={rightSection}
                 rightSectionWidth={context.generating ? 100 : 55}
                 onKeyDown={onKeyDown} />
-            <div>
-                <Button variant="subtle"
-                    className="settings-button"
-                    size="xs"
-                    compact
-                    onClick={onCustomizeSystemPromptClick}>
-                    <span>
-                        <FormattedMessage defaultMessage={"Customize system prompt"} description="Label for the button that opens a modal for customizing the 'system prompt', a message used to customize and influence how the AI responds." />
-                    </span>
-                </Button>
-                <Button variant="subtle"
-                    className="settings-button"
-                    size="xs"
-                    compact
-                    onClick={onTemperatureClick}>
-                    <span>
-                        <FormattedMessage defaultMessage="Temperature: {temperature, number, ::.0}"
-                            description="Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses"
-                            values={{ temperature }} />
-                    </span>
-                </Button>
+            <div className="bottom">
+                <Center>
+                    <Checkbox size="xs" label="Enter to send" checked={!isEnterToSend} onChange={(v) => setIsEnterToSend(!v.currentTarget.checked)}/>
+                </Center>
+                <Group my="sm" spacing="xs">
+                    <Button variant="subtle"
+                        className="settings-button"
+                        size="xs"
+                        compact
+                        onClick={onCustomizeSystemPromptClick}>
+                        <span>
+                            <FormattedMessage defaultMessage={"Customize system prompt"} description="Label for the button that opens a modal for customizing the 'system prompt', a message used to customize and influence how the AI responds." />
+                        </span>
+                    </Button>
+                    <Button variant="subtle"
+                        className="settings-button"
+                        size="xs"
+                        compact
+                        onClick={onTemperatureClick}>
+                        <span>
+                            <FormattedMessage defaultMessage="Temperature: {temperature, number, ::.0}"
+                                description="Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses"
+                                values={{ temperature }} />
+                        </span>
+                    </Button>
+                </Group>
             </div>
         </div>
     </Container>;
