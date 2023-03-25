@@ -2,6 +2,7 @@
 *.db
 .gitpod.yml
 
+.idea/*
 # Logs
 logs
 *.log
@@ -132,3 +133,6 @@ out
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.idea/chat-with-gpt-fork.iml
+.idea/modules.xml
+.idea/vcs.xml
