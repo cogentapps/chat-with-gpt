@@ -2,6 +2,7 @@ version: '3'
 
 services:
   app:
+    image: chat-with-gpt-fork:v2.0.3
     build:
       context: .
       dockerfile: Dockerfile

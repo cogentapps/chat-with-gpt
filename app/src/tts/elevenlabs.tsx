@@ -15,6 +15,19 @@ const endpoint = 'https://api.elevenlabs.io';
 
 let currentReader: ElevenLabsReader | null = null;
 
+let desiredVoice1;
+speechSynthesis.onvoiceschanged = () => {
+    const voices = speechSynthesis.getVoices();
+    console.log(voices);
+    desiredVoice1 = voices.find(voice =>
+        voice.name === "Microsoft Aria Online (Natural) - English (United States)"
+    );
+    console.log(desiredVoice1);
+    //  desiredVoice2 = voices.find(voice =>
+    //     voice.name === "Microsoft Aria Online (Natural) - English (United States)"
+    // );
+};
+
 const cache = new Map<string, ArrayBuffer>();
 
 export function createHeaders(apiKey = localStorage.getItem('elevenlabs-api-key') || '') {
@@ -257,16 +270,35 @@ export function ElevenLabsReaderButton(props: { selector: string }) {
     const onClick = useCallback(() => {
         if (status === 'idle') {
             if (!elevenLabsApiKey?.length) {
-                dispatch(openElevenLabsApiKeyPanel());
+                const utterance = new SpeechSynthesisUtterance();
+                utterance.voice = desiredVoice1 || speechSynthesis.getVoices().find(voice =>
+                    voice.name === "Microsoft Aria Online (Natural) - English (United States)"
+                );
+                utterance.text = document.querySelector(props.selector)?.textContent || '';
+                utterance.pitch = 1.0;
+                utterance.rate = 1.0;
+                utterance.volume = 1.0;
+                speechSynthesis.speak(utterance);
+                setStatus('playing')
+                utterance.onend = function(event) {
+                    setStatus('idle')
+                };
                 return;
+        }else{
+                audioContext.resume();
+                reader.current.play(document.querySelector(props.selector)!, 'Microsoft Zira Desktop - English (United States)', elevenLabsApiKey);
+            }
+        } else {
+            if (!elevenLabsApiKey?.length) {
+                speechSynthesis.cancel();
+               setStatus('idle')
+                return;
+            }else{
+                reader.current.stop();
             }
 
-            audioContext.resume();
-            reader.current.play(document.querySelector(props.selector)!, voice, elevenLabsApiKey);
-        } else {
-            reader.current.stop();
         }
-    }, [dispatch, status, props.selector, elevenLabsApiKey, voice]);
+    },[dispatch, status, props.selector, elevenLabsApiKey]);
 
     return (
         <Button variant="subtle" size="sm" compact onClickCapture={onClick} loading={status === 'init'}>
