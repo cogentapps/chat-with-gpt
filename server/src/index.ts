@@ -67,13 +67,15 @@ export default class ChatServer {
         this.app.use(express.json({ limit: '1mb' }));
         this.app.use(compression());
 
-        const { default: rateLimit } = await import('express-rate-limit'); // esm
-        const limiter = rateLimit({
-            windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // limit each IP to 100 requests per windowMs
-        });
+        if (process.env.DISABLE_RATE_LIMIT !== 'true') {
+            const { default: rateLimit } = await import('express-rate-limit'); // esm
+            const limiter = rateLimit({
+                windowMs: 15 * 60 * 1000, // 15 minutes
+                max: 100, // limit each IP to 100 requests per windowMs
+            });
 
-        this.app.use(limiter);
+            this.app.use(limiter);
+        }
 
         this.app.get('/chatapi/health', (req, res) => new HealthRequestHandler(this, req, res));
         this.app.get('/chatapi/session', (req, res) => new SessionRequestHandler(this, req, res));
