@@ -1,1 +1,1 @@
-export const APP_NAME = "Chat with GPT";
+export const APP_NAME = "Open Access GPT";

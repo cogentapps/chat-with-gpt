@@ -160,11 +160,11 @@ export default function Header(props: HeaderProps) {
             <Helmet>
                 <title>
                     {props.title ? `${props.title} - ` : ''}
-                    {intl.formatMessage({ defaultMessage: "Chat with GPT - Unofficial ChatGPT app", description: "HTML title tag" })}
+                    {intl.formatMessage({ defaultMessage: "Open Access GPT", description: "HTML title tag" })}
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
-            {context.isHome && <h2>{intl.formatMessage({ defaultMessage: "Chat with GPT", description: "app name" })}</h2>}
+            {context.isHome && <h2>{intl.formatMessage({ defaultMessage: "Open Access GPT", description: "app name" })}</h2>}
             <div className="spacer" />
             <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
             <HeaderButton icon="gear" onClick={openSettings} />
