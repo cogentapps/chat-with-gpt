@@ -2,13 +2,7 @@
 
 Chat with GPT is an open-source, unofficial ChatGPT app with extra features and more ways to customize your experience. It connects ChatGPT with ElevenLabs to give ChatGPT a realistic human voice.
 
-Try out the hosted version at: https://chatwithgpt.netlify.app
-
-Or [self-host with Docker](#running-on-your-own-computer).
-
-Powered by the new ChatGPT API from OpenAI, this app has been developed using TypeScript + React. We welcome pull requests from the community!
-
-https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1-ac38-e972dafc2f98.mp4
+Powered by the new ChatGPT API from OpenAI, this app is a customized fork of the [Cogent Apps](https://github.com/cogentapps/chat-with-gpt) one. We welcome pull requests from the community!
 
 ## Features
 
@@ -38,22 +32,6 @@ Your API key is stored only on your device and is never transmitted to anyone ex
 To use the realistic AI text-to-speech feature, you will need to add your ElevenLabs API key by clicking "Play" next to any message.
 
 Your API key is stored only on your device and never transmitted to anyone except ElevenLabs.
-
-## Running on your own computer
-
-To run on your own device, you can use Docker:
-
-```
-docker run -v $(pwd)/data:/app/data -p 3000:3000 ghcr.io/cogentapps/chat-with-gpt:release
-```
-
-Then navigate to http://localhost:3000 to view the app.
-
-## Updating
-
-```
-docker pull ghcr.io/cogentapps/chat-with-gpt:release
-```
 
 ## License
 
