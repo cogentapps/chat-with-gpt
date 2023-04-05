@@ -35,7 +35,7 @@ export default function UserOptionsTab(props: any) {
                 {supportsSpeechRecognition && <Checkbox
                     style={{ marginTop: '1rem' }}
                     id="use-openai-whisper-api" checked={useOpenAIWhisper!} onChange={onUseOpenAIWhisperChange}
-                    label="Use the OpenAI Whisper API for speech recognition."
+                    label={<FormattedMessage defaultMessage="Use the OpenAI Whisper API for speech recognition." />}
                 />}
 
                 <p>

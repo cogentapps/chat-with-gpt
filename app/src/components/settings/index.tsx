@@ -93,9 +93,9 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
             <Container>
                 <Tabs value={tab} onTabChange={onTabChange} style={{ margin: '0rem' }}>
                     <Tabs.List grow={small}>
-                        <Tabs.Tab value="options">Options</Tabs.Tab>
-                        <Tabs.Tab value="user">User</Tabs.Tab>
-                        <Tabs.Tab value="speech">Speech</Tabs.Tab>
+                        <Tabs.Tab value="options">Opzioni</Tabs.Tab>
+                        <Tabs.Tab value="user">Utente</Tabs.Tab>
+                        <Tabs.Tab value="speech">Parlata</Tabs.Tab>
                     </Tabs.List>
                     <UserOptionsTab />
                     <GenerationOptionsTab />

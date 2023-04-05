@@ -83,18 +83,22 @@
   "MI5gZ+": {
     "defaultMessage": "Download SVG"
   },
-  "N2NGTf": {
-    "defaultMessage": "Open Access GPT",
-    "description": "app name"
-  },
   "NRJ4IQ": {
     "defaultMessage": "Note: GPT-4 will only work if your OpenAI account has been granted access to the new model. <a>Request access here.</a>"
   },
   "NgCT/u": {
     "defaultMessage": "Enter your email address"
   },
+  "NtNmCJ": {
+    "defaultMessage": "Open Access GPT",
+    "description": "app name"
+  },
   "O83lC6": {
     "defaultMessage": "Enter a message here..."
+  },
+  "PrTeoW": {
+    "defaultMessage": "Open Access GPT",
+    "description": "HTML title tag"
   },
   "Q97T+z": {
     "defaultMessage": "Paste your API key here"
@@ -109,6 +113,9 @@
   "SQh9En": {
     "defaultMessage": "Sign in <h>to sync</h>",
     "description": "Label for sign in button, indicating the purpose of signing in is to sync your data between devices"
+  },
+  "T8gKkC": {
+    "defaultMessage": "Delete this chat"
   },
   "Tgo3vj": {
     "defaultMessage": "Edit",
@@ -128,10 +135,6 @@
     "defaultMessage": "Or sign in to an existing account",
     "description": "Label for a button on the Create Account page that lets the user sign into their existing account instead"
   },
-  "bIacvz": {
-    "defaultMessage": "Open Access GPT",
-    "description": "HTML title tag"
-  },
   "cAtzqn": {
     "defaultMessage": "System Prompt",
     "description": "Heading for the setting that lets users customize the System Prompt, on the settings screen"
@@ -143,6 +146,9 @@
   "f/hGIY": {
     "defaultMessage": "Hello, how can I help you today?",
     "description": "A friendly message that appears at the start of new chat sessions"
+  },
+  "fYBup2": {
+    "defaultMessage": "Use the OpenAI Whisper API for speech recognition."
   },
   "gzJlXS": {
     "defaultMessage": "Share",
@@ -186,8 +192,8 @@
     "defaultMessage": "User",
     "description": "Label that is shown above messages written by the user (as opposed to the AI) for publicly shared conversation (third person, formal)."
   },
-  "sPtnbA": {
-    "defaultMessage": "The System Prompt is shown to ChatGPT by the &quot;System&quot; before your first message. The <code>'{{ datetime }}'</code> tag is automatically replaced by the current date and time."
+  "rvoorh": {
+    "defaultMessage": "The System Prompt is shown to ChatGPT by the 'System' before your first message. The <code>'{{ datetime }}'</code> tag is automatically replaced by the current date and time."
   },
   "ss6kle": {
     "defaultMessage": "Reset to default"

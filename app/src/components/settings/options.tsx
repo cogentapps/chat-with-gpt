@@ -39,7 +39,7 @@ export default function GenerationOptionsTab(props: any) {
                 maxRows={10}
                 autosize />
             <p style={{ marginBottom: '0.7rem' }}>
-                <FormattedMessage defaultMessage="The System Prompt is shown to ChatGPT by the &quot;System&quot; before your first message. The <code>'{{ datetime }}'</code> tag is automatically replaced by the current date and time."
+                <FormattedMessage defaultMessage="The System Prompt is shown to ChatGPT by the 'System' before your first message. The <code>'{{ datetime }}'</code> tag is automatically replaced by the current date and time."
                     values={{ code: chunk => <code style={{ whiteSpace: 'nowrap' }}>{chunk}</code> }} />
             </p>
             {resettableSystemPromopt && <Button size="xs" compact variant="light" onClick={onResetSystemPrompt}>
