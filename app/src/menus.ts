@@ -6,13 +6,8 @@ export interface MenuItem {
 
 export const secondaryMenu: MenuItem[] = [
     {
-        label: "Discord",
-        link: "https://discord.gg/mS5QvKykvv",
-        icon: "discord fab",
-    },
-    {
         label: "GitHub",
-        link: "https://github.com/cogentapps/chat-with-gpt",
+        link: "https://github.com/OpenAccessGPT/open-access-gpt",
         icon: "github fab",
     },
 ];
