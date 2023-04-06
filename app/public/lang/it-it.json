@@ -65,6 +65,9 @@
     "CJwO9s": {
       "defaultMessage": "GPT 3.5 Turbo (default)"
     },
+    "EwRIOm": {
+      "defaultMessage": "Utente"
+    },  
     "FEzBCd": {
       "defaultMessage": "Senza titolo",
       "description": "default title for untitled chat sessions"
@@ -89,6 +92,9 @@
     "MI5gZ+": {
       "defaultMessage": "Scarica SVG"
     },
+    "NDV5Mq": {
+      "defaultMessage": "Opzioni"
+    },  
     "NRJ4IQ": {
       "defaultMessage": "Nota: GPT-4 funzionerà solo se al tuo account OpenAI è stato concesso l'accesso al nuovo modello. <a>Richiedi l'accesso qui.</a>"
     },
@@ -152,6 +158,9 @@
       "defaultMessage": "Anteprima della voce",
       "description": "Label for the button that plays a preview of the selected ElevenLabs text-to-speech voice"
     },
+    "dFuUS4": {
+      "defaultMessage": "Parlata"
+    },  
     "f/hGIY": {
       "defaultMessage": "Ciao, come posso aiutarti oggi?",
       "description": "A friendly message that appears at the start of new chat sessions"

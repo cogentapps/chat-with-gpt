@@ -7,7 +7,7 @@ import GenerationOptionsTab from './options';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { closeSettingsUI, selectSettingsTab, setTab } from '../../store/settings-ui';
 import SpeechOptionsTab from './speech';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const Container = styled.div`
     padding: .4rem 1rem 1rem 1rem;
@@ -82,6 +82,8 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
     const close = useCallback(() => dispatch(closeSettingsUI()), [dispatch]);
     const onTabChange = useCallback((tab: string) => dispatch(setTab(tab)), [dispatch]);
 
+    const intl = useIntl();
+
     return (
         <Drawer size="50rem"
             position='right'
@@ -93,9 +95,9 @@ export default function SettingsDrawer(props: SettingsDrawerProps) {
             <Container>
                 <Tabs value={tab} onTabChange={onTabChange} style={{ margin: '0rem' }}>
                     <Tabs.List grow={small}>
-                        <Tabs.Tab value="options">Opzioni</Tabs.Tab>
-                        <Tabs.Tab value="user">Utente</Tabs.Tab>
-                        <Tabs.Tab value="speech">Parlata</Tabs.Tab>
+                        <Tabs.Tab value="options">{intl.formatMessage({ defaultMessage: 'Options'})}</Tabs.Tab>
+                        <Tabs.Tab value="user">{intl.formatMessage({ defaultMessage: 'User'})}</Tabs.Tab>
+                        <Tabs.Tab value="speech">{intl.formatMessage({ defaultMessage: 'Speech'})}</Tabs.Tab>
                     </Tabs.List>
                     <UserOptionsTab />
                     <GenerationOptionsTab />
