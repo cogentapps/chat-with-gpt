@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { ActionIcon, Avatar, Burger, Button, Menu } from '@mantine/core';
+import { ActionIcon, Avatar, Burger, Button, Menu, Flex, Box } from '@mantine/core';
 import { useElementSize } from '@mantine/hooks';
 import { useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -109,6 +109,17 @@ export default function Sidebar(props: {
     const onBurgerClick = useCallback(() => dispatch(toggleSidebar()), [dispatch]);
     const { ref, width } = useElementSize();
 
+    const exportChats = useCallback(() => {
+        const recentChats = context.chat.search.query('');
+        const fileData = JSON.stringify(recentChats);
+        const blob = new Blob([fileData], { type: "json/application" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = Date.now()+"_exported_openai_chats.json";
+        link.href = url;
+        link.click();
+    }, []);
+
     const burgerLabel = sidebarOpen
         ? intl.formatMessage({ defaultMessage: "Close sidebar" })
         : intl.formatMessage({ defaultMessage: "Open sidebar" });
@@ -153,6 +164,11 @@ export default function Sidebar(props: {
                     </Menu.Dropdown>
                 </Menu>
             )}
+                <Flex gap="md">
+                    <Button variant="light" fullWidth onClick={exportChats}>
+                        <FormattedMessage defaultMessage={"Export all Chats"} />
+                    </Button>
+                </Flex>
         </Container>
     ), [sidebarOpen, width, ref, burgerLabel, onBurgerClick, dispatch, context.chat.chats.size]);
 

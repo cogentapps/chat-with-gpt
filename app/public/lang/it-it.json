@@ -44,6 +44,9 @@
       "defaultMessage": "Nuova Chat",
       "description": "Label for the button used to start a new chat session"
     },
+    "81FYd4": {
+      "defaultMessage": "Esporta tutte le Chat"
+    },  
     "8CYNFt": {
       "defaultMessage": "Ancora nessuna chat.",
       "description": "Message shown on the Chat History screen for new users who haven't started their first chat session"

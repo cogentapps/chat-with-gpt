@@ -41,6 +41,9 @@
     "defaultMessage": "New Chat",
     "description": "Label for the button used to start a new chat session"
   },
+  "81FYd4": {
+    "defaultMessage": "Export all Chats"
+  },
   "8CYNFt": {
     "defaultMessage": "No chats yet.",
     "description": "Message shown on the Chat History screen for new users who haven't started their first chat session"
