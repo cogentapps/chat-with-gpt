@@ -172,6 +172,9 @@
       "defaultMessage": "Temperatura: {temperature, number, ::.0}",
       "description": "Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses"
     },
+    "qd3nrR": {
+      "defaultMessage": "Inviaci il tuo feedback"
+    },  
     "raQMIg": {
       "defaultMessage": "Cancella",
       "description": "Label for a button that appears when the user is editing the text of one of their messages, to cancel without saving changes"

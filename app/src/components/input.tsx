@@ -264,6 +264,16 @@ export default function MessageInput(props: MessageInputProps) {
                 rightSectionWidth={context.generating ? 100 : 55}
                 onKeyDown={onKeyDown} />
             <div>
+            <Button variant="subtle"
+                    className="settings-button"
+                    style={{float: 'left', marginLeft: 0}}
+                    size="xs"
+                    compact
+                    onClick={() => window.open('https://tally.so/r/3lBZko')}>
+                    <span>
+                        <FormattedMessage defaultMessage={"Send your feedback"} />
+                    </span>
+                </Button>
                 <Button variant="subtle"
                     className="settings-button"
                     size="xs"
