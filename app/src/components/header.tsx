@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import Helmet from 'react-helmet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSpotlight } from '@mantine/spotlight';
-import { Burger, Button, ButtonProps } from '@mantine/core';
+import { Burger, Button, ButtonProps, Text } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context';
@@ -164,7 +164,17 @@ export default function Header(props: HeaderProps) {
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
-            {context.isHome && <h2>{intl.formatMessage({ defaultMessage: "Open Access GPT", description: "app name" })}</h2>}
+            {<h2>
+                <Text
+                    variant="gradient"
+                    gradient={{ from: '#1DDCB8', to: '#FF00F7', deg: 45 }}
+                    ta="center"
+                    fz="l"
+                    fw={700}
+                    >
+                        {intl.formatMessage({ defaultMessage: "Open Access GPT", description: "app name" })}
+                    </Text>
+            </h2>}
             <div className="spacer" />
             <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
             <HeaderButton icon="gear" onClick={openSettings} />
