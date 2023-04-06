@@ -1,7 +1,8 @@
 import styled from '@emotion/styled';
-import { ActionIcon, Avatar, Burger, Button, Menu, Flex, Box } from '@mantine/core';
+import { ActionIcon, Avatar, Burger, Button, Menu, Flex, FileInput } from '@mantine/core';
+import { FileUpload } from 'tabler-icons-react';
 import { useElementSize } from '@mantine/hooks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { backend } from '../../backend';
 import { useAppContext } from '../../context';
@@ -109,16 +110,41 @@ export default function Sidebar(props: {
     const onBurgerClick = useCallback(() => dispatch(toggleSidebar()), [dispatch]);
     const { ref, width } = useElementSize();
 
+    const recentChats = context.chat.search.query('');
+
     const exportChats = useCallback(() => {
-        const recentChats = context.chat.search.query('');
-        const fileData = JSON.stringify(recentChats);
-        const blob = new Blob([fileData], { type: "json/application" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.download = Date.now()+"_exported_openai_chats.json";
-        link.href = url;
-        link.click();
-    }, []);
+        context.chat.pull().then((chats) => {
+            const fileData = JSON.stringify(chats);
+            const blob = new Blob([fileData], { type: "json/application" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.download = Date.now()+"_exported_openai_chats.json";
+            link.href = url;
+            link.click();
+        });
+    }, [context.chat]);
+
+    const [value, setValue] = useState<File | null>(null);
+
+    useEffect(() => {
+        let file = value;
+        if (!file) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            let content = e?.target?.result;
+            if (content) {
+                const arrayBuffer = content instanceof ArrayBuffer ? content : new TextEncoder().encode(content);
+                const decoder = new TextDecoder();
+                const decodedContent = decoder.decode(arrayBuffer);
+                const parsedContent = JSON.parse(decodedContent);
+                context.chat.push(parsedContent);
+                window.location.reload();
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }, [context.chat, value])
 
     const burgerLabel = sidebarOpen
         ? intl.formatMessage({ defaultMessage: "Close sidebar" })
@@ -164,13 +190,16 @@ export default function Sidebar(props: {
                     </Menu.Dropdown>
                 </Menu>
             )}
-                <Flex gap="md">
+                {recentChats.length === 0 ? <Flex gap="md">
+                    <FileInput variant="filled" style={{margin: '0 auto'}} accept="application/json" value={value} onChange={setValue} placeholder={intl.formatMessage({defaultMessage: "Import Chats"})} icon={<FileUpload size={20} />} />
+                    {/* <Button variant="light" fullWidth onClick={importChats}> */}
+                </Flex> : <Flex gap="md">
                     <Button variant="light" fullWidth onClick={exportChats}>
                         <FormattedMessage defaultMessage={"Export all Chats"} />
                     </Button>
-                </Flex>
+                </Flex>}
         </Container>
-    ), [sidebarOpen, width, ref, burgerLabel, onBurgerClick, dispatch, context.chat.chats.size]);
+    ), [sidebarOpen, ref, onBurgerClick, burgerLabel, width, recentChats.length, value, intl, exportChats, dispatch]);
 
     return elem;
 }

@@ -43,6 +43,7 @@
     "sentence-splitter": "^4.2.0",
     "slugify": "^1.6.5",
     "sort-by": "^0.0.2",
+    "tabler-icons-react": "^1.56.0",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },

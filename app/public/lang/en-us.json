@@ -131,6 +131,9 @@
     "defaultMessage": "Model",
     "description": "Heading for the setting that lets users choose a model to interact with, on the settings screen"
   },
+  "WigL9h": {
+    "defaultMessage": "Import Chats"
+  },
   "Xzm66E": {
     "defaultMessage": "Connect your OpenAI account to get started"
   },

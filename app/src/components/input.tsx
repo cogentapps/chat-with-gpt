@@ -242,7 +242,7 @@ export default function MessageInput(props: MessageInputProps) {
                 )}
             </div>
         );
-    }, [recording, transcribing, onSubmit, onSpeechStart, props.disabled, context.generating, speechError, onHideSpeechError]);
+    }, [context.generating, context.chat, context.currentChat.leaf, speechError, onSpeechStart, transcribing, recording, onHideSpeechError, onSubmit]);
 
     const disabled = context.generating;
 

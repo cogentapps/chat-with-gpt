@@ -212,7 +212,6 @@ export default function MessageComponent(props: { message: Message, last: boolea
                 } else {
                     return intl.formatMessage({ id: 'role-user', defaultMessage: 'You', description: "Label that is shown above messages written by the user (as opposed to the AI) in the user's own chat sessions (first person)." });
                 }
-                break;
             case 'assistant':
                 return intl.formatMessage({ id: 'role-chatgpt', defaultMessage: 'ChatGPT', description: "Label that is shown above messages written by the AI (as opposed to the user)" });
             case 'system':
@@ -293,7 +292,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                 {props.last && <EndOfChatMarker />}
             </Container>
         )
-    }, [props.last, props.share, editing, content, context, props.message, props.message.content]);
+    }, [props.message, props.share, props.last, getRoleName, context, editing, content]);
 
     return elem;
 }

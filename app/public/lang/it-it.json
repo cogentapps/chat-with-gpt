@@ -3,7 +3,7 @@
       "defaultMessage": "Apri la barra laterale"
     },
     "+LMWDJ": {
-      "defaultMessage": "Storico delle chat",
+      "defaultMessage": "Chat",
       "description": "Heading for the chat history screen"
     },
     "/xTTti": {
@@ -41,11 +41,11 @@
       "defaultMessage": "Utilizza l'API Whisper di OpenAI per il riconoscimento vocale."
     },    
     "74eGxP": {
-      "defaultMessage": "Nuova Chat",
+      "defaultMessage": "Nuova chat",
       "description": "Label for the button used to start a new chat session"
     },
     "81FYd4": {
-      "defaultMessage": "Esporta tutte le Chat"
+      "defaultMessage": "Esporta tutte le chat"
     },  
     "8CYNFt": {
       "defaultMessage": "Ancora nessuna chat.",
@@ -128,12 +128,15 @@
       "defaultMessage": "Elimina questa chat"
     },  
     "VL24Xt": {
-      "defaultMessage": "Cerca le tue chats"
+      "defaultMessage": "Cerca le tue chat"
     },
     "WOuVxP": {
       "defaultMessage": "Modello",
       "description": "Heading for the setting that lets users choose a model to interact with, on the settings screen"
     },
+    "WigL9h": {
+      "defaultMessage": "Importa chat"
+    },  
     "Xzm66E": {
       "defaultMessage": "Collega il tuo account OpenAI per iniziare"
     },

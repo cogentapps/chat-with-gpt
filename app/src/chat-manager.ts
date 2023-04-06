@@ -221,6 +221,14 @@ export class ChatManager extends EventEmitter {
         });
     }
 
+    async push(data) {
+        await idb.set('chats', data);
+    }
+ 
+    async pull() {
+        return idb.get('chats');
+    }
+
     private async save() {
         const serialized = Array.from(this.chats.values())
             .map((c) => {
