@@ -33,6 +33,13 @@ To use the realistic AI text-to-speech feature, you will need to add your Eleven
 
 Your API key is stored only on your device and never transmitted to anyone except ElevenLabs.
 
+## Run locally
+
+1. Clone the repository in your local computer.
+2. Download from the [Node.js](https://nodejs.org/en) website the installer for your operating system and proceed installing  Node.js 18.15.0 and npm.
+3. Navigate to the `app` folder of the repository and execute the command `npm install`.
+4. Start the app via the command `npm start`. The web app will be available on [http://localhost:3000](http://localhost:3000).
+
 ## License
 
 Open Access GPT is licensed under the MIT license. See the LICENSE file for more information.
