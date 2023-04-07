@@ -160,7 +160,7 @@ export default function Header(props: HeaderProps) {
             <Helmet>
                 <title>
                     {props.title ? `${props.title} - ` : ''}
-                    {intl.formatMessage({ defaultMessage: "Open Access GPT", description: "HTML title tag" })}
+                    {intl.formatMessage({ defaultMessage: "OpenAccessGPT", description: "HTML title tag" })}
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
@@ -172,7 +172,7 @@ export default function Header(props: HeaderProps) {
                     fz="l"
                     fw={700}
                     >
-                        {intl.formatMessage({ defaultMessage: "Open Access GPT", description: "app name" })}
+                        {intl.formatMessage({ defaultMessage: "OpenAccessGPT", description: "app name" })}
                     </Text>
             </h2>}
             <div className="spacer" />
