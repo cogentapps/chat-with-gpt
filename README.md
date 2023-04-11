@@ -1,6 +1,6 @@
 # Open Access GPT
 
-Open Access GPT is an open-source, unofficial ChatGPT app with extra features and more ways to customize your experience. It connects ChatGPT with ElevenLabs to give ChatGPT a realistic human voice.
+Open Access GPT is an open-source, unofficial ChatGPT app with extra features and more ways to customize your experience.
 
 Powered by the new ChatGPT API from OpenAI, this app is a customized fork of the [Cogent Apps](https://github.com/cogentapps/chat-with-gpt) one. We welcome pull requests from the community!
 
@@ -11,7 +11,7 @@ Powered by the new ChatGPT API from OpenAI, this app is a customized fork of the
 -   📄 View and customize the System Prompt - the **secret prompt** the system shows the AI before your messages.
 -   🌡 Adjust the **creativity and randomness** of responses by setting the Temperature setting. Higher temperature means more creativity.
 -   💬 Give ChatGPT AI a **realistic human voice** by connecting your ElevenLabs text-to-speech account.
--   🎤 **Speech recognition** powered by OpenAI Whisper
+-   🎤 **Speech recognition** powered by OpenAI Whisper.
 -   ✉ **Share** your favorite chat sessions online using public share URLs.
 -   📋 Easily **copy-and-paste** ChatGPT messages.
 -   ✏️ Edit your messages
