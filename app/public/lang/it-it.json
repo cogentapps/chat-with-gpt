@@ -100,18 +100,14 @@
     },
     "NgCT/u": {
       "defaultMessage": "Inserisci il tuo indirizzo email"
-    },
-    "NtNmCJ": {
-      "defaultMessage": "Open Access GPT",
-      "description": "app name"
-    },    
+    }, 
     "O83lC6": {
       "defaultMessage": "Inserisci un messaggio qui..."
     },
-    "PrTeoW": {
-      "defaultMessage": "Open Access GPT",
+    "OjPxF5": {
+      "defaultMessage": "OpenAccessGPT",
       "description": "HTML title tag"
-    },  
+    },   
     "Q97T+z": {
       "defaultMessage": "Incolla la tua chiave API qui"
     },
@@ -150,6 +146,10 @@
       "defaultMessage": "Oppure accedi a un account esistente",
       "description": "Label for a button on the Create Account page that lets the user sign into their existing account instead"
     },
+    "YuI4EF": {
+      "defaultMessage": "OpenAccessGPT",
+      "description": "app name"
+    },  
     "cAtzqn": {
       "defaultMessage": "Prompt di Sistema",
       "description": "Heading for the setting that lets users customize the System Prompt, on the settings screen"
@@ -172,6 +172,9 @@
     "hJZwTS": {
       "defaultMessage": "Indirizzo email"
     },
+    "hQPHf0": {
+      "defaultMessage": "Tieni presente che le API di OpenAI hanno un costo associato. <a>Clicca qui per ottenere maggiori informazioni.</a>"
+    },  
     "iqbKb2": {
       "defaultMessage": "Salva e chiudi",
       "description": "Label for the button that closes the Settings screen, saving any changes"

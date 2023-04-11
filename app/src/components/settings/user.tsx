@@ -44,6 +44,12 @@ export default function UserOptionsTab(props: any) {
                 <p>
                     <FormattedMessage defaultMessage="OpenAI API key usage is billed at a pay-as-you-go rate, separate from your ChatGPT subscription." />
                 </p>
+                <p>
+                <FormattedMessage defaultMessage="Be aware that OpenAI's APIs have associated cost. <a>Click here to get more infos.</a>"
+                    values={{
+                        a: (chunks: any) => <a href="https://www.openaccessgpt.org/what-is-the-cost" target="_blank" rel="noreferrer">{chunks}</a>
+                    }} /> 
+                </p>             
             </SettingsOption>
         </SettingsTab>
     ), [option, openaiApiKey, useOpenAIWhisper, onOpenAIApiKeyChange]);
