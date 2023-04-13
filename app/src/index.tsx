@@ -64,8 +64,9 @@ async function bootstrapApplication() {
     const locale = navigator.language;
 
     let messages: any;
+    let supportedLocale = ["en-us", "it-it"].includes(locale.toLocaleLowerCase()) ? locale.toLocaleLowerCase() : "en-us";
     try {
-        messages = await loadLocaleData(locale.toLocaleLowerCase());
+        messages = await loadLocaleData(supportedLocale);
     } catch (e) {
         console.warn("No locale data for", locale);
     }
