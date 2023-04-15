@@ -58,6 +58,5 @@ export function TTSButton(props: { id: string, selector: string, complete: boole
                 <FormattedMessage defaultMessage="Stop" description="Label for the button that stops text-to-speech playback" />
             </span>}
         </Button>
-        {JSON.stringify(state)}
     </>);
 }
