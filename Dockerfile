@@ -1,40 +1,68 @@
-FROM node:19-alpine AS build
+FROM node:19-bullseye-slim AS build
 
-RUN addgroup -S app && adduser -S app -G app
-RUN mkdir /app && chown app:app /app
+RUN apt-get update && \
+    apt-get install -y \
+    git
 
-RUN apk add --update --no-cache git
-
-USER app
-
+# Set working directory
 WORKDIR /app
 
+# Copy package.json and tsconfig.json
 COPY ./app/package.json ./
 COPY ./app/tsconfig.json ./
 
+# Install Node.js dependencies
 RUN npm install
 
+# Copy craco.config.js, public, and src directories
 COPY ./app/craco.config.js ./craco.config.js
 COPY ./app/public ./public
 COPY ./app/src ./src
 
+# Set environment variables
 ENV NODE_ENV=production
-ENV REACT_APP_AUTH_PROVIDER=local
 
+# Build the application
 RUN npm run build
 
-FROM node:19-alpine AS server
+FROM nvidia/cuda:12.1.0-devel-ubuntu20.04 AS server
 
-RUN addgroup -S app && adduser -S app -G app
-
+# Set the working directory
 WORKDIR /app
 
-COPY ./server/package.json ./
-COPY ./server/tsconfig.json ./
+# Update the package index and install required dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    python3-pip \
+    openssl
 
-RUN apk add --update --no-cache python3 py3-pip make g++ git
+RUN mkdir /usr/local/nvm
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 19.9.0
+RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# Copy package.json and requirements.txt into the working directory
+COPY ./server/package.json ./server/requirements.txt ./server/tsconfig.json ./
+
+# Install Node.js dependencies from package.json
 RUN npm install
 
+# Install Python dependencies from requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code into the working directory
 COPY ./server/src ./src
 
 RUN CI=true sh -c "cd /app && mkdir data && npm run start && rm -rf data"
