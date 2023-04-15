@@ -53,8 +53,7 @@ RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash 
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-# Copy package.json and requirements.txt into the working directory
-COPY ./server/package.json ./server/requirements.txt ./server/tsconfig.json ./
+COPY ./server/package.json ./server/tsconfig.json ./
 
 # Install Node.js dependencies from package.json
 RUN npm install
