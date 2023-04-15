@@ -1,6 +1,6 @@
 {
   "name": "chat-with-gpt",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
     "@chengsokdara/use-whisper": "^0.2.0",
