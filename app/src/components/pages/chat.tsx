@@ -1,20 +1,23 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useCallback } from 'react';
 import styled from '@emotion/styled';
 import slugify from 'slugify';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Loader } from '@mantine/core';
 
-import { useAppContext } from '../../context';
-import { backend } from '../../backend';
+import { useAppContext } from '../../core/context';
+import { backend } from '../../core/backend';
 import { Page } from '../page';
+import { useOption } from '../../core/options/use-option';
 
 const Message = React.lazy(() => import(/* webpackPreload: true */ '../message'));
 
 const Messages = styled.div`
-    max-height: 100%;
-    flex-grow: 1;
-    overflow-y: scroll;
+    @media (min-height: 30em) {
+        max-height: 100%;
+        flex-grow: 1;
+        overflow-y: scroll;
+    }
     display: flex;
     flex-direction: column;
 `;
@@ -29,20 +32,22 @@ const EmptyMessage = styled.div`
     font-family: "Work Sans", sans-serif;
     line-height: 1.7;
     gap: 1rem;
+    min-height: 10rem;
 `;
 
 export default function ChatPage(props: any) {
     const { id } = useParams();
     const context = useAppContext();
 
-    let firstLoad = true;
+    const [autoScrollWhenOpeningChat] = useOption('auto-scroll', 'auto-scroll-when-opening-chat')
+    const [autoScrollWhileGenerating] = useOption('auto-scroll', 'auto-scroll-while-generating');
+
     useEffect(() => {
         if (props.share || !context.currentChat.chatLoadedAt) {
             return;
         }
 
-        const shouldScroll = (Date.now() - context.currentChat.chatLoadedAt) > 5000 || firstLoad;
-        firstLoad = false;
+        const shouldScroll = autoScrollWhenOpeningChat || (Date.now() - context.currentChat.chatLoadedAt) > 5000;
 
         if (!shouldScroll) {
             return;
@@ -56,9 +61,23 @@ export default function ChatPage(props: any) {
             const offset = Math.max(0, latest.offsetTop - 100);
             setTimeout(() => {
                 container?.scrollTo({ top: offset, behavior: 'smooth' });
-            }, 500);
+            }, 100);
         }
-    }, [context.currentChat?.chatLoadedAt, context.currentChat?.messagesToDisplay.length, props.share]);
+    }, [context.currentChat?.chatLoadedAt, context.currentChat?.messagesToDisplay.length, props.share, autoScrollWhenOpeningChat]);
+
+    const autoScroll = useCallback(() => {
+        if (context.generating && autoScrollWhileGenerating) {
+            const container = document.querySelector('#messages') as HTMLElement;
+            container?.scrollTo({ top: 999999, behavior: 'smooth' });
+            container?.parentElement?.scrollTo({ top: 999999, behavior: 'smooth' });
+        }
+    }, [context.generating, autoScrollWhileGenerating]);
+    useEffect(() => {
+        const timer = setInterval(() => autoScroll(), 1000);
+        return () => {
+            clearInterval(timer);
+        };
+    }, [autoScroll]);
 
     const messagesToDisplay = context.currentChat.messagesToDisplay;
 
@@ -94,7 +113,7 @@ export default function ChatPage(props: any) {
                 {shouldShowChat && (
                     <div style={{ paddingBottom: '4.5rem' }}>
                         {messagesToDisplay.map((message) => (
-                            <Message key={message.id}
+                            <Message key={id + ":" + message.id}
                                 message={message}
                                 share={props.share}
                                 last={context.currentChat.chat!.messages.leafs.some(n => n.id === message.id)} />

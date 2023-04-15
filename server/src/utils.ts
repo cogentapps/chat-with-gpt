@@ -1,5 +1,5 @@
 import crypto from 'crypto';
 
-export function randomID() {
-    return crypto.randomBytes(16).toString('hex');
+export function randomID(bytes = 16) {
+    return crypto.randomBytes(bytes).toString('hex');
 }

@@ -2,10 +2,11 @@ import styled from '@emotion/styled';
 import { Button } from '@mantine/core';
 import { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useAppDispatch, useAppSelector } from '../../store';
-import { selectOpenAIApiKey } from '../../store/api-keys';
+import { useAppDispatch } from '../../store';
 import { openOpenAIApiKeyPanel } from '../../store/settings-ui';
 import { Page } from '../page';
+import { useOption } from '../../core/options/use-option';
+import { isProxySupported } from '../../core/chat/openai';
 
 const Container = styled.div`
     flex-grow: 1;
@@ -20,7 +21,7 @@ const Container = styled.div`
 `;
 
 export default function LandingPage(props: any) {
-    const openAIApiKey = useAppSelector(selectOpenAIApiKey);
+    const [openAIApiKey] = useOption<string>('openai', 'apiKey');
     const dispatch = useAppDispatch();
     const onConnectButtonClick = useCallback(() => dispatch(openOpenAIApiKeyPanel()), [dispatch]);
 
@@ -30,16 +31,11 @@ export default function LandingPage(props: any) {
                 <FormattedMessage defaultMessage={'Hello, how can I help you today?'}
                     description="A friendly message that appears at the start of new chat sessions" />
             </p>
-            {!openAIApiKey && (
+            {!openAIApiKey && !isProxySupported() && (
                 <Button size="xs" variant="light" compact onClick={onConnectButtonClick}>
                     <FormattedMessage defaultMessage={'Connect your OpenAI account to get started'} />
                 </Button>
             )}
-            <p>
-                <Button size="xs" variant="light" component="a" href="https://www.chatwithgpt.ai" target="_blank">
-                    Try the new beta app<i style={{ marginLeft: '0.5rem' }} className="fa fa-arrow-up-right-from-square" />
-                </Button>
-            </p>
         </Container>
     </Page>;
 }

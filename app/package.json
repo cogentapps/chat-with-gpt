@@ -1,6 +1,6 @@
 {
   "name": "chat-with-gpt",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
     "@chengsokdara/use-whisper": "^0.2.0",
@@ -12,6 +12,7 @@
     "@mantine/modals": "^5.10.5",
     "@mantine/notifications": "^5.10.5",
     "@mantine/spotlight": "^5.10.5",
+    "@msgpack/msgpack": "^3.0.0-beta2",
     "@reduxjs/toolkit": "^1.9.3",
     "@svgr/webpack": "^6.5.1",
     "broadcast-channel": "^4.20.2",
@@ -20,9 +21,9 @@
     "expiry-set": "^1.0.0",
     "idb-keyval": "^6.2.0",
     "jshashes": "^1.0.8",
+    "lib0": "^0.2.73",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
-    "mic-recorder-to-mp3": "^2.2.2",
     "minisearch": "^6.0.1",
     "natural": "^6.2.0",
     "openai": "^3.2.1",
@@ -42,15 +43,20 @@
     "sentence-splitter": "^4.2.0",
     "slugify": "^1.6.5",
     "sort-by": "^0.0.2",
+    "url": "^0.11.0",
     "uuid": "^9.0.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "workerize-loader": "^2.0.2",
+    "y-indexeddb": "^9.0.9",
+    "y-protocols": "^1.0.5",
+    "yjs": "^13.5.50"
   },
   "overrides": {
     "@svgr/webpack": "$@svgr/webpack"
   },
   "scripts": {
     "start": "craco start",
-    "build": "GENERATE_SOURCEMAP=false craco build",
+    "build": "craco build",
     "test": "craco test",
     "eject": "craco eject",
     "extract": "formatjs extract 'src/**/*.ts*' --ignore='**/*.d.ts' --out-file public/lang/en-us.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'"

@@ -1,27 +1,30 @@
 require('dotenv').config()
 
-import express from 'express';
 import compression from 'compression';
+import express from 'express';
+import { execSync } from 'child_process';
 import fs from 'fs';
+import https from 'https';
 import path from 'path';
-import S3ObjectStore from './object-store/s3';
-import { SQLiteAdapter } from './database/sqlite';
-import SQLiteObjectStore from './object-store/sqlite';
-import ObjectStore from './object-store/index';
-import Database from './database/index';
-import HealthRequestHandler from './endpoints/health';
-import TitleRequestHandler from './endpoints/title';
-import MessagesRequestHandler from './endpoints/messages';
-import SyncRequestHandler from './endpoints/sync';
-import ShareRequestHandler from './endpoints/share';
-import BasicCompletionRequestHandler from './endpoints/completion/basic';
-import StreamingCompletionRequestHandler from './endpoints/completion/streaming';
-import SessionRequestHandler from './endpoints/session';
-import GetShareRequestHandler from './endpoints/get-share';
-import WhisperRequestHandler from './endpoints/whisper';
-import { configurePassport } from './passport';
 import { configureAuth0 } from './auth0';
+import { config } from './config';
+import Database from './database/index';
+import KnexDatabaseAdapter from './database/knex';
+import GetShareRequestHandler from './endpoints/get-share';
+import HealthRequestHandler from './endpoints/health';
 import DeleteChatRequestHandler from './endpoints/delete-chat';
+import ElevenLabsTTSProxyRequestHandler from './endpoints/service-proxies/elevenlabs/text-to-speech';
+import ElevenLabsVoicesProxyRequestHandler from './endpoints/service-proxies/elevenlabs/voices';
+import OpenAIProxyRequestHandler from './endpoints/service-proxies/openai';
+import SessionRequestHandler from './endpoints/session';
+import ShareRequestHandler from './endpoints/share';
+import ObjectStore from './object-store/index';
+import S3ObjectStore from './object-store/s3';
+import SQLiteObjectStore from './object-store/sqlite';
+import { configurePassport } from './passport';
+import SyncRequestHandler, { getNumUpdatesProcessedIn5Minutes } from './endpoints/sync';
+import LegacySyncRequestHandler from './endpoints/sync-legacy';
+import { getActiveUsersInLast5Minutes } from './endpoints/base';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -32,19 +35,12 @@ if (process.env.CI) {
 }
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-const webappPort = process.env.WEBAPP_PORT ? parseInt(process.env.WEBAPP_PORT, 10) : 3000;
-const origins = (process.env.ALLOWED_ORIGINS || '').split(',');
-
-if (process.env['GITPOD_WORKSPACE_URL']) {
-    origins.push(
-        process.env['GITPOD_WORKSPACE_URL']?.replace('https://', `https://${webappPort}-`)
-    );
-}
 
 export default class ChatServer {
+    authProvider = 'local';
     app: express.Application;
     objectStore: ObjectStore = process.env.S3_BUCKET ? new S3ObjectStore() : new SQLiteObjectStore();
-    database: Database = new SQLiteAdapter();
+    database: Database = new KnexDatabaseAdapter();
 
     constructor() {
         this.app = express();
@@ -56,44 +52,65 @@ export default class ChatServer {
 
         this.app.use(express.urlencoded({ extended: false }));
 
-        if (process.env.AUTH0_CLIENT_ID && process.env.AUTH0_ISSUER && process.env.PUBLIC_URL) {
+        if (config.auth0?.clientID && config.auth0?.issuer && config.publicSiteURL) {
             console.log('Configuring Auth0.');
+            this.authProvider = 'auth0';
             configureAuth0(this);
         } else {
             console.log('Configuring Passport.');
+            this.authProvider = 'local';
             configurePassport(this);
         }
 
         this.app.use(express.json({ limit: '1mb' }));
-        this.app.use(compression());
-
-        
-        const rateLimitWindowMs = process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) : 15 * 60 * 1000; // 15 minutes
-        const rateLimitMax = process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX, 10) : 100; // limit each IP to 100 requests per windowMs
+        this.app.use(compression({
+            filter: (req, res) => !req.path.includes("proxies"),
+        }));
 
         const { default: rateLimit } = await import('express-rate-limit'); // esm
-        const limiter = rateLimit({
-            windowMs: rateLimitWindowMs,
-            max: rateLimitMax,
-        });
-        this.app.use(limiter);
 
         this.app.get('/chatapi/health', (req, res) => new HealthRequestHandler(this, req, res));
-        this.app.get('/chatapi/session', (req, res) => new SessionRequestHandler(this, req, res));
-        this.app.post('/chatapi/messages', (req, res) => new MessagesRequestHandler(this, req, res));
-        this.app.post('/chatapi/title', (req, res) => new TitleRequestHandler(this, req, res));
+
+        this.app.get('/chatapi/session',
+            rateLimit({ windowMs: 60 * 1000, max: 100 }),
+            (req, res) => new SessionRequestHandler(this, req, res));
+
+        this.app.post('/chatapi/y-sync',
+            rateLimit({ windowMs: 60 * 1000, max: 100 }),
+            express.raw({ type: 'application/octet-stream', limit: '10mb' }),
+            (req, res) => new SyncRequestHandler(this, req, res));
+
+        this.app.get('/chatapi/legacy-sync',
+            rateLimit({ windowMs: 60 * 1000, max: 100 }),
+            (req, res) => new LegacySyncRequestHandler(this, req, res));
+
+        this.app.use(rateLimit({
+            windowMs: config.rateLimit.windowMs,
+            max: config.rateLimit.max,
+        }));
+        
         this.app.post('/chatapi/delete', (req, res) => new DeleteChatRequestHandler(this, req, res));
-        this.app.post('/chatapi/sync', (req, res) => new SyncRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
-        this.app.post('/chatapi/whisper', (req, res) => new WhisperRequestHandler(this, req, res));
 
-        if (process.env.ENABLE_SERVER_COMPLETION) {
-            this.app.post('/chatapi/completion', (req, res) => new BasicCompletionRequestHandler(this, req, res));
-            this.app.post('/chatapi/completion/streaming', (req, res) => new StreamingCompletionRequestHandler(this, req, res));
+        if (config.services?.openai?.apiKey) {
+            this.app.post('/chatapi/proxies/openai/v1/chat/completions', (req, res) => new OpenAIProxyRequestHandler(this, req, res));
+        }
+
+        if (config.services?.elevenlabs?.apiKey) {
+            this.app.post('/chatapi/proxies/elevenlabs/v1/text-to-speech/:voiceID', (req, res) => new ElevenLabsTTSProxyRequestHandler(this, req, res));
+            this.app.get('/chatapi/proxies/elevenlabs/v1/voices', (req, res) => new ElevenLabsVoicesProxyRequestHandler(this, req, res));
         }
 
         if (fs.existsSync('public')) {
+            const match = `<script> window.AUTH_PROVIDER = "local"; </script>`;
+            const replace = `<script> window.AUTH_PROVIDER = "${this.authProvider}"; </script>`;
+
+            const indexFilename = "public/index.html";
+            const indexSource = fs.readFileSync(indexFilename, 'utf8');
+
+            fs.writeFileSync(indexFilename, indexSource.replace(match, replace));
+
             this.app.use(express.static('public'));
 
             // serve index.html for all other routes
@@ -106,12 +123,57 @@ export default class ChatServer {
         await this.database.initialize();
 
         try {
-            this.app.listen(port, () => {
+            const callback = () => {
                 console.log(`Listening on port ${port}.`);
-            });
+            };
+
+            if (config.tls?.key && config.tls?.cert) {
+                console.log('Configuring TLS.');
+
+                const server = https.createServer({
+                    key: fs.readFileSync(config.tls.key),
+                    cert: fs.readFileSync(config.tls.cert),
+                }, this.app);
+            
+                server.listen(port, callback);
+            } else if (config.tls?.selfSigned) {
+                console.log('Configuring self-signed TLS.');
+
+                if (!fs.existsSync('./data/key.pem') || !fs.existsSync('./data/cert.pem')) {
+                    execSync('sh generate-self-signed-certificate.sh');
+                }
+
+                const server = https.createServer({
+                    key: fs.readFileSync('./data/key.pem'),
+                    cert: fs.readFileSync('./data/cert.pem'),
+                }, this.app);
+            
+                server.listen(port, callback);
+            } else {
+                this.app.listen(port, callback);
+            }
         } catch (e) {
             console.log(e);
         }
+
+        setInterval(() => {
+            const activeUsers = getActiveUsersInLast5Minutes();
+            
+            const activeUsersToDisplay = activeUsers.slice(0, 10);
+            const extraActiveUsers = activeUsers.slice(10);
+
+            const numRecentUpdates = getNumUpdatesProcessedIn5Minutes();
+
+            console.log(`Statistics (last 5m):`);
+
+            if (extraActiveUsers.length) {
+                console.log(`  - ${activeUsers.length} active users: ${activeUsersToDisplay.join(', ')} and ${extraActiveUsers.length} more`);
+            } else {
+                console.log(`  - ${activeUsers.length} active users: ${activeUsersToDisplay.join(', ')}`);
+            }
+
+            console.log(`  - ${numRecentUpdates} updates processed`);
+        }, 1000 * 60);
     }
 }
 

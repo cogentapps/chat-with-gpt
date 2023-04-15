@@ -32,7 +32,6 @@ export default class SQLiteObjectStore extends ObjectStore {
                     reject(err);
                 } else {
                     resolve(row?.value ?? null);
-                    console.log(`[object-store:sqlite] retrieved object ${key}`)
                 }
             });
         });
@@ -44,7 +43,6 @@ export default class SQLiteObjectStore extends ObjectStore {
                 if (err) {
                     reject(err);
                 } else {
-                    console.log(`[object-store:sqlite] stored object ${key}`)
                     resolve();
                 }
             });

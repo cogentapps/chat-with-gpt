@@ -5,8 +5,9 @@ import session from 'express-session';
 import createSQLiteSessionStore from 'connect-sqlite3';
 import { Strategy as LocalStrategy } from 'passport-local';
 import ChatServer from './index';
+import { config } from './config';
 
-const secret = process.env.AUTH_SECRET || crypto.randomBytes(32).toString('hex');
+const secret = config.authSecret;
 
 export function configurePassport(context: ChatServer) {
     const SQLiteStore = createSQLiteSessionStore(session);
@@ -20,7 +21,6 @@ export function configurePassport(context: ChatServer) {
         }
 
         try {
-            console.log(user.salt ? 'Using pbkdf2' : 'Using bcrypt');
             const isPasswordCorrect = user.salt
                 ? crypto.timingSafeEqual(user.passwordHash, crypto.pbkdf2Sync(password, user.salt, 310000, 32, 'sha256'))
                 : await bcrypt.compare(password, user.passwordHash.toString());

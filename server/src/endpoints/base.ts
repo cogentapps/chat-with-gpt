@@ -1,5 +1,11 @@
 import express from 'express';
 import ChatServer from '../index';
+import ExpirySet from 'expiry-set';
+
+const recentUsers = new ExpirySet<string>(1000 * 60 * 5);
+export function getActiveUsersInLast5Minutes() {
+    return Array.from(recentUsers.values());
+}
 
 export default abstract class RequestHandler {
     constructor(public context: ChatServer, private req: express.Request, private res: express.Response) {
@@ -10,6 +16,10 @@ export default abstract class RequestHandler {
         if (!this.userID && this.isProtected()) {
             this.res.sendStatus(401);
             return;
+        }
+
+        if (this.userID) {
+            recentUsers.add(this.userID);
         }
 
         try {

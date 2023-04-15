@@ -6,13 +6,12 @@ import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PersistGate } from 'redux-persist/integration/react';
-import { AppContextProvider } from './context';
+import { AppContextProvider } from './core/context';
 import store, { persistor } from './store';
 
 import ChatPage from './components/pages/chat';
 import LandingPage from './components/pages/landing';
 
-import './backend';
 import './index.scss';
 
 const router = createBrowserRouter([
