@@ -1,11 +1,12 @@
 import styled from '@emotion/styled';
 import { SpotlightProvider } from '@mantine/spotlight';
 import { useChatSpotlightProps } from '../spotlight';
-import { LoginModal, CreateAccountModal } from './auth/modals';
+import { LoginModal, CreateAccountModal } from './auth-modals';
 import Header, { HeaderProps, SubHeader } from './header';
 import MessageInput from './input';
 import SettingsDrawer from './settings';
 import Sidebar from './sidebar';
+import AudioControls from './tts-controls';
 
 const Container = styled.div`
     position: absolute;
@@ -13,11 +14,12 @@ const Container = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: #292933;
-    color: white;
     display: flex;
     flex-direction: row;
     overflow: hidden;
+
+    background: #292933;
+    color: white;
 
     .sidebar {
         width: 0%;
@@ -55,10 +57,14 @@ const Container = styled.div`
 `;
 
 const Main = styled.div`
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    overflow: hidden;
+    overflow: scroll;
+
+    @media (min-height: 30em) {
+        overflow: hidden;
+    }
 `;
 
 export function Page(props: {
@@ -79,6 +85,7 @@ export function Page(props: {
                     onShare={props.headerProps?.onShare} />
                 {props.showSubHeader && <SubHeader />}
                 {props.children}
+                <AudioControls />
                 <MessageInput key={localStorage.getItem('openai-api-key')} />
                 <SettingsDrawer />
                 <LoginModal />
@@ -87,4 +94,3 @@ export function Page(props: {
         </Container>
     </SpotlightProvider>;
 }
-

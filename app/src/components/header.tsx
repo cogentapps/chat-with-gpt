@@ -5,14 +5,25 @@ import { useSpotlight } from '@mantine/spotlight';
 import { Burger, Button, ButtonProps } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppContext } from '../context';
-import { backend } from '../backend';
+import { useAppContext } from '../core/context';
+import { backend } from '../core/backend';
 import { MenuItem, secondaryMenu } from '../menus';
 import { useAppDispatch, useAppSelector } from '../store';
-import { selectOpenAIApiKey } from '../store/api-keys';
 import { setTab } from '../store/settings-ui';
 import { selectSidebarOpen, toggleSidebar } from '../store/sidebar';
-import { openSignupModal } from '../store/ui';
+import { openLoginModal, openSignupModal } from '../store/ui';
+import { useOption } from '../core/options/use-option';
+import { useHotkeys } from '@mantine/hooks';
+
+const Banner = styled.div`
+    background: rgba(224, 49, 49, 0.2);
+    color: white;
+    text-align: center;
+    font-family: "Work Sans", sans-serif;
+    font-size: 80%;
+    padding: 0.5rem;
+    cursor: pointer;
+`;
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -61,6 +72,7 @@ const HeaderContainer = styled.div`
     h2 {
         margin: 0 0.5rem;
         font-size: 1rem;
+        white-space: nowrap;
     }
 
     .spacer {
@@ -134,7 +146,7 @@ export default function Header(props: HeaderProps) {
     const navigate = useNavigate();
     const spotlight = useSpotlight();
     const [loading, setLoading] = useState(false);
-    const openAIApiKey = useAppSelector(selectOpenAIApiKey);
+    const [openAIApiKey] = useOption<string>('openai', 'apiKey');
     const dispatch = useAppDispatch();
     const intl = useIntl();
 
@@ -149,13 +161,37 @@ export default function Header(props: HeaderProps) {
         setLoading(true);
         navigate(`/`);
         setLoading(false);
+        setTimeout(() => document.querySelector<HTMLTextAreaElement>('#message-input')?.focus(), 100);
     }, [navigate]);
 
     const openSettings = useCallback(() => {
-        dispatch(setTab(openAIApiKey ? 'options' : 'user'));
+        dispatch(setTab(openAIApiKey ? 'chat' : 'user'));
     }, [openAIApiKey, dispatch]);
 
-    const header = useMemo(() => (
+    const signIn = useCallback(() => {
+        if ((window as any).AUTH_PROVIDER !== 'local') {
+            backend.current?.signIn();
+        } else {
+            dispatch(openLoginModal());
+        }
+    }, [dispatch])
+
+    const signUp = useCallback(() => {
+        if ((window as any).AUTH_PROVIDER !== 'local') {
+            backend.current?.signIn();
+        } else {
+            dispatch(openSignupModal());
+        }
+    }, [dispatch])
+
+    useHotkeys([
+        ['c', onNewChat],
+    ]);
+
+    const header = useMemo(() => (<>
+        {context.sessionExpired && <Banner onClick={signIn}>
+            You have been signed out. Click here to sign back in.
+        </Banner>}
         <HeaderContainer className={context.isHome ? 'shaded' : ''}>
             <Helmet>
                 <title>
@@ -172,15 +208,9 @@ export default function Header(props: HeaderProps) {
                 <FormattedMessage defaultMessage="Share" description="Label for the button used to create a public share URL for a chat log" />
             </HeaderButton>}
             {backend.current && !context.authenticated && (
-                <HeaderButton onClick={() => {
-                    if (process.env.REACT_APP_AUTH_PROVIDER !== 'local') {
-                        backend.current?.signIn();
-                    } else {
-                        dispatch(openSignupModal());
-                    }
-                }}>
+                <HeaderButton onClick={localStorage.getItem('registered') ? signIn : signUp}>
                     <FormattedMessage defaultMessage="Sign in <h>to sync</h>"
-                        description="Label for sign in button, indicating the purpose of signing in is to sync your data between devices"
+                        description="Label for sign in button, which indicates that the purpose of signing in is to sync your data between devices. Less important text inside <h> tags is hidden on small screens."
                         values={{
                             h: (chunks: any) => <span className="hide-on-mobile">{chunks}</span>
                         }} />
@@ -190,7 +220,8 @@ export default function Header(props: HeaderProps) {
                 <FormattedMessage defaultMessage="New Chat" description="Label for the button used to start a new chat session" />
             </HeaderButton>
         </HeaderContainer>
-    ), [sidebarOpen, onBurgerClick, props.title, props.share, props.canShare, props.onShare, openSettings, onNewChat, loading, context.authenticated, context.isHome, context.isShare, spotlight.openSpotlight]);
+    </>), [sidebarOpen, onBurgerClick, props.title, props.share, props.canShare, props.onShare, openSettings, onNewChat, 
+        loading, context.authenticated, context.sessionExpired, context.isHome, context.isShare, spotlight.openSpotlight, signIn, signUp]);
 
     return header;
 }

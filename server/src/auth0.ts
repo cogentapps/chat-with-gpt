@@ -1,16 +1,14 @@
-import crypto from 'crypto';
 import { auth, ConfigParams } from 'express-openid-connect';
 import ChatServer from './index';
+import { config } from './config';
 
-const secret = process.env.AUTH_SECRET || crypto.randomBytes(32).toString('hex');
-
-const config: ConfigParams = {
+const auth0Config: ConfigParams = {
     authRequired: false,
     auth0Logout: false,
-    secret,
-    baseURL: process.env.PUBLIC_URL,
-    clientID: process.env.AUTH0_CLIENT_ID,
-    issuerBaseURL: process.env.AUTH0_ISSUER,
+    secret: config.authSecret,
+    baseURL: config.publicSiteURL,
+    clientID: config.auth0?.clientID,
+    issuerBaseURL: config.auth0?.issuer,
     routes: {
         login: false,
         logout: false,
@@ -18,26 +16,36 @@ const config: ConfigParams = {
 };
 
 export function configureAuth0(context: ChatServer) {
-    context.app.use(auth(config));
+    if (!config.publicSiteURL) {
+        throw new Error('Missing public site URL in config, required for Auth0');
+    }
+    if (!config.auth0?.clientID) {
+        throw new Error('Missing Auth0 client ID in config');
+    }
+    if (!config.auth0?.issuer) {
+        throw new Error('Missing Auth0 issuer in config');
+    }
+
+    context.app.use(auth(auth0Config));
 
     context.app.get('/chatapi/login', (req, res) => {
         res.oidc.login({
-            returnTo: process.env.PUBLIC_URL,
+            returnTo: config.publicSiteURL,
             authorizationParams: {
-                redirect_uri: process.env.PUBLIC_URL + '/chatapi/login-callback',
+                redirect_uri: config.publicSiteURL + '/chatapi/login-callback',
             },
         });
     });
 
     context.app.get('/chatapi/logout', (req, res) => {
         res.oidc.logout({
-            returnTo: process.env.PUBLIC_URL,
+            returnTo: config.publicSiteURL,
         });
     });
 
     context.app.all('/chatapi/login-callback', (req, res) => {
         res.oidc.callback({
-            redirectUri: process.env.PUBLIC_URL!,
-        })
+            redirectUri: config.publicSiteURL!,
+        });
     });
 }

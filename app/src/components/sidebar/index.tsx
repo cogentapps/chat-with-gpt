@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
 import { ActionIcon, Avatar, Burger, Button, Menu } from '@mantine/core';
 import { useElementSize } from '@mantine/hooks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { backend } from '../../backend';
-import { useAppContext } from '../../context';
+import { backend } from '../../core/backend';
+import { useAppContext } from '../../core/context';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { setTab } from '../../store/settings-ui';
 import { selectSidebarOpen, toggleSidebar } from '../../store/sidebar';
@@ -109,6 +109,18 @@ export default function Sidebar(props: {
     const onBurgerClick = useCallback(() => dispatch(toggleSidebar()), [dispatch]);
     const { ref, width } = useElementSize();
 
+    const [version, setVersion] = useState(0);
+    const update = useCallback(() => {
+        setVersion(v => v + 1);
+    }, []);
+    
+    useEffect(() => {
+        context.chat.on('update', update);
+        return () => {
+            context.chat.off('update', update);
+        };
+    }, []);
+
     const burgerLabel = sidebarOpen
         ? intl.formatMessage({ defaultMessage: "Close sidebar" })
         : intl.formatMessage({ defaultMessage: "Open sidebar" });
@@ -122,14 +134,14 @@ export default function Sidebar(props: {
             <div className="sidebar-content">
                 <RecentChats />
             </div>
-            {backend.current && backend.current.isAuthenticated && (
+            {context.authenticated && (
                 <Menu width={width - 20}>
                     <Menu.Target>
                         <div className="sidebar-footer">
-                            <Avatar size="lg" src={backend.current!.user!.avatar} />
+                            <Avatar size="lg" src={context.user!.avatar} />
                             <div className="user-info">
-                                <strong>{backend.current!.user!.name || backend.current!.user!.email}</strong>
-                                {!!backend.current!.user!.name && <span>{backend.current.user!.email}</span>}
+                                <strong>{context.user!.name || context.user!.email}</strong>
+                                {!!context.user!.name && <span>{context.user!.email}</span>}
                             </div>
                             <div className="spacer" />
 
@@ -144,17 +156,17 @@ export default function Sidebar(props: {
                         }} icon={<i className="fas fa-gear" />}>
                             <FormattedMessage defaultMessage={"User settings"} description="Menu item that opens the user settings screen" />
                         </Menu.Item>
-                        {/*
+
                         <Menu.Divider />
                         <Menu.Item color="red" onClick={() => backend.current?.logout()} icon={<i className="fas fa-sign-out-alt" />}>
                             <FormattedMessage defaultMessage={"Sign out"} />
-                        </Menu.Item> 
-                        */}
+                        </Menu.Item>
+
                     </Menu.Dropdown>
                 </Menu>
             )}
         </Container>
-    ), [sidebarOpen, width, ref, burgerLabel, onBurgerClick, dispatch, context.chat.chats.size]);
+    ), [sidebarOpen, width, ref, burgerLabel, onBurgerClick, dispatch, version]);
 
     return elem;
 }

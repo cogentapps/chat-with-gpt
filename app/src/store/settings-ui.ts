@@ -30,9 +30,9 @@ export const closeSettingsUI = () => settingsUISlice.actions.setTabAndOption({ t
 export const selectSettingsTab = (state: RootState) => state.settingsUI.tab;
 export const selectSettingsOption = (state: RootState) => state.settingsUI.option;
 
-export const openOpenAIApiKeyPanel = () => settingsUISlice.actions.setTabAndOption({ tab: 'user', option: 'openai-api-key' });
+export const openOpenAIApiKeyPanel = () => settingsUISlice.actions.setTabAndOption({ tab: 'user', option: 'apiKey' });
 export const openElevenLabsApiKeyPanel = () => settingsUISlice.actions.setTabAndOption({ tab: 'speech', option: 'elevenlabs-api-key' });
-export const openSystemPromptPanel = () => settingsUISlice.actions.setTabAndOption({ tab: 'options', option: 'system-prompt' });
+export const openSystemPromptPanel = () => settingsUISlice.actions.setTabAndOption({ tab: 'options', option: 'systemPrompt' });
 export const openTemperaturePanel = () => settingsUISlice.actions.setTabAndOption({ tab: 'options', option: 'temperature' });
 
 export default settingsUISlice.reducer;

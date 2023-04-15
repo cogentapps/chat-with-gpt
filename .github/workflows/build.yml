@@ -20,4 +20,4 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Build containers
-      run: docker-compose -f "docker-compose.yml" build
+      run: docker build .

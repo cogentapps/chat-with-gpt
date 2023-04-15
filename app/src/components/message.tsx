@@ -1,13 +1,15 @@
 import styled from '@emotion/styled';
 import { Button, CopyButton, Loader, Textarea } from '@mantine/core';
 
-import { Message } from "../types";
-import { share } from '../utils';
-import { ElevenLabsReaderButton } from '../tts/elevenlabs';
+import { Message } from "../core/chat/types";
+import { share } from '../core/utils';
+import { TTSButton } from './tts-button';
 import { Markdown } from './markdown';
-import { useAppContext } from '../context';
+import { useAppContext } from '../core/context';
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useAppSelector } from '../store';
+import { selectSettingsTab } from '../store/settings-ui';
 
 // hide for everyone but screen readers
 const SROnly = styled.span`
@@ -138,6 +140,10 @@ const Container = styled.div`
 
         .fa + span {
             margin-left: 0.2em;
+
+            @media (max-width: 40em) {
+                display: none;
+            }
         }
 
         .mantine-Button-root {
@@ -204,6 +210,8 @@ export default function MessageComponent(props: { message: Message, last: boolea
     const [content, setContent] = useState('');
     const intl = useIntl();
 
+    const tab = useAppSelector(selectSettingsTab);
+
     const getRoleName = useCallback((role: string, share = false) => {
         switch (role) {
             case 'user':
@@ -237,14 +245,17 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             </strong>
                             {props.message.role === 'assistant' && props.last && !props.message.done && <InlineLoader />}
                         </span>
-                        {props.message.done && <ElevenLabsReaderButton selector={'.content-' + props.message.id} />}
+                        <TTSButton id={props.message.id}
+                            selector={'.content-' + props.message.id}
+                            complete={!!props.message.done}
+                            autoplay={props.last && context.chat.lastReplyID === props.message.id} />
                         <div style={{ flexGrow: 1 }} />
                         <CopyButton value={props.message.content}>
                             {({ copy, copied }) => (
                                 <Button variant="subtle" size="sm" compact onClick={copy} style={{ marginLeft: '1rem' }}>
                                     <i className="fa fa-clipboard" />
-                                    {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
-                                        : <FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" />}
+                                        {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
+                                        : <span><FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" /></span>}
                                 </Button>
                             )}
                         </CopyButton>
@@ -293,7 +304,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                 {props.last && <EndOfChatMarker />}
             </Container>
         )
-    }, [props.last, props.share, editing, content, context, props.message, props.message.content]);
+    }, [props.last, props.share, editing, content, context, props.message, props.message.content, tab]);
 
     return elem;
 }

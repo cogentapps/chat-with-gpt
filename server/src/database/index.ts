@@ -1,3 +1,11 @@
+import ExpiryMap from "expiry-map";
+
+// @ts-ignore
+import type { Doc } from "yjs";
+
+// const documents = new ExpiryMap<string, Doc>(60 * 60 * 1000);
+const documents = new ExpiryMap<string, Doc>(48 * 60 * 60 * 1000);
+
 export default abstract class Database {
     public async initialize() {}
     public abstract createUser(email: string, passwordHash: Buffer): Promise<void>;
@@ -14,4 +22,17 @@ export default abstract class Database {
     public abstract setTitle(userID: string, chatID: string, title: string): Promise<void>;
     public abstract deleteChat(userID: string, chatID: string): Promise<any>;
     public abstract getDeletedChatIDs(userID: string): Promise<string[]>;
+
+    protected abstract loadYDoc(userID: string): Promise<Doc>;
+    public abstract saveYUpdate(userID: string, update: Uint8Array): Promise<void>;
+
+    public async getYDoc(userID: string): Promise<Doc> {
+        const doc = documents.get(userID);
+        if (doc) {
+            return doc;
+        }
+        const newDoc = await this.loadYDoc(userID);
+        documents.set(userID, newDoc);
+        return newDoc;
+    }
 }

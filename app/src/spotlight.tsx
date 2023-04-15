@@ -1,34 +1,38 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "./context";
+import { useAppContext } from "./core/context";
 
 export function useChatSpotlightProps() {
     const navigate = useNavigate();
-    const context = useAppContext();
+    const { chat } = useAppContext();
     const intl = useIntl();
 
     const [version, setVersion] = useState(0);
 
     useEffect(() => {
-        context.chat.on('update', () => setVersion(v => v + 1));
-    }, [context.chat]);
+        const handleUpdate = () => setVersion(v => v + 1);
+        chat.on('update', handleUpdate);
+        return () => {
+            chat.off('update', handleUpdate);
+        };
+    }, [chat]);
 
-    const search = useCallback((query: string) => {
-        return context.chat.search.query(query)
-            .map((result: any) => ({
+    const search = useCallback((query) => {
+        return chat.searchChats(query)
+            .map((result) => ({
                 ...result,
-                onTrigger: () => navigate('/chat/' + result.chatID + (result.messageID ? '#msg-' + result.messageID : '')),
+                onTrigger: () => navigate(`/chat/${result.chatID}${result.messageID ? `#msg-${result.messageID}` : ''}`),
             }))
-    }, [context.chat, navigate, version]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [chat, navigate, version]);
 
     const props = useMemo(() => ({
-        shortcut: ['mod + P'],
+        shortcut: ['/'],
         overlayColor: '#000000',
         searchPlaceholder: intl.formatMessage({ defaultMessage: 'Search your chats' }),
         searchIcon: <i className="fa fa-search" />,
         actions: search,
-        filter: (query: string, items: any) => items,
+        filter: (query, items) => items,
     }), [search]);
 
     return props;

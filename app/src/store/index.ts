@@ -3,11 +3,8 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import messageReducer from './message';
-import parametersReducer from './parameters';
-import apiKeysReducer from './api-keys';
-import voiceReducer from './voices';
-import settingsUIReducer from './settings-ui';
 import uiReducer from './ui';
+import settingsUIReducer from './settings-ui';
 import sidebarReducer from './sidebar';
 
 const persistConfig = {
@@ -29,13 +26,9 @@ const persistMessageConfig = {
 
 const store = configureStore({
   reducer: {
-    // auth: authReducer,
-    apiKeys: persistReducer(persistConfig, apiKeysReducer),
-    settingsUI: settingsUIReducer,
-    voices: persistReducer(persistConfig, voiceReducer),
-    parameters: persistReducer(persistConfig, parametersReducer),
     message: persistReducer(persistMessageConfig, messageReducer),
     ui: uiReducer,
+    settingsUI: settingsUIReducer,
     sidebar: persistReducer(persistSidebarConfig, sidebarReducer),
   },
 })
