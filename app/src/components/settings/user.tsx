@@ -1,12 +1,14 @@
 import SettingsTab from "./tab";
 import SettingsOption from "./option";
-import { Checkbox, TextInput } from "@mantine/core";
+import { Button, Checkbox, TextInput } from "@mantine/core";
 import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { selectOpenAIApiKey, setOpenAIApiKeyFromEvent, selectUseOpenAIWhisper, setUseOpenAIWhisperFromEvent } from "../../store/api-keys";
 import { selectSettingsOption } from "../../store/settings-ui";
 import { FormattedMessage, useIntl } from "react-intl";
 import { supportsSpeechRecognition } from "../../speech-recognition-types";
+import { useAppContext } from "../../context";
+import { serializeChat } from "../../types";
 
 export default function UserOptionsTab(props: any) {
     const option = useAppSelector(selectSettingsOption);
@@ -18,8 +20,35 @@ export default function UserOptionsTab(props: any) {
     const onOpenAIApiKeyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => dispatch(setOpenAIApiKeyFromEvent(event)), [dispatch]);
     const onUseOpenAIWhisperChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => dispatch(setUseOpenAIWhisperFromEvent(event)), [dispatch]);
 
+    const context = useAppContext();
+    const getData = useCallback(async () => {
+        const chats = Array.from(context.chat.chats.values());
+        return chats.map(chat => ({
+            ...chat,
+            messages: chat.messages.serialize(),
+        }));
+    }, [context.chat]);
+
+    const handleExport = useCallback(async () => {
+        const data = await getData();
+        const json = JSON.stringify(data);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "chat-with-gpt.json";
+        link.click();
+    }, [getData]);
+
     const elem = useMemo(() => (
         <SettingsTab name="user">
+            <SettingsOption heading="Export">
+                <div>
+                    <Button variant="light" onClick={handleExport} style={{
+                        marginRight: '1rem',
+                    }}>Export</Button>
+                </div>
+            </SettingsOption>
             <SettingsOption heading={intl.formatMessage({ defaultMessage: "Your OpenAI API Key", description: "Heading for the OpenAI API key setting on the settings screen" })}
                 focused={option === 'openai-api-key'}>
                 <TextInput

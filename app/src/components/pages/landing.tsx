@@ -35,6 +35,11 @@ export default function LandingPage(props: any) {
                     <FormattedMessage defaultMessage={'Connect your OpenAI account to get started'} />
                 </Button>
             )}
+            <p>
+                <Button size="xs" variant="light" component="a" href="https://www.chatwithgpt.ai" target="_blank">
+                    Try the new beta app<i style={{ marginLeft: '0.5rem' }} className="fa fa-arrow-up-right-from-square" />
+                </Button>
+            </p>
         </Container>
     </Page>;
 }

@@ -192,7 +192,7 @@ export default function MessageInput(props: MessageInputProps) {
     }, [initialMessage, transcript, recording, transcribing, useOpenAIWhisper, dispatch]);
 
     const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if(e.key === 'Enter' && e.shiftKey === false && !props.disabled && isEnterToSend) {
+        if(e.key === 'Enter' && e.shiftKey === false && !props.disabled) {
             e.preventDefault();
             onSubmit();
         }
@@ -276,9 +276,6 @@ export default function MessageInput(props: MessageInputProps) {
                 rightSectionWidth={context.generating ? 100 : 55}
                 onKeyDown={onKeyDown} />
             <div className="bottom">
-                <Center>
-                    <Checkbox size="xs" label="Enter to send" checked={!isEnterToSend} onChange={(v) => setIsEnterToSend(!v.currentTarget.checked)}/>
-                </Center>
                 <Group my="sm" spacing="xs">
                     <Button variant="subtle"
                         className="settings-button"
