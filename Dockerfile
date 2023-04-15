@@ -58,9 +58,6 @@ COPY ./server/package.json ./server/tsconfig.json ./
 # Install Node.js dependencies from package.json
 RUN npm install
 
-# Install Python dependencies from requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
-
 # Copy the rest of the application code into the working directory
 COPY ./server/src ./src
 
