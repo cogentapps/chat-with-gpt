@@ -103,19 +103,28 @@ export default class ChatServer {
         }
 
         if (fs.existsSync('public')) {
-            const match = `<script> window.AUTH_PROVIDER = "local"; </script>`;
-            const replace = `<script> window.AUTH_PROVIDER = "${this.authProvider}"; </script>`;
+            const match = /<script>\s*window.AUTH_PROVIDER\s*=\s*"[^"]+";?\s*<\/script>/g;
+            const replace = `<script>window.AUTH_PROVIDER="${this.authProvider}"</script>`;
 
             const indexFilename = "public/index.html";
-            const indexSource = fs.readFileSync(indexFilename, 'utf8');
+            let indexSource = fs.readFileSync(indexFilename, 'utf8');
 
-            fs.writeFileSync(indexFilename, indexSource.replace(match, replace));
+            indexSource = indexSource.replace(match, replace);
+
+            if (fs.existsSync('./data/head.html')) {
+                const head = fs.readFileSync('./data/head.html').toString();
+                indexSource = indexSource.replace('</head>', ` ${head} </head>`);
+            }
+
+            this.app.get('/', (req, res) => {
+                res.send(indexSource);
+            });
 
             this.app.use(express.static('public'));
 
             // serve index.html for all other routes
             this.app.get('*', (req, res) => {
-                res.sendFile('public/index.html', { root: path.resolve(__dirname, '..') });
+                res.send(indexSource);
             });
         }
 
