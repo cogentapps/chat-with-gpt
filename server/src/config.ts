@@ -18,6 +18,7 @@ export interface Config {
             // When provided, signed in users will be able to access OpenAI through the server
             // without needing their own API key.
             apiKey?: string;
+            loginRequired?: boolean;
         };
 
         elevenlabs?: {
@@ -25,9 +26,10 @@ export interface Config {
             // When provided, signed in users will be able to access ElevenLabs through the server
             // without needing their own API key.
             apiKey?: string;
+            loginRequired?: boolean;
         };
     };
-    
+
     /*
     Optional configuration for enabling Transport Layer Security (TLS) in the server.
     Requires specifying the file paths for the key and cert files. Includes:
@@ -102,9 +104,18 @@ if (!fs.existsSync('./data')) {
     fs.mkdirSync('./data');
 }
 
-const filename = process.env.CHATWITHGPT_CONFIG_FILENAME
-    ? path.resolve(process.env.CHATWITHGPT_CONFIG_FILENAME) 
-    : path.resolve(__dirname, '../data/config.yaml');
+let filename = process.env.CHATWITHGPT_CONFIG_FILENAME as string;
+
+// assume config.yaml if no filename is provided:
+if (!filename) {
+    filename = path.resolve(__dirname, '../data/config.yaml')
+    
+    // try config.yml if config.yaml doesn't exist:
+    const fallbackFilename = path.resolve(__dirname, '../data/config.yml');
+    if (!fs.existsSync(filename) && fs.existsSync(fallbackFilename)) {
+        filename = fallbackFilename;
+    }
+}
 
 if (fs.existsSync(filename)) {
     config = {
@@ -132,6 +143,7 @@ if (process.argv.includes('--self-signed')) {
 }
 
 if (config.publicSiteURL) {
+    // remove trailing slash:
     config.publicSiteURL = config.publicSiteURL.replace(/\/$/, '');
 }
 

@@ -23,6 +23,6 @@ export default class ElevenLabsTTSProxyRequestHandler extends RequestHandler {
     }
 
     public isProtected() {
-        return true;
+        return config.services?.elevenlabs?.loginRequired ?? true;
     }
 }

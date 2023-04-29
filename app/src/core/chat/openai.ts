@@ -7,7 +7,7 @@ import { backend } from "../backend";
 export const defaultModel = 'gpt-3.5-turbo';
 
 export function isProxySupported() {
-    return !!backend.current?.user?.services?.includes('openai');
+    return !!backend.current?.services?.includes('openai');
 }
 
 function shouldUseProxy(apiKey: string | undefined | null) {
@@ -141,5 +141,5 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 
 export const maxTokensByModel = {
     "chatgpt-3.5-turbo": 2048,
-    "gpt-4": 8096,
+    "gpt-4": 8192,
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import RequestHandler from "../../base";
 import axios from 'axios';
 import { endpoint, apiKey } from './text-to-speech';
+import { config } from '../../../config';
 
 export default class ElevenLabsVoicesProxyRequestHandler extends RequestHandler {
     async handler(req: express.Request, res: express.Response) {
@@ -16,6 +17,6 @@ export default class ElevenLabsVoicesProxyRequestHandler extends RequestHandler 
     }
 
     public isProtected() {
-        return true;
+        return config.services?.elevenlabs?.loginRequired ?? true;
     }
 }

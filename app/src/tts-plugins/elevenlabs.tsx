@@ -6,7 +6,7 @@ import { defaultElevenLabsVoiceID, defaultVoiceList } from "./elevenlabs-default
 import { backend } from "../core/backend";
 
 function isProxySupported() {
-    return !!backend.current?.user?.services?.includes('elevenlabs');
+    return !!backend.current?.services?.includes('elevenlabs');
 }
 
 function shouldUseProxy(apiKey: string | undefined | null) {

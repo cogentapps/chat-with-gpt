@@ -24,6 +24,7 @@ export interface User {
 
 export class Backend extends EventEmitter {
     public user: User | null = null;
+    public services: string[] = [];
     private checkedSession = false;
 
     private sessionInterval = new AsyncLoop(() => this.getSession(), 1000 * 30);
@@ -70,8 +71,10 @@ export class Backend extends EventEmitter {
                 avatar: session.picture,
                 services: session.services,
             };
+            this.services = session.services || [];
         } else {
             this.user = null;
+            this.services = session?.services || [];
         }
 
         this.checkedSession = true;

@@ -7,7 +7,12 @@ export default class SessionRequestHandler extends RequestHandler {
         const request = req as any;
 
         const availableServiceNames = Object.keys(config.services || {})
-            .filter(key => (config.services as any)?.[key]?.apiKey);
+            .filter(key => {
+                const serviceConfig = (config.services as any)?.[key];
+                const apiKey = serviceConfig?.apiKey;
+                const loginRequired = serviceConfig?.loginRequired ?? true;
+                return apiKey && (!loginRequired || request.isAuthenticated());
+            });
 
         if (request.oidc) {
             const user = request.oidc.user;
@@ -40,6 +45,7 @@ export default class SessionRequestHandler extends RequestHandler {
         res.json({
             authProvider: this.context.authProvider,
             authenticated: false,
+            services: availableServiceNames,
         });
     }
 }

@@ -17,6 +17,6 @@ export default class OpenAIProxyRequestHandler extends RequestHandler {
     }
 
     public isProtected() {
-        return true;
+        return config.services?.openai?.loginRequired ?? true;
     }
 }
