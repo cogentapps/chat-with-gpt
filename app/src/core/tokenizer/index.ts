@@ -12,7 +12,7 @@ const special_tokens: any = {
 
 const special_tokens_map = new Map<string, number>();
 for (const text of Object.keys(special_tokens)) {
-    special_tokens_map.set(text, special_tokens_map[text]);
+    special_tokens_map.set(text, special_tokens[text]);
 }
 
 const pattern = /('s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+/giu;
