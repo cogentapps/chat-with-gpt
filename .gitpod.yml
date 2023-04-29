@@ -1,5 +1,5 @@
 tasks:
-  - init: cd webapp && npm install
-    command: cd webapp && npm run start
-
-
+  - init: cd app && npm install
+    command: cd app && npm run start
+  - init: cd server && npm install
+    command: cd server && npm run start
