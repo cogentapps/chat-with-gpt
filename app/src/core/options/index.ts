@@ -22,11 +22,11 @@ export class OptionsManager extends EventEmitter {
         this.optionGroups = [...globalOptions, ...this.pluginMetadata];
 
         // Load options from localStorage and YChats
-        this.loadOptions();
+        this.reloadOptions();
 
         // Listen for update events on the broadcast channel
         broadcastChannel.onmessage = (event: MessageEvent) => {
-            this.loadOptions();
+            this.reloadOptions();
 
             if (event.data?.groupID) {
                 this.emit('update', event.data.groupID);
@@ -52,6 +52,7 @@ export class OptionsManager extends EventEmitter {
             this.optionsCache.set(key, value);
         } else if (option.scope === "user") {
             const key = cacheKey(groupID, option.id);
+            console.log(`loading option ${groupID}.${option.id} from YDoc into cache (${key})`);
             const value = this.yDoc.getOption(groupID, option.id) || option.defaultValue;
             this.optionsCache.set(key, value);
         } else {
@@ -62,7 +63,7 @@ export class OptionsManager extends EventEmitter {
         }
     }
 
-    private loadOptions() {
+    public reloadOptions() {
         // Load browser and user-scoped options
         this.optionGroups.forEach(group => {
             group.options.forEach(option => {
