@@ -5,7 +5,6 @@ import express from 'express';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import https from 'https';
-import path from 'path';
 import { configureAuth0 } from './auth0';
 import { config } from './config';
 import Database from './database/index';
@@ -25,6 +24,7 @@ import { configurePassport } from './passport';
 import SyncRequestHandler, { getNumUpdatesProcessedIn5Minutes } from './endpoints/sync';
 import LegacySyncRequestHandler from './endpoints/sync-legacy';
 import { getActiveUsersInLast5Minutes } from './endpoints/base';
+import { formatTime } from './utils';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -132,8 +132,8 @@ export default class ChatServer {
         await this.database.initialize();
 
         try {
-            const callback = () => {
-                console.log(`Listening on port ${port}.`);
+            const callback = (https = false) => {
+                console.log(`Open ${config.publicSiteURL || `http${https ? 's' : ''}://localhost:3000`} in your browser.`);
             };
 
             if (config.tls?.key && config.tls?.cert) {
@@ -144,7 +144,7 @@ export default class ChatServer {
                     cert: fs.readFileSync(config.tls.cert),
                 }, this.app);
             
-                server.listen(port, callback);
+                server.listen(port, () => callback(true));
             } else if (config.tls?.selfSigned) {
                 console.log('Configuring self-signed TLS.');
 
@@ -165,7 +165,7 @@ export default class ChatServer {
             console.log(e);
         }
 
-        setInterval(() => {
+        const displayStatistics = () => {
             const activeUsers = getActiveUsersInLast5Minutes();
             
             const activeUsersToDisplay = activeUsers.slice(0, 10);
@@ -173,16 +173,17 @@ export default class ChatServer {
 
             const numRecentUpdates = getNumUpdatesProcessedIn5Minutes();
 
-            console.log(`Statistics (last 5m):`);
+            console.log(`[${formatTime()}] ${activeUsers.length} active users and ${numRecentUpdates} updates processed in last 5m`);
 
             if (extraActiveUsers.length) {
-                console.log(`  - ${activeUsers.length} active users: ${activeUsersToDisplay.join(', ')} and ${extraActiveUsers.length} more`);
-            } else {
-                console.log(`  - ${activeUsers.length} active users: ${activeUsersToDisplay.join(', ')}`);
+                console.log(`  - Active users: ${activeUsersToDisplay.join(', ')} and ${extraActiveUsers.length} more`);
+            } else if (activeUsers.length) {
+                console.log(`  - Active users: ${activeUsersToDisplay.join(', ')}`);
             }
-
-            console.log(`  - ${numRecentUpdates} updates processed`);
-        }, 1000 * 60);
+        }
+        
+        setInterval(displayStatistics, 1000 * 60 * 5);
+        setTimeout(displayStatistics, 1000 * 30);
     }
 }
 
