@@ -263,6 +263,8 @@ export default function MessageInput(props: MessageInputProps) {
     const hotkeyHandler = useMemo(() => {
         const keys = [
             ['Escape', blur, { preventDefault: true }],
+            ['ctrl+Enter', onSubmit, { preventDefault: true }],
+
         ];
         if (submitOnEnter) {
             keys.unshift(['Enter', onSubmit, { preventDefault: true }]);
