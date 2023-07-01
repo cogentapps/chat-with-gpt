@@ -20,6 +20,7 @@ export default class KnexDatabaseAdapter extends Database {
     }
 
     public async initialize() {
+        console.log(`Initializing database adapter for ${this.knexConfig.client}.`);
         await this.createTables();
     }
 

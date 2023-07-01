@@ -12,4 +12,8 @@ export async function basicHandler(req: express.Request, res: express.Response) 
     })
 
     res.json(response.data);
+
+    const promptTokens = response.data.usage.prompt_tokens as number;
+    const completionTokens = response.data.usage.completion_tokens as number;
+    // console.log(`prompt tokens: ${promptTokens}, completion tokens: ${completionTokens}, model: ${req.body.model}`);
 }

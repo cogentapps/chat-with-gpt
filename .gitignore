@@ -1,3 +1,5 @@
+**/config.yaml
+**/config.yml
 *.sqlite
 *.db
 .gitpod.yml

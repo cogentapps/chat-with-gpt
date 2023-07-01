@@ -2,6 +2,7 @@
 import { EventSource } from "launchdarkly-eventsource";
 import express from 'express';
 import { apiKey } from ".";
+import { countTokensForMessages } from "./tokenizer";
 
 export async function streamingHandler(req: express.Request, res: express.Response) {
     res.set({
@@ -9,6 +10,11 @@ export async function streamingHandler(req: express.Request, res: express.Respon
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
     });
+
+    const messages = req.body.messages;
+    const promptTokens = countTokensForMessages(messages);
+
+    let completion = '';
 
     const eventSource = new EventSource('https://api.openai.com/v1/chat/completions', {
         method: "POST",
@@ -30,6 +36,26 @@ export async function streamingHandler(req: express.Request, res: express.Respon
         if (event.data === '[DONE]') {
             res.end();
             eventSource.close();
+
+            const totalTokens = countTokensForMessages([
+                ...messages,
+                {
+                    role: "assistant",
+                    content: completion,
+                },
+            ]);
+            const completionTokens = totalTokens - promptTokens;
+            // console.log(`prompt tokens: ${promptTokens}, completion tokens: ${completionTokens}, model: ${req.body.model}`);
+            return;
+        }
+
+        try {
+            const chunk = parseResponseChunk(event.data);
+            if (chunk.choices && chunk.choices.length > 0) {
+                completion += chunk.choices[0]?.delta?.content || '';
+            }
+        } catch (e) {
+            console.error(e);
         }
     });
 
@@ -48,4 +74,23 @@ export async function streamingHandler(req: express.Request, res: express.Respon
     res.on('error', e => {
         eventSource.close();
     });
+}
+
+function parseResponseChunk(buffer: any) {
+    const chunk = buffer.toString().replace('data: ', '').trim();
+
+    if (chunk === '[DONE]') {
+        return {
+            done: true,
+        };
+    }
+
+    const parsed = JSON.parse(chunk);
+
+    return {
+        id: parsed.id,
+        done: false,
+        choices: parsed.choices,
+        model: parsed.model,
+    };
 }

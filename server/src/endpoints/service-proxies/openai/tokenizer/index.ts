@@ -1,6 +1,9 @@
-import { OpenAIMessage } from "../chat/types";
 import { CoreBPE, RankMap } from "./bpe";
-import ranks from './cl100k_base.json';
+import fs from 'fs';
+import path from 'path';
+import { OpenAIMessage } from "../message";
+
+const ranks = JSON.parse(fs.readFileSync(path.join(__dirname, './cl100k_base.json'), 'utf8'));
 
 const special_tokens: any = {
     "<|endoftext|>": 100257,
@@ -47,19 +50,4 @@ export function countTokensForMessages(messages: OpenAIMessage[]) {
         tokens += countTokensForMessage(m);
     }
     return tokens;
-}
-
-export function truncateText(text: string, tokens: number) {
-    const encoded = tokenizer.encodeOrdinary(text);
-    const decoded = tokenizer.decodeBytes(encoded.slice(0, Math.max(0, tokens)));
-    return new TextDecoder().decode(decoded);
-}
-
-export function truncateMessage(message: OpenAIMessage, tokens: number) {
-    const encoded = tokenizer.encodeOrdinary(message.content);
-    const decoded = tokenizer.decodeBytes(encoded.slice(0, Math.max(0, tokens - overheadTokens.perMessage)));
-    return {
-        role: message.role,
-        content: new TextDecoder().decode(decoded),
-    };
 }
