@@ -19,9 +19,9 @@ export const parameterOptions: OptionGroup = {
             renderProps: (value, options, context) => ({
                 type: "select",
                 label: "Model",
-                description: value === 'gpt-4' && context.intl.formatMessage(
+                description: value?.includes('gpt-4') && context.intl.formatMessage(
                     {
-                        defaultMessage: "Note: GPT-4 will only work if your OpenAI account has been granted access to the new model. <a>Request access here.</a>",
+                        defaultMessage: "Note: This model will only work if your OpenAI account has been granted you have been given access to it. <a>Request access here.</a>",
                     },
                     { 
                         a: (text: string) => <a href="https://openai.com/waitlist/gpt-4-api" target="_blank" rel="noreferer">{text}</a> 
@@ -33,8 +33,34 @@ export const parameterOptions: OptionGroup = {
                         value: "gpt-3.5-turbo",
                     },
                     {
+                        label: "GPT 3.5 Turbo 16k",
+                        value: "gpt-3.5-turbo-16k",
+                    },
+                    {
                         label: "GPT 4 (requires invite)",
                         value: "gpt-4",
+                    },
+                    {
+                        label: "GPT 4 32k (requires invite)",
+                        value: "gpt-4-32k",
+                    },
+                    {
+                        label: "GPT 4 Snapshot (June 13, 2023)",
+                        value: "gpt-4-0613",
+                    },
+          
+                    {
+                        label: "GPT 4 32k Snapshot (June 13, 2023)",
+                        value: "gpt-4-32k-0613",
+                    },
+  
+                    {
+                        label: "GPT 3.5 Turbo Snapshot (June 13, 2023)",
+                        value: "gpt-3.5-turbo-0613",
+                    },
+                    {
+                        label: "GPT 3.5 Turbo 16k Snapshot (June 13, 2023)",
+                        value: "gpt-3.5-turbo-16k-0613",
                     },
                 ],
             }),
