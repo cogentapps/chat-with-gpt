@@ -4,7 +4,7 @@ import { OptionGroup } from "../core/options/option-group";
 import { openAIOptions } from "./openai";
 import { parameterOptions } from "./parameters";
 import { ttsServiceOptions } from "./tts-service";
-import { autoScrollOptions, inputOptions } from "./ui";
+import { autoScrollOptions, inputOptions, markdownOptions } from "./ui";
 import { whisperOptions } from "./whisper";
 
 export const globalOptions: OptionGroup[] = [
@@ -12,6 +12,7 @@ export const globalOptions: OptionGroup[] = [
     autoScrollOptions,
     parameterOptions,
     inputOptions,
+    markdownOptions,
     whisperOptions,
     ttsServiceOptions,
 ];

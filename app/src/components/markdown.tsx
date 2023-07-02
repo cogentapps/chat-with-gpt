@@ -53,6 +53,7 @@ const ImagePreview = styled.div`
 export interface MarkdownProps {
     content: string;
     className?: string;
+    katex? : boolean;
 }
 
 export function Markdown(props: MarkdownProps) {
@@ -68,11 +69,19 @@ export function Markdown(props: MarkdownProps) {
         return classes;
     }, [props.className])
 
-    const elem = useMemo(() => (
-        <div className={classes.join(' ')}>
+    const elem = useMemo(() => {
+        const remarkPlugins: any[] = [remarkGfm];
+        const rehypePlugins: any[] = [];
+
+        if (props.katex) {
+          remarkPlugins.push(remarkMath);
+          rehypePlugins.push(rehypeKatex);
+        }
+      
+        return <div className={classes.join(' ')}>
             <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeKatex]}
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
                 components={{
                     ol({ start, children }) {
                         return <ol start={start ?? 1} style={{ counterReset: `list-item ${(start || 1)}` }}>
@@ -129,8 +138,8 @@ export function Markdown(props: MarkdownProps) {
                         )
                     }
                 }}>{props.content}</ReactMarkdown>
-        </div>
-    ), [props.content, classes, intl]);
+        </div>;
+    }, [props.content, props.katex, classes, intl]);
 
     return elem;
 }

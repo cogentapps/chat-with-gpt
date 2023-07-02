@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { Button, CopyButton, Loader, Textarea } from '@mantine/core';
 
+import { useOption } from '../core/options/use-option';
 import { Message } from "../core/chat/types";
 import { share } from '../core/utils';
 import { TTSButton } from './tts-button';
@@ -210,6 +211,8 @@ export default function MessageComponent(props: { message: Message, last: boolea
     const [content, setContent] = useState('');
     const intl = useIntl();
 
+    const [katex] = useOption<boolean>('markdown', 'katex');
+
     const tab = useAppSelector(selectSettingsTab);
 
     const getRoleName = useCallback((role: string, share = false) => {
@@ -288,7 +291,9 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             </Button>
                         )}
                     </div>
-                    {!editing && <Markdown content={props.message.content} className={"content content-" + props.message.id} />}
+                    {!editing && <Markdown content={props.message.content}
+                        katex={katex}
+                        className={"content content-" + props.message.id} />}
                     {editing && (<Editor>
                         <Textarea value={content}
                             onChange={e => setContent(e.currentTarget.value)}

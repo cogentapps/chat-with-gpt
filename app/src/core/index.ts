@@ -39,7 +39,7 @@ export class ChatManager extends EventEmitter {
         loadSavedChatsFromPreviousVersion(this.doc)
             .then(() => this.emit('update'));
         
-        setInterval(() => this.emitChanges());
+        setInterval(() => this.emitChanges(), 100);
 
         channel.onmessage = message => {
             if (message.type === 'y-update') {
@@ -87,7 +87,10 @@ export class ChatManager extends EventEmitter {
         // connect new doc to persistance, scoped to the current username
         this.provider = new IndexeddbPersistence('chats:' + username, this.doc.root);
         this.provider.whenSynced.then(() => {
-            this.doc.getChatIDs().map(id => this.emit(id));
+            this.doc.getChatIDs().map(id => {
+                this.emit(id);
+                this.search.update(id);
+            });
             this.emit('update');
             this.doc.emit('ready');
             this.options.reloadOptions();
