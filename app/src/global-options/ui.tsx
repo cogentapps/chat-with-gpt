@@ -48,3 +48,19 @@ export const inputOptions: OptionGroup = {
         },
     ],
 }
+
+export const markdownOptions: OptionGroup = {
+    id: 'markdown',
+    name: "Markdown",
+    options: [
+        {
+            id: 'katex',
+            defaultValue: false,
+            displayOnSettingsScreen: "ui",
+            renderProps: {
+                type: "checkbox",
+                label: "Enable Katex math rendering (experimental)",
+            },
+        },
+    ],
+}
