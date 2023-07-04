@@ -7,7 +7,6 @@
     "test": "jest",
     "start": "npx ts-node --logError src/index.ts"
   },
-  "proxy": "http://localhost:3001",
   "author": "cogentdev",
   "license": "MIT",
   "dependencies": {
