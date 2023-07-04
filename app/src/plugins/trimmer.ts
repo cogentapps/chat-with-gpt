@@ -31,7 +31,7 @@ export class ContextTrimmerPlugin extends Plugin<ContextTrimmerPluginOptions> {
                     }),
                     validate: (value, options) => {
                         const max = maxTokensByModel[options.getOption('parameters', 'model')] || 2048;
-                        return value < max;
+                        return value <= max;
                     },
                     displayInQuickSettings: {
                         name: "Max Tokens",
