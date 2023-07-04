@@ -4,8 +4,10 @@
   "description": "An open-source ChatGPT app with a voice",
   "main": "index.js",
   "scripts": {
+    "test": "jest",
     "start": "npx ts-node --logError src/index.ts"
   },
+  "proxy": "http://localhost:3001",
   "author": "cogentdev",
   "license": "MIT",
   "dependencies": {
@@ -60,5 +62,10 @@
     "y-protocols": "^1.0.5",
     "yaml": "^2.2.1",
     "yjs": "^13.5.51"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.2",
+    "jest": "^29.6.0",
+    "ts-jest": "^29.1.1"
   }
 }
