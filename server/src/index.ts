@@ -133,7 +133,7 @@ export default class ChatServer {
 
         try {
             const callback = (https = false) => {
-                console.log(`Open ${config.publicSiteURL || `http${https ? 's' : ''}://localhost:3000`} in your browser.`);
+                console.log(`Open ${config.publicSiteURL || `http${https ? 's' : ''}://localhost:${port}`} in your browser.`);
             };
 
             if (config.tls?.key && config.tls?.cert) {
