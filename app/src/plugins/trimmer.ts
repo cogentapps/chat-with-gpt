@@ -27,7 +27,7 @@ export class ContextTrimmerPlugin extends Plugin<ContextTrimmerPluginOptions> {
                         type: "slider",
                         min: 512,
                         max: maxTokensByModel[options.getOption('parameters', 'model')] || 2048,
-                        step: 512,
+                        step: 64,
                     }),
                     validate: (value, options) => {
                         const max = maxTokensByModel[options.getOption('parameters', 'model')] || 2048;
