@@ -6,12 +6,14 @@ export default class SessionRequestHandler extends RequestHandler {
     async handler(req: express.Request, res: express.Response) {
         const request = req as any;
 
+        const authenticated = !!(request.oidc?.user?.sub || request.session?.passport?.user?.id);
+
         const availableServiceNames = Object.keys(config.services || {})
             .filter(key => {
                 const serviceConfig = (config.services as any)?.[key];
                 const apiKey = serviceConfig?.apiKey;
                 const loginRequired = serviceConfig?.loginRequired ?? true;
-                return apiKey && (!loginRequired || request.isAuthenticated());
+                return apiKey && (!loginRequired || authenticated);
             });
 
         if (request.oidc) {
