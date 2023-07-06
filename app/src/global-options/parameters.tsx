@@ -19,7 +19,7 @@ export const parameterOptions: OptionGroup = {
             renderProps: (value, options, context) => ({
                 type: "select",
                 label: "Model",
-                description: value?.includes('gpt-4') && context.intl.formatMessage(
+                description: value?.includes('32') && context.intl.formatMessage(
                     {
                         defaultMessage: "Note: This model will only work if your OpenAI account has been granted you have been given access to it. <a>Request access here.</a>",
                     },
@@ -37,7 +37,7 @@ export const parameterOptions: OptionGroup = {
                         value: "gpt-3.5-turbo-16k",
                     },
                     {
-                        label: "GPT 4 (requires invite)",
+                        label: "GPT 4",
                         value: "gpt-4",
                     },
                     {
