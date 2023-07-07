@@ -13,7 +13,6 @@
     "@msgpack/msgpack": "^3.0.0-beta2",
     "@reduxjs/toolkit": "^1.9.3",
     "broadcast-channel": "^4.20.2",
-    "buffer": "^6.0.3",
     "comlink": "^4.4.1",
     "events": "^3.3.0",
     "idb-keyval": "^6.2.0",
