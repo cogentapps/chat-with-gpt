@@ -8,6 +8,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PersistGate } from 'redux-persist/integration/react';
 import { AppContextProvider } from './core/context';
 import store, { persistor } from './store';
+import * as serviceWorkerRegistration from "./serviceworker-registration";
+import { setUpdateAvailable } from "./store/pwa";
 
 import ChatPage from './components/pages/chat';
 import LandingPage from './components/pages/landing';
@@ -87,3 +89,7 @@ async function bootstrapApplication() {
 }
 
 bootstrapApplication();
+
+serviceWorkerRegistration.register({
+    onUpdate: () => store.dispatch(setUpdateAvailable()),
+});
