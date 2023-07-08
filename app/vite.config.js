@@ -4,6 +4,15 @@ import { comlink } from "vite-plugin-comlink";
 
 export default defineConfig(() => {
   return {
+    server: {
+      proxy: {
+        "/chatapi": {
+          target: "http://localhost:3001",
+          secure: false,
+          changeOrigin: true,
+        },
+      },
+    },
     build: {
       outDir: "build",
     },
