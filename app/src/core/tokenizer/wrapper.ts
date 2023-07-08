@@ -1,10 +1,11 @@
+import { wrap } from "comlink";
 import { OpenAIMessage } from "../chat/types";
 import type { ChatHistoryTrimmerOptions } from "./chat-history-trimmer";
 // @ts-ignore
 import tokenizer from "./worker?worker&url";
 
-const worker = new ComlinkWorker<typeof import("./worker")>(
-  new URL(tokenizer, import.meta.url)
+const worker = wrap<typeof import("./worker")>(
+  new Worker(new URL(tokenizer, import.meta.url), { type: "module" })
 );
 
 export async function runChatTrimmer(

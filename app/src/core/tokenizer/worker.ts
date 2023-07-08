@@ -1,3 +1,4 @@
+import { expose } from "comlink";
 import * as methods from ".";
 import { OpenAIMessage } from "../chat/types";
 import { ChatHistoryTrimmer, ChatHistoryTrimmerOptions } from "./chat-history-trimmer";
@@ -14,3 +15,5 @@ export function countTokensForText(text: string) {
 export function countTokensForMessages(messages: OpenAIMessage[]) {
     return methods.countTokensForMessages(messages);
 }
+
+expose({ runChatTrimmer, countTokensForText, countTokensForMessages });
