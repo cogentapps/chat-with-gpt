@@ -14,9 +14,12 @@ COPY ./app/tsconfig.json ./
 # Install Node.js dependencies
 RUN npm install
 
+COPY ./app/vite.config.js ./
+
 # Copy public, and src directories
 COPY ./app/public ./public
 COPY ./app/src ./src
+COPY ./app/index.html ./
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -29,14 +32,6 @@ FROM node:19-bullseye-slim AS server
 # Set the working directory
 WORKDIR /app
 
-# Update the package index and install required dependencies
-# RUN apt-get update && \
-#     apt-get install -y \
-#     curl \
-#     build-essential \
-#     libssl-dev \
-#     openssl
-
 COPY ./server/package.json ./server/tsconfig.json ./
 
 # Install Node.js dependencies from package.json
@@ -45,7 +40,7 @@ RUN npm install
 # Copy the rest of the application code into the working directory
 COPY ./server/src ./src
 
-RUN CI=true sh -c "cd /app && mkdir data && npm run start && rm -rf data"
+RUN CI=true sh -c "cd /app && npm run start && rm -rf data"
 
 COPY --from=build /app/build /app/public
 
