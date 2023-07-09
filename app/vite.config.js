@@ -14,6 +14,10 @@ export default defineConfig(() => {
     },
     build: {
       outDir: "build",
+      target: "es2020"
+    },
+    esbuild: {
+      target: "es2020"
     },
     resolve: {
       alias: {
