@@ -2,9 +2,6 @@
   "+G35mR": {
     "defaultMessage": "Open sidebar"
   },
-  "+H2Qtw": {
-    "defaultMessage": "Show quick settings below message input"
-  },
   "+LMWDJ": {
     "defaultMessage": "Chat History",
     "description": "Heading for the chat history screen"
@@ -56,8 +53,8 @@
     "defaultMessage": "Save changes",
     "description": "Label for a button that appears when the user is editing the text of one of their messages, to save the changes"
   },
-  "E4+fv5": {
-    "defaultMessage": "Auto-scroll to the bottom of the page when opening a chat"
+  "CIe3Dt": {
+    "defaultMessage": "Note: This model will only work if your OpenAI account has been granted you have been given access to it. <a>Request access here.</a>"
   },
   "FEzBCd": {
     "defaultMessage": "Untitled",
@@ -73,11 +70,11 @@
   "KKa5Br": {
     "defaultMessage": "Give ChatGPT a realisic human voice by connecting your ElevenLabs account (preview the available voices below). <a>Click here to sign up.</a>"
   },
+  "KbUcBc": {
+    "defaultMessage": "Your ElevenLabs API Key"
+  },
   "L5s+z7": {
     "defaultMessage": "OpenAI API key usage is billed at a pay-as-you-go rate, separate from your ChatGPT subscription."
-  },
-  "LHOuNA": {
-    "defaultMessage": "Auto-scroll while generating a response"
   },
   "MI5gZ+": {
     "defaultMessage": "Download SVG"
@@ -85,9 +82,6 @@
   "N2NGTf": {
     "defaultMessage": "Chat with GPT",
     "description": "app name"
-  },
-  "NRJ4IQ": {
-    "defaultMessage": "Note: GPT-4 will only work if your OpenAI account has been granted access to the new model. <a>Request access here.</a>"
   },
   "NgCT/u": {
     "defaultMessage": "Enter your email address"
@@ -105,16 +99,16 @@
   "SQJto2": {
     "defaultMessage": "Sign in"
   },
-  "SQh9En": {
-    "defaultMessage": "Sign in <h>to sync</h>",
-    "description": "Label for sign in button, indicating the purpose of signing in is to sync your data between devices"
-  },
   "T8gKkC": {
     "defaultMessage": "Delete this chat"
   },
   "Tgo3vj": {
     "defaultMessage": "Edit",
     "description": "Label for the button the user can click to edit the text of one of their messages"
+  },
+  "UbN3HK": {
+    "defaultMessage": "Sign in <h>to sync</h>",
+    "description": "Label for sign in button, which indicates that the purpose of signing in is to sync your data between devices. Less important text inside <h> tags is hidden on small screens."
   },
   "VL24Xt": {
     "defaultMessage": "Search your chats"
@@ -126,10 +120,6 @@
     "defaultMessage": "Or sign in to an existing account",
     "description": "Label for a button on the Create Account page that lets the user sign into their existing account instead"
   },
-  "aR9WsJ": {
-    "defaultMessage": "UI Settings",
-    "description": "Heading for the setting that lets users customize various UI elements"
-  },
   "bIacvz": {
     "defaultMessage": "Chat with GPT - Unofficial ChatGPT app",
     "description": "HTML title tag"
@@ -137,9 +127,6 @@
   "f/hGIY": {
     "defaultMessage": "Hello, how can I help you today?",
     "description": "A friendly message that appears at the start of new chat sessions"
-  },
-  "gNu/AE": {
-    "defaultMessage": "Show microphone button in message input"
   },
   "gzJlXS": {
     "defaultMessage": "Share",
@@ -155,6 +142,9 @@
     "defaultMessage": "Save and Close",
     "description": "Label for the button that closes the Settings screen, saving any changes"
   },
+  "jU4MQH": {
+    "defaultMessage": "Rename this chat"
+  },
   "jtu3jt": {
     "defaultMessage": "You can find your API key by clicking your avatar or initials in the top right of the ElevenLabs website, then clicking Profile. Your API key is stored only on this device and never transmitted to anyone except ElevenLabs."
   },
@@ -162,9 +152,8 @@
     "defaultMessage": "Copied",
     "description": "Label for copy-to-clipboard button after a successful copy"
   },
-  "pv41j8": {
-    "defaultMessage": "Temperature: {temperature, number, ::.0}",
-    "description": "Label for the button that opens a modal for setting the 'temperature' (randomness) of AI responses"
+  "mL4Q28": {
+    "defaultMessage": "Custom Voice ID"
   },
   "raQMIg": {
     "defaultMessage": "Cancel",
@@ -196,19 +185,8 @@
     "defaultMessage": "Copy",
     "description": "Label for copy-to-clipboard button"
   },
-  "w5Dmuu": {
-    "defaultMessage": "Customize system prompt",
-    "description": "Label for the button that opens a modal for customizing the 'system prompt', a message used to customize and influence how the AI responds."
-  },
   "xXbJso": {
     "defaultMessage": "Sign out"
-  },
-  "xqpqZE": {
-    "defaultMessage": "Your Elevenlabs API Key"
-  },
-  "y1F8Hs": {
-    "defaultMessage": "Your OpenAI API Key",
-    "description": "Heading for the OpenAI API key setting on the settings screen"
   },
   "zBmup+": {
     "defaultMessage": "Regenerate",

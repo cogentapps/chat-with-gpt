@@ -1,28 +1,20 @@
+import { wrap } from "comlink";
 import { OpenAIMessage } from "../chat/types";
 import type { ChatHistoryTrimmerOptions } from "./chat-history-trimmer";
 // @ts-ignore
-import tokenizer from 'workerize-loader!./worker';
+import tokenizer from "./worker?worker&url";
 
-let worker: any;
+const worker = wrap<typeof import("./worker")>(
+  new Worker(new URL(tokenizer, import.meta.url), { type: "module" })
+);
 
-async function getWorker() {
-    if (!worker) {
-        worker = await tokenizer();
-    }
-    return worker;
-}
-
-export async function runChatTrimmer(messages: OpenAIMessage[], options: ChatHistoryTrimmerOptions): Promise<OpenAIMessage[]> {
-    const worker = await getWorker();
-    return worker.runChatTrimmer(messages, options);
+export async function runChatTrimmer(
+  messages: OpenAIMessage[],
+  options: ChatHistoryTrimmerOptions
+): Promise<OpenAIMessage[]> {
+  return worker.runChatTrimmer(messages, options);
 }
 
 export async function countTokens(messages: OpenAIMessage[]) {
-    const worker = await getWorker();
-    return await worker.countTokensForMessages(messages);
+  return await worker.countTokensForMessages(messages);
 }
-
-// preload the worker
-getWorker().then(w => {
-    (window as any).worker = w;
-})
