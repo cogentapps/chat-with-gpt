@@ -14,8 +14,7 @@ COPY ./app/tsconfig.json ./
 # Install Node.js dependencies
 RUN npm install
 
-# Copy craco.config.js, public, and src directories
-COPY ./app/craco.config.js ./craco.config.js
+# Copy public, and src directories
 COPY ./app/public ./public
 COPY ./app/src ./src
 
