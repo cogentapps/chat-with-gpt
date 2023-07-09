@@ -15,7 +15,6 @@ import messageReducer from './message';
 import settingsUIReducer from './settings-ui';
 import sidebarReducer from './sidebar';
 import uiReducer from './ui';
-import pwaReducer from './pwa';
 
 const persistConfig = {
   key: 'root',
@@ -38,7 +37,6 @@ const store = configureStore({
     ui: uiReducer,
     settingsUI: settingsUIReducer,
     sidebar: persistReducer<ReturnType<typeof sidebarReducer>>(persistSidebarConfig, sidebarReducer),
-    pwa: pwaReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,32 +1,37 @@
 import { Button, Notification } from "@mantine/core";
 import { useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "../store";
-import { resetUpdate, selectUpdateAvailable } from "../store/pwa";
+import { useRegisterSW } from "virtual:pwa-register/react";
 
 export function InstallUpdateNotification() {
-    const updateAvailable = useAppSelector(selectUpdateAvailable);
-    const dispatch = useAppDispatch();
+  const {
+    offlineReady: [_, setOfflineReady],
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(r) {
+      console.log("SW Registered:", r);
+    },
+    onRegisterError(error) {
+      console.log("SW registration error", error);
+    },
+  });
 
-    const onClose = useCallback(() => dispatch(resetUpdate()), [dispatch]);
+  const onClose = () => {
+    setOfflineReady(false);
+    setNeedRefresh(false);
+  };
 
-    const onUpdate = useCallback(async () => {
-        dispatch(resetUpdate());
+  const onUpdate = useCallback(async () => {
+    updateServiceWorker(true);
+  }, []);
 
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration && registration.waiting) {
-        registration.waiting.postMessage({ type: "SKIP_WAITING" });
-        }
-
-        window.location.reload();
-    }, [dispatch]);
-
-    return updateAvailable ? (
-        <Notification title="Update available!" onClose={onClose}>
-            Click{" "}
-            <Button compact onClick={onUpdate}>
-                Update now
-            </Button>{" "}
-            to get the latest version.
-        </Notification>
-    ) : null;
+  return needRefresh ? (
+    <Notification title="Update available!" onClose={onClose}>
+      Click{" "}
+      <Button compact onClick={onUpdate}>
+        Update now
+      </Button>{" "}
+      to get the latest version.
+    </Notification>
+  ) : null;
 }
