@@ -4,6 +4,7 @@ import { useChatSpotlightProps } from '../spotlight';
 import { LoginModal, CreateAccountModal } from './auth-modals';
 import Header, { HeaderProps, SubHeader } from './header';
 import MessageInput from './input';
+import { InstallUpdateNotification } from './pwa-notifications';
 import SettingsDrawer from './settings';
 import Sidebar from './sidebar';
 import AudioControls from './tts-controls';
@@ -90,6 +91,7 @@ export function Page(props: {
                 <SettingsDrawer />
                 <LoginModal />
                 <CreateAccountModal />
+                <InstallUpdateNotification />
             </Main>
         </Container>
     </SpotlightProvider>;

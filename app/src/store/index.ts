@@ -31,8 +31,6 @@ const persistMessageConfig = {
   storage,
 }
 
-
-
 const store = configureStore({
   reducer: {
     message: persistReducer<ReturnType<typeof messageReducer>>(persistMessageConfig, messageReducer),
