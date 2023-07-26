@@ -84,7 +84,7 @@ export function Markdown(props: MarkdownProps) {
                 rehypePlugins={rehypePlugins}
                 components={{
                     ol({ start, children }) {
-                        return <ol start={start ?? 1} style={{ counterReset: `list-item ${(start || 1)}` }}>
+                        return <ol start={start ?? 0} style={{ counterReset: `list-item ${(start || 0)}` }}>
                             {children}
                         </ol>;
                     },
