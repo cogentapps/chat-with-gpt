@@ -81,6 +81,15 @@ export interface Config {
         windowMs?: number;
         max?: number;
     };
+
+    /*
+    The amount of time before the session expires and a user must log in again.
+    */
+    sessionTimeout?: {
+        days: number,
+        hours: number,
+        minutes: number
+    }
 }
 
 // default config:

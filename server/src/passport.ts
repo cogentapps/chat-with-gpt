@@ -8,6 +8,7 @@ import ChatServer from './index';
 import { config } from './config';
 
 const secret = config.authSecret;
+const sessionTimeout = config.sessionTimeout;
 
 export function configurePassport(context: ChatServer) {
     const SQLiteStore = createSQLiteSessionStore(session);
@@ -51,6 +52,13 @@ export function configurePassport(context: ChatServer) {
         secret,
         resave: false,
         saveUninitialized: false,
+        cookie: {
+            maxAge: sessionTimeout
+                ? (sessionTimeout.days * (1000 * 60 * 60 * 24))
+                + (sessionTimeout.hours * (1000 * 60 * 60))
+                + (sessionTimeout.minutes * (1000 * 60))
+                : undefined
+        },
         store: sessionStore as any,
     }));
     context.app.use(passport.authenticate('session'));
