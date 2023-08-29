@@ -201,12 +201,14 @@ export default class ElevenLabsPlugin extends TTSPlugin<ElevenLabsPluginOptions>
         }
 
         const url = this.endpoint + '/v1/text-to-speech/' + voice.id;
+        const model_id = 'eleven_multilingual_v2';
 
         const response = await fetch(url, {
             headers: this.createHeaders(),
             method: 'POST',
             body: JSON.stringify({
                 text,
+                model_id,
             }),
         });
 
