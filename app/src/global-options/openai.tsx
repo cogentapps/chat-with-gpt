@@ -15,7 +15,7 @@ export const openAIOptions: OptionGroup = {
                 placeholder: "sk-************************************************",
                 description: <>
                     <p>
-                        <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noreferrer">
+                        <a href="https://platform.openai.com/account/api-keys" target="_blank" rel="noreferrer" style="color: red;">
                             <FormattedMessage defaultMessage="Find your API key here." description="Label for the link that takes the user to the page on the OpenAI website where they can find their API key." />
                         </a>
                     </p>
