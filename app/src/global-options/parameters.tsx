@@ -48,12 +48,18 @@ export const parameterOptions: OptionGroup = {
                         label: "GPT 4 Snapshot (June 13, 2023)",
                         value: "gpt-4-0613",
                     },
-          
                     {
-                        label: "GPT 4 32k Snapshot (June 13, 2023)",
+                        label: "GPT 4 Snapshot (March 14, 2023)",
+                        value: "gpt-4-0314",
+                    },
+                    {
+                        label: "GPT 4 32k June Snapshot (required invite)",
                         value: "gpt-4-32k-0613",
                     },
-  
+                    {
+                        label: "GPT 4 32k March Snapshot (required invite)",
+                        value: "gpt-4-32k-0314",
+                    },
                     {
                         label: "GPT 3.5 Turbo Snapshot (June 13, 2023)",
                         value: "gpt-3.5-turbo-0613",
