@@ -43,7 +43,7 @@ export function useCreateAppContext(): Context {
     const dispatch = useAppDispatch();
 
     intl = useIntl();
-    
+
     const { pathname } = useLocation();
     const isHome = pathname === '/';
     const isShare = pathname.startsWith('/s/');
@@ -77,7 +77,7 @@ export function useCreateAppContext(): Context {
 
     const onNewMessage = useCallback(async (message?: string) => {
         resetAudioContext();
-        
+
         if (isShare) {
             return false;
         }
@@ -114,22 +114,12 @@ export function useCreateAppContext(): Context {
             }
         }
 
-        // if (chatManager.has(id)) {
-            // chatManager.sendMessage({
-            //     chatID: id,
-            //     content: message.trim(),
-            //     requestedParameters: {
-            //         ...parameters,
-            //         apiKey: openaiApiKey,
-            //     },
-            //     parentID: currentChat.leaf?.id,
-            // });
-        // } else {
-        //     await chatManager.createChat(id);
-
             chatManager.sendMessage({
                 chatID: id,
-                content: message.trim(),
+                content: {
+                    type: "text",
+                    text: message.trim(),
+                },
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
@@ -171,7 +161,7 @@ export function useCreateAppContext(): Context {
 
     const editMessage = useCallback(async (message: Message, content: string) => {
         resetAudioContext();
-        
+
         if (isShare) {
             return false;
         }
@@ -196,7 +186,10 @@ export function useCreateAppContext(): Context {
         if (id && chatManager.has(id)) {
             await chatManager.sendMessage({
                 chatID: id,
-                content: content.trim(),
+                content: {
+                    type: "text",
+                    text: message.trim(),
+                },
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
@@ -207,7 +200,10 @@ export function useCreateAppContext(): Context {
             const id = await chatManager.createChat();
             await chatManager.sendMessage({
                 chatID: id,
-                content: content.trim(),
+                content: {
+                    type: "text",
+                    text: message.trim(),
+                },
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
