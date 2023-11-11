@@ -7,6 +7,22 @@ export interface Parameters {
     model: string;
 }
 
+export type TextContentItem = {
+    type: 'text';
+    text: string;
+}
+
+export type ImageContentItem = {
+    type: 'image_url';
+    image_url: {
+        url: string;
+    };
+};
+
+export type ContentItem = TextContentItem | ImageContentItem;
+
+export type MessageContent = string | ContentItem[];
+
 export interface Message {
     id: string;
     chatID: string;
@@ -14,7 +30,7 @@ export interface Message {
     timestamp: number;
     role: string;
     model?: string;
-    content: string;
+    content: MessageContent;
     parameters?: Parameters;
     done?: boolean;
 }
@@ -22,13 +38,13 @@ export interface Message {
 export interface UserSubmittedMessage {
     chatID: string;
     parentID?: string;
-    content: string;
+    content: MessageContent;
     requestedParameters: Parameters;
 }
 
 export interface OpenAIMessage {
     role: string;
-    content: string;
+    content: MessageContent;
 }
 
 export function getOpenAIMessageFromMessage(message: Message): OpenAIMessage {
