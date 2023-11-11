@@ -30,7 +30,8 @@ export interface Message {
     timestamp: number;
     role: string;
     model?: string;
-    content: MessageContent;
+    content: string;
+    image_url?: string;
     parameters?: Parameters;
     done?: boolean;
 }
@@ -38,7 +39,8 @@ export interface Message {
 export interface UserSubmittedMessage {
     chatID: string;
     parentID?: string;
-    content: MessageContent;
+    content: string;
+    image_url?: string;
     requestedParameters: Parameters;
 }
 
@@ -47,10 +49,43 @@ export interface OpenAIMessage {
     content: MessageContent;
 }
 
+export function convertOpenAIMessageContentToMessageContent(openAIMessageContent: MessageContent): string {
+    if (typeof openAIMessageContent === 'string') {
+        // The content is already a string, so return it as is.
+        return openAIMessageContent;
+    } else if (Array.isArray(openAIMessageContent) && openAIMessageContent.length > 0) {
+        // The content is an array and we assume there's at least one item.
+        // Directly access the text of the first (and supposedly only) TextContentItem.
+        const firstItem = openAIMessageContent[0];
+        if ('text' in firstItem) {
+            return firstItem.text; // Assuming this is a TextContentItem with a 'text' field.
+        }
+    }
+    // If the content is neither a string nor a valid array, return an empty string or handle as needed.
+    return '';
+}
+
+
 export function getOpenAIMessageFromMessage(message: Message): OpenAIMessage {
+    let contents: ContentItem[] = [];
+
+    contents.push({
+        type: 'text',
+        text: message.content,
+    });
+
+    if (message.image_url) {
+        contents.push({
+            type: 'image_url',
+            image_url: {
+                url: message['image_url'],
+            },
+        });
+    }
+
     return {
         role: message.role,
-        content: message.content,
+        content: contents,
     };
 }
 

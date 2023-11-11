@@ -114,19 +114,16 @@ export function useCreateAppContext(): Context {
             }
         }
 
-            chatManager.sendMessage({
-                chatID: id,
-                content: {
-                    type: "text",
-                    text: message.trim(),
-                },
-                requestedParameters: {
-                    ...parameters,
-                    apiKey: openaiApiKey,
-                },
-                parentID: currentChat.leaf?.id,
-            });
-        // }
+        // FIXME: Add image_url if it's been set by user
+        chatManager.sendMessage({
+            chatID: id,
+            content: message.trim(),
+            requestedParameters: {
+                ...parameters,
+                apiKey: openaiApiKey,
+            },
+            parentID: currentChat.leaf?.id,
+        });
 
         return id;
     }, [dispatch, id, currentChat.leaf, isShare]);
@@ -183,13 +180,11 @@ export function useCreateAppContext(): Context {
             temperature: chatManager.options.getOption<number>('parameters', 'temperature', id),
         };
 
+        // FIXME: Add image_url if it's been set by user
         if (id && chatManager.has(id)) {
             await chatManager.sendMessage({
                 chatID: id,
-                content: {
-                    type: "text",
-                    text: message.trim(),
-                },
+                content: content.trim(),
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
@@ -200,10 +195,7 @@ export function useCreateAppContext(): Context {
             const id = await chatManager.createChat();
             await chatManager.sendMessage({
                 chatID: id,
-                content: {
-                    type: "text",
-                    text: message.trim(),
-                },
+                content: content.trim(),
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
