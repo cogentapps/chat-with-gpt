@@ -44,6 +44,8 @@ export default function MessageInput(props: MessageInputProps) {
     const [speechError, setSpeechError] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState(null);
     const [isImageUploading, setIsImageUploading] = useState(false);
+    const [uploadedImageName, setUploadedImageName] = useState('');
+    const [showImageNameDropdown, setShowImageNameDropdown] = useState(false);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
     const [useOpenAIWhisper] = useOption<boolean>('speech-recognition', 'use-whisper');
     const [openAIApiKey] = useOption<string>('openai', 'apiKey');
@@ -204,6 +206,7 @@ export default function MessageInput(props: MessageInputProps) {
         const file = event.target.files[0];
         if (file) {
             setIsImageUploading(true);
+            setUploadedImageName(file.name);
             const reader = new FileReader();
 
             reader.onload = (loadEvent) => {
@@ -217,11 +220,22 @@ export default function MessageInput(props: MessageInputProps) {
                 // FIXME: Add error to UI
                 console.log('Error uploading image: ', error);
                 setIsImageUploading(false);
+                setUploadedImageName('');
             }
 
             reader.readAsDataURL(file);
         }
     };
+
+    function handleMouseEnter() {
+        if (imageUrl) {
+            setShowImageNameDropdown(true);
+        }
+    }
+
+    function handleMouseLeave() {
+        setShowImageNameDropdown(false);
+    }
 
     const rightSection = useMemo(() => {
         return (
@@ -280,15 +294,41 @@ export default function MessageInput(props: MessageInputProps) {
                             ref={fileInputRef}
                         />
 
-                        <ActionIcon size="xl"
-                            onClick={() => fileInputRef.current.click()}
-                            disabled={isImageUploading}>
-                            {isImageUploading ? (
-                                <i className="fa fa-ellipsis-h" style={{ fontSize: '90%' }} />
-                            ) : (
-                                <i className="fa fa-camera" style={{ fontSize: '90%' }} />
-                            )}
-                        </ActionIcon>
+                        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                            <Popover width={200} position="bottom" withArrow shadow="md" opened={showImageNameDropdown}>
+                                <Popover.Target>
+                                    <ActionIcon
+                                        size="xl"
+                                        onClick={() => fileInputRef.current.click()}
+                                        disabled={isImageUploading}
+                                    >
+                                        {isImageUploading ? (
+                                            <i className="fa fa-ellipsis-h" style={{ fontSize: '90%' }} />
+                                        ) : uploadedImageName ? (
+                                            <i className="fa fa-check" style={{ fontSize: '90%' }} />
+                                        ) : (
+                                            <i className="fa fa-camera" style={{ fontSize: '90%' }} />
+                                        )}
+                                    </ActionIcon>
+                                </Popover.Target>
+                                <Popover.Dropdown>
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                    }}>
+                                        <p style={{
+                                            fontFamily: `"Work Sans", sans-serif`,
+                                            fontSize: '0.9rem',
+                                            textAlign: 'center',
+                                            marginBottom: '0.5rem',
+                                        }}>
+                                            {uploadedImageName}
+                                        </p>
+                                    </div>
+                                </Popover.Dropdown>
+                            </Popover>
+                        </div>
 
                         <ActionIcon size="xl"
                             onClick={onSubmit}
@@ -299,7 +339,7 @@ export default function MessageInput(props: MessageInputProps) {
                 )}
             </div>
         );
-    }, [recording, transcribing, isImageUploading, imageUrl, onSubmit, onSpeechStart, props.disabled, context.generating, speechError, onHideSpeechError, showMicrophoneButton]);
+    }, [recording, transcribing, isImageUploading, imageUrl, showImageNameDropdown, onSubmit, onSpeechStart, props.disabled, context.generating, speechError, onHideSpeechError, showMicrophoneButton]);
 
     const disabled = context.generating;
 
