@@ -75,7 +75,7 @@ export function useCreateAppContext(): Context {
         };
     }, [updateAuth]);
 
-    const onNewMessage = useCallback(async (message?: string) => {
+    const onNewMessage = useCallback(async (message?: string, imageUrl?: string) => {
         resetAudioContext();
 
         if (isShare) {
@@ -114,10 +114,10 @@ export function useCreateAppContext(): Context {
             }
         }
 
-        // FIXME: Add image_url if it's been set by user
         chatManager.sendMessage({
             chatID: id,
             content: message.trim(),
+            image_url: imageUrl,
             requestedParameters: {
                 ...parameters,
                 apiKey: openaiApiKey,
@@ -180,11 +180,11 @@ export function useCreateAppContext(): Context {
             temperature: chatManager.options.getOption<number>('parameters', 'temperature', id),
         };
 
-        // FIXME: Add image_url if it's been set by user
         if (id && chatManager.has(id)) {
             await chatManager.sendMessage({
                 chatID: id,
                 content: content.trim(),
+                image_url: message.image_url,
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
@@ -196,6 +196,7 @@ export function useCreateAppContext(): Context {
             await chatManager.sendMessage({
                 chatID: id,
                 content: content.trim(),
+                image_url: message.image_url,
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,

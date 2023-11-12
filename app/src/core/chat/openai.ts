@@ -59,6 +59,17 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
         throw new Error('No API key provided');
     }
 
+    let payload = {
+        "model": parameters.model,
+        "messages": messages,
+        "temperature": parameters.temperature,
+    };
+
+    // The GPT-4V model preview requires max tokens to be set
+    if (parameters.model === "gpt-4-vision-preview") {
+        payload["max_tokens"] = 4096;
+    }
+
     const response = await fetch(endpoint + '/v1/chat/completions', {
         method: "POST",
         headers: {
@@ -66,11 +77,7 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
             'Authorization': !proxied ? `Bearer ${parameters.apiKey}` : '',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            "model": parameters.model,
-            "messages": messages,
-            "temperature": parameters.temperature,
-        }),
+        body: JSON.stringify(payload),
     });
 
     const data = await response.json();
@@ -88,6 +95,18 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         throw new Error('No API key provided');
     }
 
+    let payload = {
+        "model": parameters.model,
+        "messages": messages,
+        "temperature": parameters.temperature,
+        "stream": true,
+    };
+
+    // The GPT-4V model preview requires max tokens to be set
+    if (parameters.model === "gpt-4-vision-preview") {
+        payload["max_tokens"] = 4096;
+    }
+
     const eventSource = new SSE(endpoint + '/v1/chat/completions', {
         method: "POST",
         headers: {
@@ -95,12 +114,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
             'Authorization': !proxied ? `Bearer ${parameters.apiKey}` : '',
             'Content-Type': 'application/json',
         },
-        payload: JSON.stringify({
-            "model": parameters.model,
-            "messages": messages,
-            "temperature": parameters.temperature,
-            "stream": true,
-        }),
+        payload: JSON.stringify(payload),
     }) as SSE;
 
     let contents = '';
