@@ -5,6 +5,7 @@ import { OpenAIMessage, Parameters } from "./types";
 import { backend } from "../backend";
 
 export const defaultModel = 'gpt-4-1106-preview';
+export const titlesModel = 'gpt-3.5-turbo';
 
 export function isProxySupported() {
     return !!backend.current?.services?.includes('openai');
