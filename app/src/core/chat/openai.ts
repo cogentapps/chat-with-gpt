@@ -150,7 +150,7 @@ export const maxTokensByModel = {
     "gpt-4-32k-0314": 32768,
     "gpt-3.5-turbo": 4096,
     "gpt-3.5-turbo-0613": 4096,
-    "gpt-3.5-turbo-1106": 16385,
-    "gpt-3.5-turbo-16k": 16385,
-    "gpt-3.5-turbo-16k-0613": 16385,
+    "gpt-3.5-turbo-1106": 16384,
+    "gpt-3.5-turbo-16k": 16384,
+    "gpt-3.5-turbo-16k-0613": 16384,
 };

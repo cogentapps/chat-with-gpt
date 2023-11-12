@@ -49,16 +49,16 @@ export interface OpenAIMessage {
     content: MessageContent;
 }
 
-export function convertOpenAIMessageContentToMessageContent(openAIMessageContent: MessageContent): string {
+export function getTextContentFromOpenAIMessageContent(openAIMessageContent: MessageContent): string {
     if (typeof openAIMessageContent === 'string') {
         // The content is already a string, so return it as is.
         return openAIMessageContent;
     } else if (Array.isArray(openAIMessageContent) && openAIMessageContent.length > 0) {
-        // The content is an array and we assume there's at least one item.
-        // Directly access the text of the first (and supposedly only) TextContentItem.
+        // The content is an array, so return the text field of the first item in the array.
+        // Note: The first item will always be a text field, and following items may be images.
         const firstItem = openAIMessageContent[0];
         if ('text' in firstItem) {
-            return firstItem.text; // Assuming this is a TextContentItem with a 'text' field.
+            return firstItem.text;
         }
     }
     // If the content is neither a string nor a valid array, return an empty string or handle as needed.

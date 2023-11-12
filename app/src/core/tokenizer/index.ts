@@ -1,4 +1,4 @@
-import { OpenAIMessage } from "../chat/types";
+import { OpenAIMessage, getTextContentFromOpenAIMessageContent } from "../chat/types";
 import { CoreBPE, RankMap } from "./bpe";
 import ranks from './cl100k_base.json';
 
@@ -38,7 +38,8 @@ export function countTokensForText(text: string) {
 }
 
 export function countTokensForMessage(message: OpenAIMessage) {
-    return countTokensForText(message.content) + overheadTokens.perMessage;
+    const text = getTextContentFromOpenAIMessageContent(message.content);
+    return countTokensForText(text) + overheadTokens.perMessage;
 }
 
 export function countTokensForMessages(messages: OpenAIMessage[]) {
@@ -56,10 +57,26 @@ export function truncateText(text: string, tokens: number) {
 }
 
 export function truncateMessage(message: OpenAIMessage, tokens: number) {
-    const encoded = tokenizer.encodeOrdinary(message.content);
+    const text = getTextContentFromOpenAIMessageContent(message.content);
+    const encoded = tokenizer.encodeOrdinary(text);
     const decoded = tokenizer.decodeBytes(encoded.slice(0, Math.max(0, tokens - overheadTokens.perMessage)));
-    return {
-        role: message.role,
-        content: new TextDecoder().decode(decoded),
-    };
+    const truncatedText = new TextDecoder().decode(decoded);
+
+    if (Array.isArray(message.content) && message.content.length > 0) {
+        const truncatedContent = JSON.parse(JSON.stringify(message.content));
+        if ('text' in truncatedContent[0]) {
+            // Update the text field of the first text content item with the truncated text, if it exists.
+            // Note: The first item will always be a text field, and following items may be images.
+            truncatedContent[0].text = truncatedText
+        }
+        return {
+            ...message,
+            content: truncatedContent,
+        }
+    } else {
+        return {
+            ...message,
+            content: truncatedText,
+        };
+    }
 }
