@@ -6,6 +6,8 @@ This is a fork of from [cogent-apps](https://github.com/cogentapps/chat-with-gpt
 
 You can [self-host with Docker](#running-on-your-own-computer).
 
+You can build your own image, or use the ones [hosted in our public registry](https://hub.docker.com/r/jpipu/chat-with-gpt).
+
 Powered by the new ChatGPT API from OpenAI, this app has been developed using TypeScript + React. We welcome pull requests from the community!
 https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1-ac38-e972dafc2f98.mp4
 
@@ -46,7 +48,7 @@ Your API key is stored only on your device and never transmitted to anyone excep
 To run on your own device, you can use Docker:
 
 ```
-docker run -v $(pwd)/data:/app/data -p 3000:3000 ghcr.io/cogentapps/chat-with-gpt:release
+docker run -v $(pwd)/data:/app/data -p 3000:3000 docker.io/jpipu/chat-with-gpt:release
 ```
 
 Then navigate to http://localhost:3000 to view the app.
@@ -72,7 +74,7 @@ and restart the server. Login is required.
 ## Updating
 
 ```
-docker pull ghcr.io/cogentapps/chat-with-gpt:release
+docker pull docker.io/jpipu/chat-with-gpt:latest
 ```
 
 ## TODOs
