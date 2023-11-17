@@ -75,6 +75,13 @@ and restart the server. Login is required.
 docker pull ghcr.io/cogentapps/chat-with-gpt:release
 ```
 
+## TODOs
+
+- [ ] Save system prompt between browsers for a user.
+- [ ] Support for Assistants.
+- [ ] Specify custom API URL (e.g. [anyscale](https://docs.endpoints.anyscale.com/))
+- [ ] Instructions on self-signing (See [1](https://github.com/cogentapps/chat-with-gpt/issues/132) and [2](https://github.com/cogentapps/chat-with-gpt/issues/170)) for running with secure connection.
+
 ## License
 
 Chat with GPT is licensed under the MIT license. See the LICENSE file for more information.
