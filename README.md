@@ -2,13 +2,13 @@
 
 Chat with GPT is an open-source, unofficial ChatGPT app with extra features and more ways to customize your experience. It connects ChatGPT with ElevenLabs to give ChatGPT a realistic human voice.
 
-Try out the hosted version at: https://www.chatwithgpt.ai
+This is a fork of from [cogent-apps](https://github.com/cogentapps/chat-with-gpt) that is no longer maintained.
 
-Or [self-host with Docker](#running-on-your-own-computer).
+You can [self-host with Docker](#running-on-your-own-computer).
 
 Powered by the new ChatGPT API from OpenAI, this app has been developed using TypeScript + React. We welcome pull requests from the community!
-
 https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1-ac38-e972dafc2f98.mp4
+
 
 ## Features
 
@@ -18,6 +18,8 @@ https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1
 - 🌡 Adjust the **creativity and randomness** of responses by setting the Temperature setting. Higher temperature means more creativity.
 - 💬 Give ChatGPT AI a **realistic human voice** by connecting your ElevenLabs text-to-speech account, or using your browser's built-in text-to-speech.
 - 🎤 **Speech recognition** powered by OpenAI Whisper.
+- :muscle: **Latest models** that are kept up-to-date with the releases from OpenAI.
+- :camera: **Image** capabilities, so you can query GPT-4V about your pictures.
 - ✉ **Share** your favorite chat sessions online using public share URLs.
 - 📋 Easily **copy-and-paste** ChatGPT messages.
 - ✏️ Edit your messages
