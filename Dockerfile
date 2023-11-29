@@ -1,4 +1,3 @@
-# Build Stage
 FROM node:19-bullseye-slim AS build
 
 RUN apt-get update && \
@@ -13,7 +12,7 @@ COPY ./app/package.json ./
 COPY ./app/tsconfig.json ./
 
 # Install Node.js dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 COPY ./app/vite.config.js ./
 
@@ -28,7 +27,6 @@ ENV NODE_ENV=production
 # Build the application
 RUN npm run build
 
-# Server Stage
 FROM node:19-bullseye-slim AS server
 
 # Set the working directory
@@ -37,15 +35,13 @@ WORKDIR /app
 COPY ./server/package.json ./server/tsconfig.json ./
 
 # Install Node.js dependencies from package.json
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Copy the rest of the application code into the working directory
 COPY ./server/src ./src
 
-# Run the server
 RUN CI=true sh -c "cd /app && npm run start && rm -rf data"
 
-# Copy the built application from the build stage
 COPY --from=build /app/build /app/public
 
 LABEL org.opencontainers.image.source="https://github.com/cogentapps/chat-with-gpt"
