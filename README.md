@@ -83,6 +83,7 @@ docker pull docker.io/jpipu/chat-with-gpt:latest
 - [ ] Support for Assistants.
 - [ ] Specify custom API URL (e.g. [anyscale](https://docs.endpoints.anyscale.com/))
 - [ ] Instructions on self-signing (See [1](https://github.com/cogentapps/chat-with-gpt/issues/132) and [2](https://github.com/cogentapps/chat-with-gpt/issues/170)) for running with secure connection.
+- [ ] Change API key field so it's not auto-filled by password managers with password
 
 ## License
 
