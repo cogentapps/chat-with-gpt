@@ -41,7 +41,7 @@ export class Search {
         if (!query?.trim().length) {
             const searchResults = this.context.all()
                 .sort((a, b) => b.updated - a.updated)
-                .slice(0, 10);
+                .slice(0, 32);
             const results = this.processSearchResults(searchResults);
             return results;
         }
