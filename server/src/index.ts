@@ -50,7 +50,7 @@ export default class ChatServer {
         //const { default: helmet } = await import('helmet');
         //this.app.use(helmet());
 
-        this.app.use(express.urlencoded({ extended: false }));
+        this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
         if (config.auth0?.clientID && config.auth0?.issuer && config.publicSiteURL) {
             console.log('Configuring Auth0.');
@@ -62,7 +62,7 @@ export default class ChatServer {
             configurePassport(this);
         }
 
-        this.app.use(express.json({ limit: '1mb' }));
+        this.app.use(express.json({ limit: '50mb' }));
         this.app.use(compression({
             filter: (req, res) => !req.path.includes("proxies"),
         }));
@@ -88,7 +88,7 @@ export default class ChatServer {
             windowMs: config.rateLimit.windowMs,
             max: config.rateLimit.max,
         }));
-        
+
         this.app.post('/chatapi/delete', (req, res) => new DeleteChatRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
@@ -143,7 +143,7 @@ export default class ChatServer {
                     key: fs.readFileSync(config.tls.key),
                     cert: fs.readFileSync(config.tls.cert),
                 }, this.app);
-            
+
                 server.listen(port, () => callback(true));
             } else if (config.tls?.selfSigned) {
                 console.log('Configuring self-signed TLS.');
@@ -156,7 +156,7 @@ export default class ChatServer {
                     key: fs.readFileSync('./data/key.pem'),
                     cert: fs.readFileSync('./data/cert.pem'),
                 }, this.app);
-            
+
                 server.listen(port, callback);
             } else {
                 this.app.listen(port, callback);
@@ -167,7 +167,7 @@ export default class ChatServer {
 
         const displayStatistics = () => {
             const activeUsers = getActiveUsersInLast5Minutes();
-            
+
             const activeUsersToDisplay = activeUsers.slice(0, 10);
             const extraActiveUsers = activeUsers.slice(10);
 
@@ -181,7 +181,7 @@ export default class ChatServer {
                 console.log(`  - Active users: ${activeUsersToDisplay.join(', ')}`);
             }
         }
-        
+
         setInterval(displayStatistics, 1000 * 60 * 5);
         setTimeout(displayStatistics, 1000 * 30);
     }

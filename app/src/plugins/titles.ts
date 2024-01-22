@@ -1,8 +1,8 @@
 import Plugin from "../core/plugins";
 import { PluginDescription } from "../core/plugins/plugin-description";
-import { OpenAIMessage, Parameters } from "../core/chat/types";
+import { OpenAIMessage, getTextContentFromOpenAIMessageContent, Parameters } from "../core/chat/types";
 import { countTokens, runChatTrimmer } from "../core/tokenizer/wrapper";
-import { defaultModel } from "../core/chat/openai";
+import { titlesModel } from "../core/chat/openai";
 
 export const systemPrompt = `
 Please read the following exchange and write a short, concise title describing the topic (in the user's language).
@@ -17,7 +17,7 @@ export interface TitlePluginOptions {
 }
 
 const userPrompt = (messages: OpenAIMessage[]) => {
-    return messages.map(m => `${m.role.toLocaleUpperCase()}:\n${m.content}`)
+    return messages.map(m => `${m.role.toLocaleUpperCase()}:\n${getTextContentFromOpenAIMessageContent(m.content)}`)
         .join("\n===\n")
         + "\n===\nTitle:";
 }
@@ -59,10 +59,10 @@ export class TitlePlugin extends Plugin<TitlePluginOptions> {
                 ]
 
                 const output = await this.context?.createChatCompletion(messages, {
-                    model: defaultModel,
+                    model: titlesModel,
                     temperature: 0,
                 });
-                
+
                 if (!output || output === 'N/A') {
                     return;
                 }

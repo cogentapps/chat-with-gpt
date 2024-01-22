@@ -7,6 +7,22 @@ export interface Parameters {
     model: string;
 }
 
+export type TextContentItem = {
+    type: 'text';
+    text: string;
+}
+
+export type ImageContentItem = {
+    type: 'image_url';
+    image_url: {
+        url: string;
+    };
+};
+
+export type ContentItem = TextContentItem | ImageContentItem;
+
+export type MessageContent = string | ContentItem[];
+
 export interface Message {
     id: string;
     chatID: string;
@@ -15,6 +31,7 @@ export interface Message {
     role: string;
     model?: string;
     content: string;
+    image_url?: string;
     parameters?: Parameters;
     done?: boolean;
 }
@@ -23,18 +40,52 @@ export interface UserSubmittedMessage {
     chatID: string;
     parentID?: string;
     content: string;
+    image_url?: string;
     requestedParameters: Parameters;
 }
 
 export interface OpenAIMessage {
     role: string;
-    content: string;
+    content: MessageContent;
 }
 
+export function getTextContentFromOpenAIMessageContent(openAIMessageContent: MessageContent): string {
+    if (typeof openAIMessageContent === 'string') {
+        // The content is already a string, so return it as is.
+        return openAIMessageContent;
+    } else if (Array.isArray(openAIMessageContent) && openAIMessageContent.length > 0) {
+        // The content is an array, so return the text field of the first item in the array.
+        // Note: The first item will always be a text field, and following items may be images.
+        const firstItem = openAIMessageContent[0];
+        if ('text' in firstItem) {
+            return firstItem.text;
+        }
+    }
+    // If the content is neither a string nor a valid array, return an empty string or handle as needed.
+    return '';
+}
+
+
 export function getOpenAIMessageFromMessage(message: Message): OpenAIMessage {
+    let contents: ContentItem[] = [];
+
+    contents.push({
+        type: 'text',
+        text: message.content,
+    });
+
+    if (message.image_url) {
+        contents.push({
+            type: 'image_url',
+            image_url: {
+                url: message['image_url'],
+            },
+        });
+    }
+
     return {
         role: message.role,
-        content: message.content,
+        content: contents,
     };
 }
 

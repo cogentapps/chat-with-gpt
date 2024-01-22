@@ -43,7 +43,7 @@ export function useCreateAppContext(): Context {
     const dispatch = useAppDispatch();
 
     intl = useIntl();
-    
+
     const { pathname } = useLocation();
     const isHome = pathname === '/';
     const isShare = pathname.startsWith('/s/');
@@ -75,9 +75,9 @@ export function useCreateAppContext(): Context {
         };
     }, [updateAuth]);
 
-    const onNewMessage = useCallback(async (message?: string) => {
+    const onNewMessage = useCallback(async (message?: string, imageUrl?: string) => {
         resetAudioContext();
-        
+
         if (isShare) {
             return false;
         }
@@ -114,29 +114,16 @@ export function useCreateAppContext(): Context {
             }
         }
 
-        // if (chatManager.has(id)) {
-            // chatManager.sendMessage({
-            //     chatID: id,
-            //     content: message.trim(),
-            //     requestedParameters: {
-            //         ...parameters,
-            //         apiKey: openaiApiKey,
-            //     },
-            //     parentID: currentChat.leaf?.id,
-            // });
-        // } else {
-        //     await chatManager.createChat(id);
-
-            chatManager.sendMessage({
-                chatID: id,
-                content: message.trim(),
-                requestedParameters: {
-                    ...parameters,
-                    apiKey: openaiApiKey,
-                },
-                parentID: currentChat.leaf?.id,
-            });
-        // }
+        chatManager.sendMessage({
+            chatID: id,
+            content: message.trim(),
+            image_url: imageUrl,
+            requestedParameters: {
+                ...parameters,
+                apiKey: openaiApiKey,
+            },
+            parentID: currentChat.leaf?.id,
+        });
 
         return id;
     }, [dispatch, id, currentChat.leaf, isShare]);
@@ -171,7 +158,7 @@ export function useCreateAppContext(): Context {
 
     const editMessage = useCallback(async (message: Message, content: string) => {
         resetAudioContext();
-        
+
         if (isShare) {
             return false;
         }
@@ -197,6 +184,7 @@ export function useCreateAppContext(): Context {
             await chatManager.sendMessage({
                 chatID: id,
                 content: content.trim(),
+                image_url: message.image_url,
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,
@@ -208,6 +196,7 @@ export function useCreateAppContext(): Context {
             await chatManager.sendMessage({
                 chatID: id,
                 content: content.trim(),
+                image_url: message.image_url,
                 requestedParameters: {
                     ...parameters,
                     apiKey: openaiApiKey,

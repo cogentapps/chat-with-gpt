@@ -38,7 +38,7 @@ export class ChatManager extends EventEmitter {
 
         loadSavedChatsFromPreviousVersion(this.doc)
             .then(() => this.emit('update'));
-        
+
         setInterval(() => this.emitChanges(), 100);
 
         channel.onmessage = message => {
@@ -64,7 +64,7 @@ export class ChatManager extends EventEmitter {
         const doc = this.doc as YChatDoc | undefined;
         const provider = this.provider as IndexeddbPersistence | undefined;
         doc?.removeAllListeners();
-        
+
         const pluginOptionsManager = this.options as OptionsManager | undefined;
         pluginOptionsManager?.destroy();
 
@@ -122,7 +122,7 @@ export class ChatManager extends EventEmitter {
     private emitChanges() {
         const ids = Array.from(this.changedIDs);
         this.changedIDs.clear();
-        
+
         for (const id of ids) {
             this.emit(id);
             this.search.update(id);
@@ -147,6 +147,7 @@ export class ChatManager extends EventEmitter {
             timestamp: Date.now(),
             role: 'user',
             content: userSubmittedMessage.content,
+            image_url: userSubmittedMessage.image_url,
             done: true,
         };
 

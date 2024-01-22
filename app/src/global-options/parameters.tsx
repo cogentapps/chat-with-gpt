@@ -23,44 +23,62 @@ export const parameterOptions: OptionGroup = {
                     {
                         defaultMessage: "Note: This model will only work if your OpenAI account has been granted you have been given access to it. <a>Request access here.</a>",
                     },
-                    { 
-                        a: (text: string) => <a href="https://openai.com/waitlist/gpt-4-api" target="_blank" rel="noreferer">{text}</a> 
+                    {
+                        a: (text: string) => <a href="https://openai.com/waitlist/gpt-4-api" target="_blank" rel="noreferer">{text}</a>
                     } as any,
                 ),
                 options: [
                     {
-                        label: "GPT 3.5 Turbo (default)",
+                        label: "GPT-3.5 Turbo",
                         value: "gpt-3.5-turbo",
                     },
                     {
-                        label: "GPT 3.5 Turbo 16k",
-                        value: "gpt-3.5-turbo-16k",
-                    },
-                    {
-                        label: "GPT 4",
-                        value: "gpt-4",
-                    },
-                    {
-                        label: "GPT 4 32k (requires invite)",
-                        value: "gpt-4-32k",
-                    },
-                    {
-                        label: "GPT 4 Snapshot (June 13, 2023)",
-                        value: "gpt-4-0613",
-                    },
-          
-                    {
-                        label: "GPT 4 32k Snapshot (June 13, 2023)",
-                        value: "gpt-4-32k-0613",
-                    },
-  
-                    {
-                        label: "GPT 3.5 Turbo Snapshot (June 13, 2023)",
+                        label: "GPT-3.5 Turbo Snapshot (June 13, 2023)",
                         value: "gpt-3.5-turbo-0613",
                     },
                     {
-                        label: "GPT 3.5 Turbo 16k Snapshot (June 13, 2023)",
+                        label: "GPT-3.5 Turbo Snapshot (November 6, 2023) (default)",
+                        value: "gpt-3.5-turbo-1106",
+                    },
+                    {
+                        label: "GPT-3.5 Turbo 16k",
+                        value: "gpt-3.5-turbo-16k",
+                    },
+                    {
+                        label: "GPT-3.5 Turbo 16k Snapshot (June 13, 2023)",
                         value: "gpt-3.5-turbo-16k-0613",
+                    },
+                    {
+                        label: "GPT-4 Snapshot (November 6, 2023)",
+                        value: "gpt-4-1106-preview",
+                    },
+                    {
+                        label: "GPT-4V (GPT-4 with Vision)",
+                        value: "gpt-4-vision-preview",
+                    },
+                    {
+                        label: "GPT-4",
+                        value: "gpt-4",
+                    },
+                    {
+                        label: "GPT-4 Snapshot (March 14, 2023)",
+                        value: "gpt-4-0314",
+                    },
+                    {
+                        label: "GPT-4 Snapshot (June 13, 2023)",
+                        value: "gpt-4-0613",
+                    },
+                    {
+                        label: "GPT-4 32k (requires invite)",
+                        value: "gpt-4-32k",
+                    },
+                    {
+                        label: "GPT-4 32k June Snapshot (required invite)",
+                        value: "gpt-4-32k-0613",
+                    },
+                    {
+                        label: "GPT-4 32k March Snapshot (required invite)",
+                        value: "gpt-4-32k-0314",
                     },
                 ],
             }),

@@ -77,14 +77,14 @@ export function Markdown(props: MarkdownProps) {
           remarkPlugins.push(remarkMath);
           rehypePlugins.push(rehypeKatex);
         }
-      
+
         return <div className={classes.join(' ')}>
             <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={rehypePlugins}
                 components={{
                     ol({ start, children }) {
-                        return <ol start={start ?? 1} style={{ counterReset: `list-item ${(start || 1)}` }}>
+                        return <ol start={start ?? 0} style={{ counterReset: `list-item ${(start || 0)}` }}>
                             {children}
                         </ol>;
                     },
