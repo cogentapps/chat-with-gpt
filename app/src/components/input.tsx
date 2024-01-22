@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Button, ActionIcon, Textarea, Loader, Popover } from '@mantine/core';
 import { getHotkeyHandler, useHotkeys, useMediaQuery } from '@mantine/hooks';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../core/context';
@@ -12,6 +12,7 @@ import { speechRecognition, supportsSpeechRecognition } from '../core/speech-rec
 import { useWhisper } from '@chengsokdara/use-whisper';
 import QuickSettings from './quick-settings';
 import { useOption } from '../core/options/use-option';
+import { set } from '../core/utils/idb';
 
 const Container = styled.div`
     background: #292933;
@@ -41,6 +42,10 @@ export default function MessageInput(props: MessageInputProps) {
     const message = useAppSelector(selectMessage);
     const [recording, setRecording] = useState(false);
     const [speechError, setSpeechError] = useState<string | null>(null);
+    const [imageUrl, setImageUrl] = useState(null);
+    const [isImageUploading, setIsImageUploading] = useState(false);
+    const [uploadedImageName, setUploadedImageName] = useState('');
+    const [showImageNameDropdown, setShowImageNameDropdown] = useState(false);
     const hasVerticalSpace = useMediaQuery('(min-height: 1000px)');
     const [useOpenAIWhisper] = useOption<boolean>('speech-recognition', 'use-whisper');
     const [openAIApiKey] = useOption<string>('openai', 'apiKey');
@@ -60,6 +65,7 @@ export default function MessageInput(props: MessageInputProps) {
     const context = useAppContext();
     const dispatch = useAppDispatch();
     const intl = useIntl();
+    const fileInputRef = useRef(null);
 
     const tab = useAppSelector(selectSettingsTab);
 
@@ -75,15 +81,16 @@ export default function MessageInput(props: MessageInputProps) {
     const onSubmit = useCallback(async () => {
         setSpeechError(null);
 
-        const id = await context.onNewMessage(message);
+        const id = await context.onNewMessage(message, imageUrl);
 
         if (id) {
             if (!window.location.pathname.includes(id)) {
                 navigate('/chat/' + id);
             }
             dispatch(setMessage(''));
+            setImageUrl(null);
         }
-    }, [context, message, dispatch, navigate]);
+    }, [context, message, imageUrl, dispatch, navigate]);
 
     const onSpeechError = useCallback((e: any) => {
         console.error('speech recognition error', e);
@@ -195,6 +202,41 @@ export default function MessageInput(props: MessageInputProps) {
         document.querySelector<HTMLTextAreaElement>('#message-input')?.blur();
     }, []);
 
+    const onImageSelected = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setIsImageUploading(true);
+            setUploadedImageName(file.name);
+            const reader = new FileReader();
+
+            reader.onload = (loadEvent) => {
+                const base64Image = loadEvent.target.result;
+                setImageUrl(base64Image); // Update the state with the base64 image data
+                setIsImageUploading(false);
+                console.log("Image uploaded: ", base64Image);
+            };
+
+            reader.onerror = (error) => {
+                // FIXME: Add error to UI
+                console.log('Error uploading image: ', error);
+                setIsImageUploading(false);
+                setUploadedImageName('');
+            }
+
+            reader.readAsDataURL(file);
+        }
+    };
+
+    function handleMouseEnter() {
+        if (imageUrl) {
+            setShowImageNameDropdown(true);
+        }
+    }
+
+    function handleMouseLeave() {
+        setShowImageNameDropdown(false);
+    }
+
     const rightSection = useMemo(() => {
         return (
             <div style={{
@@ -243,15 +285,61 @@ export default function MessageInput(props: MessageInputProps) {
                                 </div>
                             </Popover.Dropdown>
                         </Popover>}
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={onImageSelected}
+                            ref={fileInputRef}
+                        />
+
+                        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                            <Popover width={200} position="bottom" withArrow shadow="md" opened={showImageNameDropdown}>
+                                <Popover.Target>
+                                    <ActionIcon
+                                        size="xl"
+                                        onClick={() => fileInputRef.current.click()}
+                                        disabled={isImageUploading}
+                                    >
+                                        {isImageUploading ? (
+                                            <i className="fa fa-ellipsis-h" style={{ fontSize: '90%' }} />
+                                        ) : uploadedImageName ? (
+                                            <i className="fa fa-check" style={{ fontSize: '90%' }} />
+                                        ) : (
+                                            <i className="fa fa-camera" style={{ fontSize: '90%' }} />
+                                        )}
+                                    </ActionIcon>
+                                </Popover.Target>
+                                <Popover.Dropdown>
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                    }}>
+                                        <p style={{
+                                            fontFamily: `"Work Sans", sans-serif`,
+                                            fontSize: '0.9rem',
+                                            textAlign: 'center',
+                                            marginBottom: '0.5rem',
+                                        }}>
+                                            {uploadedImageName}
+                                        </p>
+                                    </div>
+                                </Popover.Dropdown>
+                            </Popover>
+                        </div>
+
                         <ActionIcon size="xl"
-                            onClick={onSubmit}>
+                            onClick={onSubmit}
+                            disabled={isImageUploading}>
                             <i className="fa fa-paper-plane" style={{ fontSize: '90%' }} />
                         </ActionIcon>
                     </>
                 )}
             </div>
         );
-    }, [recording, transcribing, onSubmit, onSpeechStart, props.disabled, context.generating, speechError, onHideSpeechError, showMicrophoneButton]);
+    }, [recording, transcribing, isImageUploading, imageUrl, showImageNameDropdown, onSubmit, onSpeechStart, props.disabled, context.generating, speechError, onHideSpeechError, showMicrophoneButton]);
 
     const disabled = context.generating;
 

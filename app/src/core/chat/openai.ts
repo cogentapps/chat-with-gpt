@@ -4,7 +4,8 @@ import SSE from "../utils/sse";
 import { OpenAIMessage, Parameters } from "./types";
 import { backend } from "../backend";
 
-export const defaultModel = 'gpt-3.5-turbo';
+export const defaultModel = 'gpt-4-1106-preview';
+export const titlesModel = 'gpt-3.5-turbo';
 
 export function isProxySupported() {
     return !!backend.current?.services?.includes('openai');
@@ -58,6 +59,17 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
         throw new Error('No API key provided');
     }
 
+    let payload = {
+        "model": parameters.model,
+        "messages": messages,
+        "temperature": parameters.temperature,
+    };
+
+    // The GPT-4V model preview requires max tokens to be set
+    if (parameters.model === "gpt-4-vision-preview") {
+        payload["max_tokens"] = 4096;
+    }
+
     const response = await fetch(endpoint + '/v1/chat/completions', {
         method: "POST",
         headers: {
@@ -65,11 +77,7 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
             'Authorization': !proxied ? `Bearer ${parameters.apiKey}` : '',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            "model": parameters.model,
-            "messages": messages,
-            "temperature": parameters.temperature,
-        }),
+        body: JSON.stringify(payload),
     });
 
     const data = await response.json();
@@ -87,6 +95,18 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         throw new Error('No API key provided');
     }
 
+    let payload = {
+        "model": parameters.model,
+        "messages": messages,
+        "temperature": parameters.temperature,
+        "stream": true,
+    };
+
+    // The GPT-4V model preview requires max tokens to be set
+    if (parameters.model === "gpt-4-vision-preview") {
+        payload["max_tokens"] = 4096;
+    }
+
     const eventSource = new SSE(endpoint + '/v1/chat/completions', {
         method: "POST",
         headers: {
@@ -94,12 +114,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
             'Authorization': !proxied ? `Bearer ${parameters.apiKey}` : '',
             'Content-Type': 'application/json',
         },
-        payload: JSON.stringify({
-            "model": parameters.model,
-            "messages": messages,
-            "temperature": parameters.temperature,
-            "stream": true,
-        }),
+        payload: JSON.stringify(payload),
     }) as SSE;
 
     let contents = '';
@@ -140,12 +155,17 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
 }
 
 export const maxTokensByModel = {
-    "gpt-3.5-turbo": 4096,
+    "gpt-4-1106-preview": 128000,
+    "gpt-4-vision-preview": 128000,
     "gpt-4": 8192,
+    "gpt-4-0314": 8192,
     "gpt-4-0613": 8192,
     "gpt-4-32k": 32768,
     "gpt-4-32k-0613": 32768,
-    "gpt-3.5-turbo-16k": 16384,
+    "gpt-4-32k-0314": 32768,
+    "gpt-3.5-turbo": 4096,
     "gpt-3.5-turbo-0613": 4096,
+    "gpt-3.5-turbo-1106": 16384,
+    "gpt-3.5-turbo-16k": 16384,
     "gpt-3.5-turbo-16k-0613": 16384,
 };

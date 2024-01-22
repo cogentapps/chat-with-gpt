@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import { createChatCompletion, createStreamingChatCompletion } from "./openai";
 import { PluginContext } from "../plugins/plugin-context";
 import { pluginRunner } from "../plugins/plugin-runner";
-import { Chat, Message, OpenAIMessage, Parameters, getOpenAIMessageFromMessage } from "./types";
+import { Chat, Message, OpenAIMessage, Parameters, getOpenAIMessageFromMessage, getTextContentFromOpenAIMessageContent } from "./types";
 import { EventEmitterAsyncIterator } from "../utils/event-emitter-async-iterator";
 import { YChat } from "./y-chat";
 import { OptionsManager } from "../options";
@@ -17,11 +17,11 @@ export class ReplyRequest extends EventEmitter {
     private cancelSSE: any;
 
     constructor(private chat: Chat,
-                private yChat: YChat,
-                private messages: Message[],
-                private replyID: string,
-                private requestedParameters: Parameters,
-                private pluginOptions: OptionsManager) {
+        private yChat: YChat,
+        private messages: Message[],
+        private replyID: string,
+        private requestedParameters: Parameters,
+        private pluginOptions: OptionsManager) {
         super();
         this.mutatedMessages = [...messages];
         this.mutatedMessages = messages.map(m => getOpenAIMessageFromMessage(m));
@@ -57,8 +57,8 @@ export class ReplyRequest extends EventEmitter {
 
         this.timer = setInterval(() => {
             const sinceLastChunk = Date.now() - this.lastChunkReceivedAt;
-            if (sinceLastChunk > 30000 && !this.done) {
-                this.onError('no response from OpenAI in the last 30 seconds');
+            if (sinceLastChunk > 60000 && !this.done) {
+                this.onError('no response from OpenAI in the last 60 seconds');
             }
         }, 2000);
     }
@@ -122,7 +122,7 @@ export class ReplyRequest extends EventEmitter {
                 content: this.content,
             }, this.mutatedMessages, this.mutatedParameters, false);
 
-            this.content = output.content;
+            this.content = getTextContentFromOpenAIMessageContent(output.content);
         });
 
         this.yChat.setPendingMessageContent(this.replyID, this.content);

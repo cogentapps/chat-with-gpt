@@ -238,6 +238,10 @@ export default function MessageComponent(props: { message: Message, last: boolea
             return null;
         }
 
+        const imageElement = props.message.image_url ? (
+            <img src={props.message.image_url} alt="Message content" className="content-image" />
+        ) : null;
+
         return (
             <Container className={"message by-" + props.message.role}>
                 <div className="inner">
@@ -257,7 +261,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             {({ copy, copied }) => (
                                 <Button variant="subtle" size="sm" compact onClick={copy} style={{ marginLeft: '1rem' }}>
                                     <i className="fa fa-clipboard" />
-                                        {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
+                                    {copied ? <FormattedMessage defaultMessage="Copied" description="Label for copy-to-clipboard button after a successful copy" />
                                         : <span><FormattedMessage defaultMessage="Copy" description="Label for copy-to-clipboard button" /></span>}
                                 </Button>
                             )}
@@ -291,9 +295,12 @@ export default function MessageComponent(props: { message: Message, last: boolea
                             </Button>
                         )}
                     </div>
-                    {!editing && <Markdown content={props.message.content}
-                        katex={katex}
-                        className={"content content-" + props.message.id} />}
+                    {!editing && (
+                        <div className={"content view-content-" + props.message.id}>
+                            <Markdown content={props.message.content} katex={katex} className={"content content-" + props.message.id} />
+                            {imageElement}
+                        </div>
+                    )}
                     {editing && (<Editor>
                         <Textarea value={content}
                             onChange={e => setContent(e.currentTarget.value)}
@@ -309,7 +316,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                 {props.last && <EndOfChatMarker />}
             </Container>
         )
-    }, [props.last, props.share, editing, content, context, props.message, props.message.content, tab]);
+    }, [props.last, props.share, editing, content, context, props.message, props.message.content, props.message.image_url, tab]);
 
     return elem;
 }
