@@ -12,7 +12,7 @@ import store, { persistor } from './store';
 import ChatPage from './components/pages/chat';
 import LandingPage from './components/pages/landing';
 
-import './index.scss';
+import "./index.css";
 
 const router = createBrowserRouter([
     {

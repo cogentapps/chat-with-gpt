@@ -40,6 +40,29 @@ export function cloneArrayBuffer(buffer: ArrayBuffer): ArrayBuffer {
 }
 
 /**
+ * Lexicographically compare two `Uint8Array` instances.
+ *
+ * @param {Uint8Array} a - The first `Uint8Array` instance to compare.
+ * @param {Uint8Array} b - The second `Uint8Array` instance to compare.
+ * @returns {number} The comparison result. -1 if `a` is "less" than `b`, 1 if `a` is "greater" than `b`, or 0 if they are "equal".
+ */
+export function compareUint8Array(a: Uint8Array, b: Uint8Array): number {
+  if (a === b) return 0;
+
+  const len = Math.min(a.byteLength, b.byteLength);
+
+  for (let i = 0; i < len; ++i) {
+    if (a[i] < b[i]) return -1;
+    if (a[i] > b[i]) return 1;
+  }
+
+  if (a.byteLength < b.byteLength) return -1;
+  if (a.byteLength > b.byteLength) return 1;
+
+  return 0;
+}
+
+/**
  * Shares the specified text using the Web Share API if available in the user's browser.
  *
  * @function
