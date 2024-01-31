@@ -41,8 +41,12 @@ export const parameterOptions: OptionGroup = {
                         value: "gpt-4",
                     },
                     {
-                        label: "GPT 4 Turbo preview",
+                        label: "GPT 4 Turbo preview 1106",
                         value: "gpt-4-1106-preview",
+                    },
+                    {
+                        label: "GPT 4 Turbo preview (latest)",
+                        value: "gpt-4-turbo-preview",
                     },
                     {
                         label: "GPT 4 32k (requires invite)",
